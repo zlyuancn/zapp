@@ -1,0 +1,33 @@
+/*
+-------------------------------------------------
+   Author :       Zhang Fan
+   date：         2020/8/22
+   Description :
+-------------------------------------------------
+*/
+
+package app
+
+import (
+	"github.com/zlyuancn/zapp/core"
+)
+
+type Handler func(app core.IApp)
+
+// handler类型
+type HandlerType int
+
+const (
+	// 在app初始化前
+	BeforeInitializeHandler HandlerType = iota + 1
+	// 在app初始化后
+	AfterInitializeHandler
+	// 在app启动前
+	BeforeStartHandler
+	// 在app启动后
+	AfterStartHandler
+	// 在app退出前
+	BeforeExitHandler
+	// 在app退出后
+	AfterExitHandler
+)
