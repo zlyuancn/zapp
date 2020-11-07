@@ -37,9 +37,20 @@ func (t ServiceType) String() string {
 		return "grpc"
 	case CronService:
 		return "cron"
+	default:
+		if desc, ok := serviceTypeDescribeMap[t]; ok {
+			return desc
+		}
 	}
 
-	return fmt.Sprintf("ServiceType<%d>", t)
+	return fmt.Sprintf("<undefined service type %d>", t)
+}
+
+var serviceTypeDescribeMap = make(map[ServiceType]string)
+
+// 注册服务类型描述
+func RegistryServiceTypeDescribe(t ServiceType, desc string) {
+	serviceTypeDescribeMap[t] = desc
 }
 
 // 默认服务名
