@@ -17,7 +17,12 @@ import (
 )
 
 func NewLogger(c core.IConfig) core.ILogger {
-	var conf zlog.LogConfig
-	utils.FailOnErrorf(c.ParseShard(consts.LogConfigShardName, &conf), "解析log配置失败")
+	var conf = zlog.DefaultConfig
+
+	viper := c.GetViper()
+	if viper.IsSet(consts.LogConfigShardName) {
+		utils.FailOnErrorf(viper.UnmarshalKey(consts.LogConfigShardName, &conf), "解析log配置失败")
+	}
+
 	return zlog.New(conf)
 }
