@@ -13,7 +13,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
 	github.com/takama/daemon v1.0.0
-	github.com/zlyuancn/zlog v0.0.0-20200510075342-5831b7d2f6c6
+	github.com/zlyuancn/zlog v0.0.0-20201107061811-296315fd4162
 	github.com/zlyuancn/zscheduler v0.0.0-20201105060354-a118f38bdd8f
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0
