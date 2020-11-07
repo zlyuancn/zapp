@@ -249,6 +249,6 @@ func (app *appCli) freeMemory() {
 
 func (app *appCli) handler(t HandlerType) {
 	for _, h := range app.opt.Handlers[t] {
-		h(app)
+		h(app, t)
 	}
 }

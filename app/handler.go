@@ -12,7 +12,7 @@ import (
 	"github.com/zlyuancn/zapp/core"
 )
 
-type Handler func(app core.IApp)
+type Handler func(app core.IApp, handlerType HandlerType)
 
 // handler类型
 type HandlerType int
