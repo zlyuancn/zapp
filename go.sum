@@ -209,8 +209,8 @@ github.com/zlyuancn/zgpool v0.0.0-20201028093712-18bf87b9f38e h1:TLiEOdD0/VoxqEI
 github.com/zlyuancn/zgpool v0.0.0-20201028093712-18bf87b9f38e/go.mod h1:hcTFkqRHzZYl33RX4BQZZ3WV9rrY7XAYk1HlOE2emxQ=
 github.com/zlyuancn/zlog v0.0.0-20200510075342-5831b7d2f6c6 h1:CiIGNOGjLSV35KrG5+XwtZbBWJRAexLGCAaKEtRA+xk=
 github.com/zlyuancn/zlog v0.0.0-20200510075342-5831b7d2f6c6/go.mod h1:JM1QwCNmnJNZlBpqJJ8cSLGCQRh9ttXjw6huc6Spb2Q=
-github.com/zlyuancn/zlog v0.0.0-20201107061811-296315fd4162 h1:z4IUgBOM36deEmM1fcPHBZB7RBiAYiHppiuOFLVfF9A=
-github.com/zlyuancn/zlog v0.0.0-20201107061811-296315fd4162/go.mod h1:JM1QwCNmnJNZlBpqJJ8cSLGCQRh9ttXjw6huc6Spb2Q=
+github.com/zlyuancn/zlog v0.0.0-20201107071137-3b2b7df64ef1 h1:9M3BlQA1ReqarIvRfx2D8IEWf1oDTghUqNTggDRxRJI=
+github.com/zlyuancn/zlog v0.0.0-20201107071137-3b2b7df64ef1/go.mod h1:ZUn31FCocTG1dg6bmIHz+ONfSOXSdM9ztTqgn1RdrlA=
 github.com/zlyuancn/zscheduler v0.0.0-20201105060354-a118f38bdd8f h1:JAUvxE0QFF9bh7ew8XH7FYShpVaCg/ZRprvhYm1Iqn4=
 github.com/zlyuancn/zscheduler v0.0.0-20201105060354-a118f38bdd8f/go.mod h1:CzaRFr1bsUVvJMr2ctTW8MCtmQ2Pfn7N9fOmelloogk=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
