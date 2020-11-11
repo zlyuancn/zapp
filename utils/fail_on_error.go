@@ -12,14 +12,22 @@ import (
 	"fmt"
 )
 
+func Panic(a ...interface{}) {
+	log.Panic(a...)
+}
+
+func Panicf(format string, v ...interface{}) {
+	log.Panicf(format, v...)
+}
+
 func FailOnError(err error, msg string) {
 	if err != nil {
-		panic(fmt.Errorf("%s: %s", msg, err))
+		log.Panicf("%s: %s", msg, err)
 	}
 }
 
 func FailOnErrorf(err error, format string, msg ...interface{}) {
 	if err != nil {
-		panic(fmt.Errorf("%s: %s", fmt.Sprintf(format, msg...), err))
+		log.Panicf("%s: %s", fmt.Sprintf(format, msg...), err)
 	}
 }

@@ -51,7 +51,7 @@ type appCli struct {
 // 正常启动时会初始化所有服务
 func NewApp(appName string, opts ...Option) core.IApp {
 	if appName == "" {
-		panic("appName must not empty")
+		utils.Panic("appName must not empty")
 	}
 	app := &appCli{
 		name:      appName,

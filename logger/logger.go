@@ -25,5 +25,7 @@ func NewLogger(appName string, c core.IConfig) core.ILogger {
 		utils.FailOnErrorf(viper.UnmarshalKey(consts.LogConfigShardName, &conf), "解析log配置失败")
 	}
 
-	return zlog.New(conf)
+	log := zlog.New(conf)
+	utils.SetLog(log)
+	return log
 }

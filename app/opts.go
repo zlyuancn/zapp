@@ -9,9 +9,10 @@
 package app
 
 import (
-	"fmt"
+	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/consts"
+	"github.com/zlyuancn/zapp/utils"
 )
 
 type Option func(opt *option)
@@ -39,7 +40,7 @@ func (o *option) AddService(serviceType consts.ServiceType, serviceName ...strin
 	}
 
 	if _, ok = services[name]; ok {
-		panic(fmt.Errorf("服务类型[%s]的服务名[%s]已存在", serviceType.String(), name))
+		utils.Panic("服务类型的服务名已存在", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name))
 	}
 
 	services[name] = struct{}{}
