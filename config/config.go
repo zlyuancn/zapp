@@ -31,6 +31,9 @@ type configCli struct {
 	files []string
 }
 
+// 解析配置
+//
+// 多个配置文件如果存在同配置分片则只识别最后的分片
 func NewConfig() core.IConfig {
 	confText := flag.String("c", "", "配置文件,多个文件用逗号隔开,同名配置分片会完全覆盖之前的分片")
 	testConfig := flag.Bool("t", false, "测试配置文件")
