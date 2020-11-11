@@ -46,7 +46,7 @@ func NewConfig() core.IConfig {
 	c := &configCli{
 		v: viper.New(),
 		c: &core.Config{
-			Debug:              true,
+			Debug:              false,
 			FreeMemoryInterval: DefaultFreeMemoryInterval,
 		},
 		files: files,
