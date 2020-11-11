@@ -16,8 +16,9 @@ import (
 	"github.com/zlyuancn/zapp/utils"
 )
 
-func NewLogger(c core.IConfig) core.ILogger {
+func NewLogger(appName string, c core.IConfig) core.ILogger {
 	var conf = zlog.DefaultConfig
+	conf.Name = appName
 
 	viper := c.GetViper()
 	if viper.IsSet(consts.LogConfigShardName) {

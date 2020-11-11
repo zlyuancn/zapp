@@ -72,7 +72,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	}
 
 	app.config = config.NewConfig()
-	app.logger = logger.NewLogger(app.config)
+	app.logger = logger.NewLogger(appName, app.config)
 	app.component = component.NewComponent(app)
 	app.context = context.NewContext(app.component)
 
