@@ -13,19 +13,21 @@ import (
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
-	"github.com/zlyuancn/zapp/utils"
 )
+
+var Log core.ILogger
 
 func NewLogger(appName string, c core.IConfig) core.ILogger {
 	var conf = zlog.DefaultConfig
 	conf.Name = appName
 
 	viper := c.GetViper()
-	if viper.IsSet(consts.LogConfigShardName) {
-		utils.FailOnErrorf(viper.UnmarshalKey(consts.LogConfigShardName, &conf), "解析log配置失败")
+	if viper.IsSet(consts.ConfigShardName_Log) {
+		if err := viper.UnmarshalKey(consts.ConfigShardName_Log, &conf); err != nil {
+			Log.Fatalf("%s: %s", "解析log配置失败", err)
+		}
 	}
 
-	log := zlog.New(conf)
-	utils.SetLog(log)
-	return log
+	Log = zlog.New(conf)
+	return Log
 }

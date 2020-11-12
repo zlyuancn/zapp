@@ -8,10 +8,6 @@
 
 package core
 
-import (
-	"github.com/zlyuancn/zapp/consts"
-)
-
 // app
 //
 // 用于将所有模块连起来
@@ -34,5 +30,5 @@ type IApp interface {
 	// 获取上下文
 	GetContext() IContext
 	// 获取服务
-	GetService(serviceType consts.ServiceType, serviceName ...string) (IService, bool)
+	GetService(serviceType ServiceType, serviceName ...string) (IService, bool)
 }

@@ -14,13 +14,12 @@ import (
 	"github.com/zlyuancn/zscheduler"
 	"go.uber.org/zap"
 
-	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/service"
 )
 
 func init() {
-	service.RegisterCreator(consts.CronService, new(cronCreator))
+	service.RegisterCreator(core.CronService, new(cronCreator))
 }
 
 type cronCreator struct{}

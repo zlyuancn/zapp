@@ -10,24 +10,26 @@ package utils
 
 import (
 	"fmt"
+
+	"github.com/zlyuancn/zapp/logger"
 )
 
 func Panic(a ...interface{}) {
-	log.Panic(a...)
+	logger.Log.Panic(a...)
 }
 
 func Panicf(format string, v ...interface{}) {
-	log.Panicf(format, v...)
+	logger.Log.Panicf(format, v...)
 }
 
 func FailOnError(err error, msg string) {
 	if err != nil {
-		log.Panicf("%s: %s", msg, err)
+		logger.Log.Panicf("%s: %s", msg, err)
 	}
 }
 
 func FailOnErrorf(err error, format string, msg ...interface{}) {
 	if err != nil {
-		log.Panicf("%s: %s", fmt.Sprintf(format, msg...), err)
+		logger.Log.Panicf("%s: %s", fmt.Sprintf(format, msg...), err)
 	}
 }

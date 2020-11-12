@@ -41,7 +41,7 @@ type appCli struct {
 	closeChan chan struct{}
 	interrupt chan os.Signal
 
-	services map[consts.ServiceType]map[string]core.IService
+	services map[core.ServiceType]map[string]core.IService
 	opt      *option
 }
 
@@ -57,7 +57,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 		name:      appName,
 		closeChan: make(chan struct{}),
 		interrupt: make(chan os.Signal, 1),
-		services:  make(map[consts.ServiceType]map[string]core.IService),
+		services:  make(map[core.ServiceType]map[string]core.IService),
 		opt:       newOption(),
 	}
 
@@ -219,7 +219,7 @@ func (app *appCli) GetContext() core.IContext {
 	return app.context
 }
 
-func (app *appCli) GetService(serviceType consts.ServiceType, serviceName ...string) (core.IService, bool) {
+func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...string) (core.IService, bool) {
 	name := consts.DefaultServiceName
 	if len(serviceName) > 0 {
 		name = serviceName[0]
