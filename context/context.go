@@ -27,17 +27,15 @@ func nextContextId() string {
 	bs := []byte{48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48} // 补0位, 32^13等于2^65
 	i := 12
 	for {
-		v := byte(31 & id)
-		if v < 10 {
-			bs[i] = v + 48
-		} else {
-			bs[i] = v + 87
+		bs[i] = byte(31&id) + 48 // 从字符0开始
+		if bs[i] > 57 {          // 超过数字用字母表示
+			bs[i] += 39
 		}
 		if id < 32 {
 			return string(bs)
 		}
 		i--
-		id = id >> 5
+		id >>= 5
 	}
 }
 
