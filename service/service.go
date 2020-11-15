@@ -9,26 +9,32 @@
 package service
 
 import (
-	"fmt"
+	"go.uber.org/zap"
 
-	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
+	"github.com/zlyuancn/zapp/utils"
 )
 
-var creators = make(map[consts.ServiceType]core.IServiceCreator)
+var creators = make(map[core.ServiceType]core.IServiceCreator)
 
 // 注册建造者
-func RegisterCreator(serviceType consts.ServiceType, creator core.IServiceCreator) {
+func RegisterCreator(serviceType core.ServiceType, creator core.IServiceCreator) {
 	if _, ok := creators[serviceType]; ok {
-		panic(fmt.Errorf("重复注册建造者: %s" + serviceType.String()))
+		utils.Panic("重复注册建造者", zap.String("serviceType", serviceType.String()))
 	}
 	creators[serviceType] = creator
 }
 
 // 创建服务,
-func NewService(serviceType consts.ServiceType, c core.IComponent) core.IService {
+func NewService(serviceType core.ServiceType, c core.IComponent) core.IService {
 	if creator, ok := creators[serviceType]; ok {
 		return creator.Create(c)
 	}
-	panic(fmt.Errorf("使用了未注册的建造者: %s", serviceType.String()))
+	utils.Panic("使用了未注册的建造者", zap.String("serviceType", serviceType.String()))
+	return nil
+}
+
+// 注册服务类型描述
+func RegistryServiceTypeDescribe(t core.ServiceType, desc string) {
+	core.RegistryServiceTypeDescribe(t, desc)
 }

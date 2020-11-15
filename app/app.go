@@ -40,7 +40,7 @@ type appCli struct {
 	closeChan chan struct{}
 	interrupt chan os.Signal
 
-	services map[consts.ServiceType]map[string]core.IService
+	services map[core.ServiceType]map[string]core.IService
 	opt      *option
 }
 
@@ -50,13 +50,13 @@ type appCli struct {
 // 正常启动时会初始化所有服务
 func NewApp(appName string, opts ...Option) core.IApp {
 	if appName == "" {
-		panic("appName must not empty")
+		utils.Panic("appName must not empty")
 	}
 	app := &appCli{
 		name:      appName,
 		closeChan: make(chan struct{}),
 		interrupt: make(chan os.Signal, 1),
-		services:  make(map[consts.ServiceType]map[string]core.IService),
+		services:  make(map[core.ServiceType]map[string]core.IService),
 		opt:       newOption(),
 	}
 
@@ -71,7 +71,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	}
 
 	app.config = config.NewConfig()
-	app.logger = logger.NewLogger(app.config)
+	app.logger = logger.NewLogger(appName, app.config)
 	app.component = component.NewComponent(app)
 
 	app.logger.Info("初始化服务")
@@ -217,7 +217,7 @@ func (app *appCli) NewContext(tag ...string) core.IContext {
 	return context.NewContext(app, tag...)
 }
 
-func (app *appCli) GetService(serviceType consts.ServiceType, serviceName ...string) (core.IService, bool) {
+func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...string) (core.IService, bool) {
 	name := consts.DefaultServiceName
 	if len(serviceName) > 0 {
 		name = serviceName[0]

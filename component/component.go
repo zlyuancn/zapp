@@ -9,7 +9,6 @@
 package component
 
 import (
-	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/service/cron"
 )
@@ -45,7 +44,7 @@ func (c *componentCli) Close() {
 }
 
 func (c *componentCli) RegistryCronJob(name string, expression string, job cron.Job, enable ...bool) {
-	s, ok := c.app.GetService(consts.CronService)
+	s, ok := c.app.GetService(core.CronService)
 	if !ok {
 		return
 	}
