@@ -46,7 +46,7 @@ type contextCli struct {
 }
 
 func NewContext(app core.IApp, tag ...string) core.IContext {
-	log, _ := zlog.WrapZapFields(app.GetLogger(), zap.String("ctx_id", nextContextId()), zap.Strings("ctx_tag", tag))
+	log, _ := zlog.WrapZapFields(app.GetLogger(), zap.String("ctxId", nextContextId()), zap.Strings("ctxTag", tag))
 
 	return &contextCli{
 		app:     app,

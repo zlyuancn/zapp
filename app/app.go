@@ -50,7 +50,7 @@ type appCli struct {
 // 正常启动时会初始化所有服务
 func NewApp(appName string, opts ...Option) core.IApp {
 	if appName == "" {
-		utils.Panic("appName must not empty")
+		utils.Fatal("appName must not empty")
 	}
 	app := &appCli{
 		name:      appName,
@@ -120,7 +120,7 @@ func (app *appCli) startService() {
 	for serviceType, services := range app.services {
 		for name, s := range services {
 			if err := s.Start(); err != nil {
-				app.logger.Fatal("服务启动失败", zap.String("服务类型", serviceType.String()), zap.String("服务名", name), zap.Error(err))
+				app.logger.Fatal("服务启动失败", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name), zap.Error(err))
 			}
 		}
 	}
@@ -131,7 +131,7 @@ func (app *appCli) closeService() {
 	for serviceType, services := range app.services {
 		for name, s := range services {
 			if err := s.Close(); err != nil {
-				app.logger.Error("服务关闭失败", zap.String("服务类型", serviceType.String()), zap.String("服务名", name), zap.Error(err))
+				app.logger.Error("服务关闭失败", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name), zap.Error(err))
 			}
 		}
 	}
@@ -143,7 +143,7 @@ func (app *appCli) enableDaemon() {
 	}
 
 	d, err := daemon.New(app.name, app.name, daemon.SystemDaemon)
-	utils.FailOnError(err, "守护进程模块创建失败")
+	utils.FatalOnError(err, "守护进程模块创建失败")
 	app.daemon = d
 
 	var out string

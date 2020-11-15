@@ -10,6 +10,7 @@ package logger
 
 import (
 	"github.com/zlyuancn/zlog"
+	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
@@ -24,7 +25,7 @@ func NewLogger(appName string, c core.IConfig) core.ILogger {
 	viper := c.GetViper()
 	if viper.IsSet(consts.ConfigShardName_Log) {
 		if err := viper.UnmarshalKey(consts.ConfigShardName_Log, &conf); err != nil {
-			Log.Fatalf("%s: %s", "解析log配置失败", err)
+			Log.Fatal("解析log配置失败", zap.Error(err))
 		}
 	}
 

@@ -58,7 +58,7 @@ func NewConfig() core.IConfig {
 	for _, file := range files {
 		vp := viper.New()
 		vp.SetConfigFile(file)
-		utils.FailOnErrorf(vp.ReadInConfig(), "配置文件<%s>加载失败", file)
+		utils.FatalOnError(vp.ReadInConfig(), "配置文件加载失败", file)
 		for k, v := range vp.AllSettings() {
 			c.v.SetDefault(k, v)
 		}
@@ -69,7 +69,7 @@ func NewConfig() core.IConfig {
 		os.Exit(0)
 	}
 
-	utils.FailOnError(c.v.Unmarshal(c.c), "配置解析失败")
+	utils.FatalOnError(c.v.Unmarshal(c.c), "配置解析失败")
 	return c
 }
 

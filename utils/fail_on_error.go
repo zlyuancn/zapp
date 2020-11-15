@@ -9,7 +9,7 @@
 package utils
 
 import (
-	"fmt"
+	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/logger"
 )
@@ -18,18 +18,17 @@ func Panic(a ...interface{}) {
 	logger.Log.Panic(a...)
 }
 
-func Panicf(format string, v ...interface{}) {
-	logger.Log.Panicf(format, v...)
-}
-
-func FailOnError(err error, msg string) {
+func PanicOnError(err error, a ...interface{}) {
 	if err != nil {
-		logger.Log.Panicf("%s: %s", msg, err)
+		logger.Log.Panic(append(append([]interface{}{}, a...), zap.Error(err)))
 	}
 }
 
-func FailOnErrorf(err error, format string, msg ...interface{}) {
+func Fatal(a ...interface{}) {
+	logger.Log.Fatal(a...)
+}
+func FatalOnError(err error, a ...interface{}) {
 	if err != nil {
-		logger.Log.Panicf("%s: %s", fmt.Sprintf(format, msg...), err)
+		logger.Log.Fatal(append(append([]interface{}{}, a...), zap.Error(err)))
 	}
 }
