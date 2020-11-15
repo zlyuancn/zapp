@@ -36,7 +36,6 @@ type appCli struct {
 	config    core.IConfig
 	logger    core.ILogger
 	component core.IComponent
-	context   core.IContext
 
 	closeChan chan struct{}
 	interrupt chan os.Signal
@@ -74,7 +73,6 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	app.config = config.NewConfig()
 	app.logger = logger.NewLogger(app.config)
 	app.component = component.NewComponent(app)
-	app.context = context.NewContext(app.component)
 
 	app.logger.Info("初始化服务")
 
@@ -215,8 +213,8 @@ func (app *appCli) GetComponent() core.IComponent {
 	return app.component
 }
 
-func (app *appCli) GetContext() core.IContext {
-	return app.context
+func (app *appCli) NewContext(tag ...string) core.IContext {
+	return context.NewContext(app, tag...)
 }
 
 func (app *appCli) GetService(serviceType consts.ServiceType, serviceName ...string) (core.IService, bool) {

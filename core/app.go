@@ -31,8 +31,8 @@ type IApp interface {
 	GetLogger() ILogger
 	// 获取组件
 	GetComponent() IComponent
-	// 获取上下文
-	GetContext() IContext
+	// 创建上下文,
+	NewContext(tag ...string) IContext
 	// 获取服务
 	GetService(serviceType consts.ServiceType, serviceName ...string) (IService, bool)
 }
