@@ -28,8 +28,6 @@ func (*cronCreator) Create(app core.IApp) core.IService {
 	return NewCronService(app)
 }
 
-type Job = zscheduler.Job
-
 type CronService struct {
 	app       core.IApp
 	scheduler zscheduler.IScheduler
@@ -68,11 +66,11 @@ func (c *CronService) Close() error {
 	return nil
 }
 
-func NewTask(name string, expression string, job Job, enable ...bool) zscheduler.ITask {
+func NewTask(name string, expression string, handler func() error, enable ...bool) zscheduler.ITask {
 	return zscheduler.NewTaskOfConfig(name, zscheduler.TaskConfig{
 		Trigger:  zscheduler.NewCronTrigger(expression),
 		Executor: zscheduler.NewExecutor(0, 0, 1),
-		Job:      job,
+		Job:      handler,
 		Enable:   len(enable) == 0 || enable[0],
 	})
 }

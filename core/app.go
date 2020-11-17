@@ -8,10 +8,6 @@
 
 package core
 
-import (
-	"github.com/zlyuancn/zscheduler"
-)
-
 // app
 //
 // 用于将所有模块连起来
@@ -40,5 +36,5 @@ type IApp interface {
 	// 获取服务
 	GetService(serviceType ServiceType, serviceName ...string) (IService, bool)
 	// 注册cron任务
-	RegistryCronJob(name string, expression string, handler zscheduler.Job, enable ...bool)
+	RegistryCronJob(name string, expression string, handler func() error, serviceName ...string)
 }

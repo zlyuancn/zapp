@@ -46,5 +46,4 @@ func (c *ComponentCli) CtxLog(ctx context.Context) core.ILogger {
 }
 
 func (c *ComponentCli) Close() {
-	c.log.Error("关闭组件资源")
 }

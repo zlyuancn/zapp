@@ -29,11 +29,11 @@ func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...strin
 	return s, ok
 }
 
-func (app *appCli) RegistryCronJob(name string, expression string, job cron.Job, enable ...bool) {
-	s, ok := app.GetService(core.CronService)
+func (app *appCli) RegistryCronJob(name string, expression string, handler func() error, serviceName ...string) {
+	s, ok := app.GetService(core.CronService, serviceName...)
 	if !ok {
 		return
 	}
 
-	s.Inject(cron.NewTask(name, expression, job, enable...))
+	s.Inject(cron.NewTask(name, expression, handler))
 }
