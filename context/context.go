@@ -43,6 +43,8 @@ type contextCli struct {
 	app    core.IApp
 	config *core.Config
 	core.ILogger
+	data     map[string]interface{}
+	metadata interface{}
 }
 
 func NewContext(app core.IApp, tag ...string) core.IContext {
@@ -52,6 +54,7 @@ func NewContext(app core.IApp, tag ...string) core.IContext {
 		app:     app,
 		config:  app.GetConfig().Config(),
 		ILogger: log,
+		data:    make(map[string]interface{}),
 	}
 }
 
@@ -61,4 +64,21 @@ func (c *contextCli) App() core.IApp {
 
 func (c *contextCli) Config() *core.Config {
 	return c.config
+}
+
+func (c *contextCli) Set(k string, v interface{}) {
+	c.data[k] = v
+}
+
+func (c *contextCli) Get(k string) (interface{}, bool) {
+	v, ok := c.data[k]
+	return v, ok
+}
+
+func (c *contextCli) SetMetadata(data interface{}) {
+	c.metadata = data
+}
+
+func (c *contextCli) GetMetadata() interface{} {
+	return c.metadata
 }
