@@ -66,11 +66,11 @@ func (c *CronService) Close() error {
 	return nil
 }
 
-func NewTask(name string, expression string, handler func() error, enable ...bool) zscheduler.ITask {
+func NewTask(name string, expression string, enable bool, handler func() error) zscheduler.ITask {
 	return zscheduler.NewTaskOfConfig(name, zscheduler.TaskConfig{
 		Trigger:  zscheduler.NewCronTrigger(expression),
 		Executor: zscheduler.NewExecutor(0, 0, 1),
 		Job:      handler,
-		Enable:   len(enable) == 0 || enable[0],
+		Enable:   enable,
 	})
 }

@@ -36,5 +36,5 @@ type IApp interface {
 	// 获取服务
 	GetService(serviceType ServiceType, serviceName ...string) (IService, bool)
 	// 注册cron任务
-	RegistryCronJob(name string, expression string, handler func() error, serviceName ...string)
+	RegistryCronJob(name string, expression string, enable bool, handler func() error, serviceName ...string)
 }
