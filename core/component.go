@@ -14,7 +14,11 @@ import (
 
 // 组件, 如db, rpc等
 type IComponent interface {
-	IContext
+	// 获取app
+	App() IApp
+	// 获取配置
+	Config() *Config
+	ILogger
 	// 关闭
 	Close()
 
