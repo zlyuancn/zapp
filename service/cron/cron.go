@@ -24,23 +24,23 @@ func init() {
 
 type cronCreator struct{}
 
-func (*cronCreator) Create(c core.IComponent) core.IService {
-	return NewCronService(c)
+func (*cronCreator) Create(app core.IApp) core.IService {
+	return NewCronService(app)
 }
 
 type Job = zscheduler.Job
 
 type CronService struct {
-	c         core.IComponent
+	app       core.IApp
 	scheduler zscheduler.IScheduler
 }
 
-func NewCronService(c core.IComponent) *CronService {
+func NewCronService(app core.IApp) *CronService {
 	return &CronService{
-		c: c,
+		app: app,
 		scheduler: zscheduler.NewScheduler(
-			zscheduler.WithLogger(c.App().GetLogger()),
-			zscheduler.WithGoroutinePool(c.Config().Cron.ThreadCount, c.Config().Cron.JobQueueSize),
+			zscheduler.WithLogger(app.GetLogger()),
+			zscheduler.WithGoroutinePool(app.GetConfig().Config().Cron.ThreadCount, app.GetConfig().Config().Cron.JobQueueSize),
 		),
 	}
 }
@@ -49,11 +49,11 @@ func (c *CronService) Inject(a ...interface{}) {
 	for _, v := range a {
 		task, ok := v.(zscheduler.ITask)
 		if !ok {
-			c.c.Logger().Fatal("Cron服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
+			c.app.GetLogger().Fatal("Cron服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
 		}
 
 		if ok := c.scheduler.AddTask(task); !ok {
-			c.c.Logger().Fatal("添加Cron任务失败, 可能是名称重复", zap.String("name", task.Name()))
+			c.app.GetLogger().Fatal("添加Cron任务失败, 可能是名称重复", zap.String("name", task.Name()))
 		}
 	}
 }

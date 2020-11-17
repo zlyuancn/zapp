@@ -30,19 +30,19 @@ func init() {
 
 type grpcCreator struct{}
 
-func (*grpcCreator) Create(c core.IComponent) core.IService {
-	return NewGrpcService(c)
+func (*grpcCreator) Create(app core.IApp) core.IService {
+	return NewGrpcService(app)
 }
 
 type GrpcService struct {
-	c      core.IComponent
+	app    core.IApp
 	server *grpc.Server
 }
 
-func NewGrpcService(c core.IComponent) core.IService {
+func NewGrpcService(app core.IApp) core.IService {
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-			MakeContextInterceptor(c),
+			MakeContextInterceptor(app),
 			UnaryServerLogInterceptor(), // 日志
 			grpc_ctxtags.UnaryServerInterceptor(),
 			grpc_recovery.UnaryServerInterceptor(), // panic拦截
@@ -53,7 +53,7 @@ func NewGrpcService(c core.IComponent) core.IService {
 	)
 
 	return &GrpcService{
-		c:      c,
+		app:    app,
 		server: server,
 	}
 }
@@ -72,10 +72,10 @@ func (g *GrpcService) Close() error {
 }
 
 // 构建上下文拦截器
-func MakeContextInterceptor(c core.IComponent) grpc.UnaryServerInterceptor {
+func MakeContextInterceptor(app core.IApp) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-		appCtx := c.App().NewContext(info.FullMethod)
-		ctx = utils.Context.SaveAppContextToContext(ctx, appCtx)
+		log := app.CreateLogger(info.FullMethod)
+		ctx = utils.Context.SaveLoggerToContext(ctx, log)
 		return handler(ctx, req)
 	}
 }
@@ -83,16 +83,16 @@ func MakeContextInterceptor(c core.IComponent) grpc.UnaryServerInterceptor {
 // 日志拦截器
 func UnaryServerLogInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		appCtx := utils.Context.MustLoadAppContextFromContext(ctx)
+		log := utils.Context.MustGetLoggerFromContext(ctx)
 
 		startTime := time.Now()
-		appCtx.Info("grpc.request", zap.Any("args", req))
+		log.Info("grpc.request", zap.Any("args", req))
 
 		resp, err := handler(ctx, req)
 		if err != nil {
-			appCtx.Error("grpc.response", zap.String("耗时", time.Since(startTime).String()), zap.Error(err))
+			log.Error("grpc.response", zap.String("耗时", time.Since(startTime).String()), zap.Error(err))
 		} else {
-			appCtx.Info("grpc.response", zap.String("耗时", time.Since(startTime).String()), zap.Any("resp", resp))
+			log.Info("grpc.response", zap.String("耗时", time.Since(startTime).String()), zap.Any("resp", resp))
 		}
 
 		return resp, err

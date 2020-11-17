@@ -10,21 +10,15 @@ package core
 
 import (
 	"context"
-
-	"github.com/zlyuancn/zscheduler"
 )
 
-// 组件, 如db, rpc等
+// 组件, 如db, rpc, cache, mq等
 type IComponent interface {
 	// 获取app
 	App() IApp
 	// 获取配置
 	Config() *Config
-	// 日志
-	Logger(ctx ...context.Context) ILogger
-	// 关闭
-	Close()
 
-	// 注册cron任务
-	RegistryCronJob(name string, expression string, handler zscheduler.Job, enable ...bool)
+	// 从标准context获取日志
+	CtxLog(ctx context.Context) ILogger
 }

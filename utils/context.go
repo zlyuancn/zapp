@@ -19,23 +19,23 @@ var Context = new(contextUtil)
 
 type contextUtil struct{}
 
-// 基于传入的标准context生成一个新的标准context并保存app上下文
-func (c *contextUtil) SaveAppContextToContext(ctx context.Context, appCtx core.IContext) context.Context {
-	return context.WithValue(ctx, consts.SaveFieldName_AppContext, appCtx)
+// 基于传入的标准context生成一个新的标准context并保存log
+func (c *contextUtil) SaveLoggerToContext(ctx context.Context, log core.ILogger) context.Context {
+	return context.WithValue(ctx, consts.SaveFieldName_Logger, log)
 }
 
-// 从标准context中加载app上下文
-func (c *contextUtil) LoadAppContextFromContext(ctx context.Context) (core.IContext, bool) {
-	value := ctx.Value(consts.SaveFieldName_AppContext)
-	appCtx, ok := value.(core.IContext)
-	return appCtx, ok
+// 从标准context中获取log
+func (c *contextUtil) GetLoggerFromContext(ctx context.Context) (core.ILogger, bool) {
+	value := ctx.Value(consts.SaveFieldName_Logger)
+	log, ok := value.(core.ILogger)
+	return log, ok
 }
 
-// 从标准context中加载app上下文, 如果失败会panic
-func (c *contextUtil) MustLoadAppContextFromContext(ctx context.Context) core.IContext {
-	out, ok := c.LoadAppContextFromContext(ctx)
+// 从标准context中获取log, 如果失败会panic
+func (c *contextUtil) MustGetLoggerFromContext(ctx context.Context) core.ILogger {
+	log, ok := c.GetLoggerFromContext(ctx)
 	if !ok {
 		Panic("can't load app_context from context")
 	}
-	return out
+	return log
 }

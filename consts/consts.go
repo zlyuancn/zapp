@@ -19,6 +19,6 @@ const DefaultServiceName = "default"
 
 // 用户储存上下文的字段名
 const (
-	// app上下文
-	SaveFieldName_AppContext = "_app_ctx"
+	// log
+	SaveFieldName_Logger = "_logger"
 )

@@ -25,7 +25,7 @@ type IService interface {
 // 服务建造者
 type IServiceCreator interface {
 	// 创建服务
-	Create(c IComponent) IService
+	Create(app IApp) IService
 }
 
 // 服务类型

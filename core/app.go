@@ -8,6 +8,10 @@
 
 package core
 
+import (
+	"github.com/zlyuancn/zscheduler"
+)
+
 // app
 //
 // 用于将所有模块连起来
@@ -19,16 +23,22 @@ type IApp interface {
 	// 退出
 	//
 	// 结束所有服务并退出
-	Exit()
-
+	Close()
 	// 获取配置
 	GetConfig() IConfig
+
+	// 日志组件
+	ILogger
 	// 获取日志组件
 	GetLogger() ILogger
+	// 创建日志组件副本
+	CreateLogger(tag ...string) ILogger
+
 	// 获取组件
 	GetComponent() IComponent
-	// 创建上下文,
-	NewContext(tag ...string) IContext
+
 	// 获取服务
 	GetService(serviceType ServiceType, serviceName ...string) (IService, bool)
+	// 注册cron任务
+	RegistryCronJob(name string, expression string, handler zscheduler.Job, enable ...bool)
 }

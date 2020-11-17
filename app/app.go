@@ -21,8 +21,6 @@ import (
 
 	"github.com/zlyuancn/zapp/component"
 	"github.com/zlyuancn/zapp/config"
-	"github.com/zlyuancn/zapp/consts"
-	"github.com/zlyuancn/zapp/context"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
 	"github.com/zlyuancn/zapp/service"
@@ -33,15 +31,18 @@ type appCli struct {
 	name   string
 	daemon daemon.Daemon
 
-	config    core.IConfig
-	logger    core.ILogger
-	component core.IComponent
+	opt *option
 
 	closeChan chan struct{}
 	interrupt chan os.Signal
 
-	services map[core.ServiceType]map[string]core.IService
-	opt      *option
+	config core.IConfig
+
+	loggerId uint64
+	core.ILogger
+
+	component core.IComponent
+	services  map[core.ServiceType]map[string]core.IService
 }
 
 // 创建一个app
@@ -71,10 +72,10 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	}
 
 	app.config = config.NewConfig()
-	app.logger = logger.NewLogger(appName, app.config)
+	app.ILogger = logger.NewLogger(appName, app.config)
 	app.component = component.NewComponent(app)
 
-	app.logger.Info("初始化服务")
+	app.Info("初始化服务")
 
 	// app初始化前
 	app.handler(BeforeInitializeHandler)
@@ -82,7 +83,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	for serviceType, names := range app.opt.Servers {
 		services := make(map[string]core.IService, len(names))
 		for name := range names {
-			services[name] = service.NewService(serviceType, app.component)
+			services[name] = service.NewService(serviceType, app)
 		}
 		app.services[serviceType] = services
 	}
@@ -90,13 +91,13 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	// app初始化后
 	app.handler(AfterInitializeHandler)
 
-	app.logger.Info("服务初始化完毕")
+	app.Info("服务初始化完毕")
 
 	return app
 }
 
 func (app *appCli) run() {
-	app.logger.Info("启动app")
+	app.Info("启动app")
 
 	// app启动前
 	app.handler(BeforeStartHandler)
@@ -108,7 +109,7 @@ func (app *appCli) run() {
 	// app启动后
 	app.handler(AfterStartHandler)
 
-	app.logger.Info("app已启动")
+	app.Info("app已启动")
 
 	signal.Notify(app.interrupt, os.Kill, os.Interrupt, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
 	<-app.interrupt
@@ -116,22 +117,22 @@ func (app *appCli) run() {
 }
 
 func (app *appCli) startService() {
-	app.logger.Info("启动服务")
+	app.Info("启动服务")
 	for serviceType, services := range app.services {
 		for name, s := range services {
 			if err := s.Start(); err != nil {
-				app.logger.Fatal("服务启动失败", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name), zap.Error(err))
+				app.Fatal("服务启动失败", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name), zap.Error(err))
 			}
 		}
 	}
 }
 
 func (app *appCli) closeService() {
-	app.logger.Warn("关闭服务")
+	app.Info("关闭服务")
 	for serviceType, services := range app.services {
 		for name, s := range services {
 			if err := s.Close(); err != nil {
-				app.logger.Error("服务关闭失败", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name), zap.Error(err))
+				app.Error("服务关闭失败", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name), zap.Error(err))
 			}
 		}
 	}
@@ -172,19 +173,19 @@ func (app *appCli) enableDaemon() {
 }
 
 func (app *appCli) exit() {
-	app.logger.Warn("app准备退出")
+	app.Warn("app准备退出")
 	close(app.closeChan)
 
 	// app退出前
 	app.handler(BeforeExitHandler)
 
+	app.closeComponentResource()
 	app.closeService()
-	app.component.Close()
 
 	// app退出后
 	app.handler(AfterExitHandler)
 
-	app.logger.Warn("app已退出")
+	app.Warn("app已退出")
 }
 
 // 启动服务
@@ -194,42 +195,13 @@ func (app *appCli) Run() {
 	app.run()
 }
 
-// 结束服务
-//
-// 发送退出信号
-func (app *appCli) Exit() {
+// 关闭app
+func (app *appCli) Close() {
 	app.interrupt <- syscall.SIGTERM
-}
-
-func (app *appCli) GetLogger() core.ILogger {
-	return app.logger
 }
 
 func (app *appCli) GetConfig() core.IConfig {
 	return app.config
-}
-
-func (app *appCli) GetComponent() core.IComponent {
-	return app.component
-}
-
-func (app *appCli) NewContext(tag ...string) core.IContext {
-	return context.NewContext(app, tag...)
-}
-
-func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...string) (core.IService, bool) {
-	name := consts.DefaultServiceName
-	if len(serviceName) > 0 {
-		name = serviceName[0]
-	}
-
-	services, ok := app.services[serviceType]
-	if !ok {
-		return nil, false
-	}
-
-	s, ok := services[name]
-	return s, ok
 }
 
 func (app *appCli) freeMemory() {

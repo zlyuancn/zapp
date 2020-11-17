@@ -26,9 +26,9 @@ func RegisterCreator(serviceType core.ServiceType, creator core.IServiceCreator)
 }
 
 // 创建服务,
-func NewService(serviceType core.ServiceType, c core.IComponent) core.IService {
+func NewService(serviceType core.ServiceType, app core.IApp) core.IService {
 	if creator, ok := creators[serviceType]; ok {
-		return creator.Create(c)
+		return creator.Create(app)
 	}
 	utils.Panic("使用了未注册的建造者", zap.String("serviceType", serviceType.String()))
 	return nil
