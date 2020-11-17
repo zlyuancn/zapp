@@ -49,11 +49,11 @@ func (c *CronService) Inject(a ...interface{}) {
 	for _, v := range a {
 		task, ok := v.(zscheduler.ITask)
 		if !ok {
-			c.c.Fatal("Cron服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
+			c.c.Logger().Fatal("Cron服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
 		}
 
 		if ok := c.scheduler.AddTask(task); !ok {
-			c.c.Fatal("添加Cron任务失败, 可能是名称重复", zap.String("name", task.Name()))
+			c.c.Logger().Fatal("添加Cron任务失败, 可能是名称重复", zap.String("name", task.Name()))
 		}
 	}
 }

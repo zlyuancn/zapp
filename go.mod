@@ -18,6 +18,7 @@ require (
 	go.uber.org/zap v1.16.0
 	golang.org/x/sys v0.0.0-20201029080932-201ba4db2418 // indirect
 	golang.org/x/text v0.3.4 // indirect
+	google.golang.org/grpc v1.21.1
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

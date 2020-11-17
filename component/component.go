@@ -9,6 +9,8 @@
 package component
 
 import (
+	"context"
+
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/service/cron"
 )
@@ -16,14 +18,14 @@ import (
 type componentCli struct {
 	app    core.IApp
 	config *core.Config
-	core.ILogger
+	log    core.ILogger
 }
 
 func NewComponent(app core.IApp) core.IComponent {
 	return &componentCli{
-		app:     app,
-		config:  app.GetConfig().Config(),
-		ILogger: app.GetLogger(),
+		app:    app,
+		config: app.GetConfig().Config(),
+		log:    app.GetLogger(),
 	}
 }
 
@@ -35,8 +37,8 @@ func (c *componentCli) Config() *core.Config {
 	return c.config
 }
 
-func (c *componentCli) Logger() core.ILogger {
-	return c.ILogger
+func (c *componentCli) Logger(ctx ...context.Context) core.ILogger {
+	return c.log
 }
 
 func (c *componentCli) Close() {

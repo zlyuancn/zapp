@@ -9,6 +9,8 @@
 package core
 
 import (
+	"context"
+
 	"github.com/zlyuancn/zscheduler"
 )
 
@@ -18,7 +20,8 @@ type IComponent interface {
 	App() IApp
 	// 获取配置
 	Config() *Config
-	ILogger
+	// 日志
+	Logger(ctx ...context.Context) ILogger
 	// 关闭
 	Close()
 
