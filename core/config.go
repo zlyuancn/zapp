@@ -15,9 +15,11 @@ import (
 // 配置结构
 type Config struct {
 	Debug              bool
-	ApiBind            string // api的bind地址
 	FreeMemoryInterval int    // 清理内存间隔时间(毫秒)
-	Cron               struct {
+	GrpcService        struct { // grpc服务
+		Bind string
+	}
+	Cron struct {
 		ThreadCount  int // 线程数
 		JobQueueSize int // job队列大小
 	} // 定时器

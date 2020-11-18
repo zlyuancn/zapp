@@ -21,6 +21,8 @@ type Option func(opt *option)
 type option struct {
 	// 启用守护
 	EnableDaemon bool
+	// 忽略未启用的服务注入
+	IgnoreInjectOfDisableServer bool
 	// 服务
 	Servers map[core.ServiceType]map[string]struct{}
 	// handlers
@@ -74,9 +76,23 @@ func WithHandler(t HandlerType, hs ...Handler) Option {
 	}
 }
 
-// 添加Cron服务
-func WithCron(serviceName ...string) Option {
+// 忽略未启用的服务注入
+func WithIgnoreInjectOfDisableServer(ignore ...bool) Option {
 	return func(opt *option) {
-		opt.AddService(core.CronService, serviceName...)
+		opt.IgnoreInjectOfDisableServer = len(ignore) == 0 || ignore[0]
+	}
+}
+
+// 启用Cron服务
+func WithCron() Option {
+	return func(opt *option) {
+		opt.AddService(core.CronService)
+	}
+}
+
+// 启用grpc服务
+func WithGrpc() Option {
+	return func(opt *option) {
+		opt.AddService(core.GrpcService)
 	}
 }

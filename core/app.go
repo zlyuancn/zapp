@@ -8,6 +8,10 @@
 
 package core
 
+import (
+	"google.golang.org/grpc"
+)
+
 // app
 //
 // 用于将所有模块连起来
@@ -36,5 +40,7 @@ type IApp interface {
 	// 获取服务
 	GetService(serviceType ServiceType, serviceName ...string) (IService, bool)
 	// 注册cron任务
-	RegistryCronJob(name string, expression string, enable bool, handler func() error, serviceName ...string)
+	RegistryCronJob(name string, expression string, enable bool, handler func(log ILogger) error)
+	// 注册grpc服务
+	RegistryGrpcService(a func(c IComponent, server *grpc.Server))
 }

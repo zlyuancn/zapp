@@ -65,12 +65,3 @@ func (c *CronService) Close() error {
 	c.scheduler.Stop()
 	return nil
 }
-
-func NewTask(name string, expression string, enable bool, handler func() error) zscheduler.ITask {
-	return zscheduler.NewTaskOfConfig(name, zscheduler.TaskConfig{
-		Trigger:  zscheduler.NewCronTrigger(expression),
-		Executor: zscheduler.NewExecutor(0, 0, 1),
-		Job:      handler,
-		Enable:   enable,
-	})
-}

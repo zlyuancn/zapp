@@ -10,6 +10,8 @@ package grpc
 
 import (
 	"context"
+	"fmt"
+	"net"
 	"time"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -58,11 +60,39 @@ func NewGrpcService(app core.IApp) core.IService {
 }
 
 func (g *GrpcService) Inject(a ...interface{}) {
-	panic("implement me")
+	for _, v := range a {
+		fn, ok := v.(func(c core.IComponent, server *grpc.Server))
+		if !ok {
+			g.app.GetLogger().Fatal("Grpc服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
+		}
+
+		fn(g.app.GetComponent(), g.server)
+	}
 }
 
 func (g *GrpcService) Start() error {
-	panic("implement me")
+	conf := g.app.GetConfig().Config().GrpcService
+
+	listener, err := net.Listen("tcp", conf.Bind)
+	if err != nil {
+		return err
+	}
+
+	errChan := make(chan error, 1)
+	go func(errChan chan error) {
+		if err := g.server.Serve(listener); err != nil {
+			errChan <- err
+		}
+	}(errChan)
+
+	select {
+	case <-time.After(time.Millisecond * 500):
+	case err := <-errChan:
+		return err
+	}
+
+	g.app.GetLogger().Info("grpc启动成功", zap.String("bind", conf.Bind))
+	return nil
 }
 
 func (g *GrpcService) Close() error {

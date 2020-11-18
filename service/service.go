@@ -30,7 +30,7 @@ func NewService(serviceType core.ServiceType, app core.IApp) core.IService {
 	if creator, ok := creators[serviceType]; ok {
 		return creator.Create(app)
 	}
-	utils.Panic("使用了未注册的建造者", zap.String("serviceType", serviceType.String()))
+	utils.Fatal("使用了未注册的建造者", zap.String("serviceType", serviceType.String()))
 	return nil
 }
 

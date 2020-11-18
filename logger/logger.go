@@ -16,7 +16,7 @@ import (
 	"github.com/zlyuancn/zapp/core"
 )
 
-var Log core.ILogger
+var Log core.ILogger = zlog.DefaultLogger
 
 func NewLogger(appName string, c core.IConfig) core.ILogger {
 	var conf = zlog.DefaultConfig
