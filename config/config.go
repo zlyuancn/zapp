@@ -16,13 +16,13 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/utils"
 )
 
 const (
-	DefaultConfigFile         = "./configs/default.toml,./configs/local.toml"
-	DefaultFreeMemoryInterval = 120000 // 默认清理内存间隔时间(毫秒)
+	DefaultConfigFile = "./configs/default.toml,./configs/local.toml"
 )
 
 type configCli struct {
@@ -49,8 +49,7 @@ func NewConfig() core.IConfig {
 	c := &configCli{
 		v: viper.New(),
 		c: &core.Config{
-			Debug:              false,
-			FreeMemoryInterval: DefaultFreeMemoryInterval,
+			Debug: false,
 		},
 		files: files,
 	}
@@ -62,6 +61,10 @@ func NewConfig() core.IConfig {
 		for k, v := range vp.AllSettings() {
 			c.v.SetDefault(k, v)
 		}
+	}
+
+	if c.c.FreeMemoryInterval <= 0 {
+		c.c.FreeMemoryInterval = consts.DefaultConfig_FreeMemoryInterval
 	}
 
 	if *testConfig {

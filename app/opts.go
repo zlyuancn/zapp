@@ -43,7 +43,7 @@ func (o *option) AddService(serviceType core.ServiceType, serviceName ...string)
 	}
 
 	if _, ok = services[name]; ok {
-		utils.Panic("服务类型的服务名已存在", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name))
+		utils.Fatal("服务类型的服务名已存在", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name))
 	}
 
 	services[name] = struct{}{}

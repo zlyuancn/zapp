@@ -20,7 +20,7 @@ var creators = make(map[core.ServiceType]core.IServiceCreator)
 // 注册建造者
 func RegisterCreator(serviceType core.ServiceType, creator core.IServiceCreator) {
 	if _, ok := creators[serviceType]; ok {
-		utils.Panic("重复注册建造者", zap.String("serviceType", serviceType.String()))
+		utils.Fatal("重复注册建造者", zap.String("serviceType", serviceType.String()))
 	}
 	creators[serviceType] = creator
 }

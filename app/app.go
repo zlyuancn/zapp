@@ -205,7 +205,7 @@ func (app *appCli) GetConfig() core.IConfig {
 }
 
 func (app *appCli) freeMemory() {
-	t := time.NewTicker(time.Second * 120)
+	t := time.NewTicker(time.Millisecond * time.Duration(app.config.Config().FreeMemoryInterval))
 	for {
 		select {
 		case <-app.closeChan:
