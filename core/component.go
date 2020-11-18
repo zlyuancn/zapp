@@ -10,6 +10,8 @@ package core
 
 import (
 	"context"
+
+	"google.golang.org/grpc"
 )
 
 // 组件, 如db, rpc, cache, mq等
@@ -21,4 +23,12 @@ type IComponent interface {
 
 	// 从标准context获取日志
 	CtxLog(ctx context.Context) ILogger
+
+	IGrpcClient
+}
+
+type IGrpcClient interface {
+	// 获取grpc客户端
+	GetGrpcClient(name string, creator func(conn *grpc.ClientConn) interface{}) interface{}
+	Close()
 }

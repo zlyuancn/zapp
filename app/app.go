@@ -179,8 +179,8 @@ func (app *appCli) exit() {
 	// app退出前
 	app.handler(BeforeExitHandler)
 
-	app.closeComponentResource()
 	app.closeService()
+	app.closeComponentResource()
 
 	// app退出后
 	app.handler(AfterExitHandler)

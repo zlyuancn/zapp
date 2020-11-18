@@ -10,6 +10,7 @@ package component
 
 import (
 	"context"
+	"sync"
 
 	"github.com/zlyuancn/zapp/component/grpc"
 	"github.com/zlyuancn/zapp/core"
@@ -21,7 +22,7 @@ type ComponentCli struct {
 	config *core.Config
 	log    core.ILogger
 
-	grpc *grpc.Client
+	core.IGrpcClient
 }
 
 func NewComponent(app core.IApp) core.IComponent {
@@ -30,7 +31,7 @@ func NewComponent(app core.IApp) core.IComponent {
 		config: app.GetConfig().Config(),
 		log:    app.GetLogger(),
 
-		grpc: grpc.NewClient(app),
+		IGrpcClient: grpc.NewClient(app),
 	}
 }
 
@@ -43,4 +44,12 @@ func (c *ComponentCli) CtxLog(ctx context.Context) core.ILogger {
 }
 
 func (c *ComponentCli) Close() {
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		c.IGrpcClient.Close()
+	}()
+
+	wg.Wait()
 }
