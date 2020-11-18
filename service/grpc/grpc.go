@@ -42,8 +42,7 @@ type GrpcService struct {
 func NewGrpcService(app core.IApp) core.IService {
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-			MakeContextInterceptor(app),
-			UnaryServerLogInterceptor(), // 日志
+			UnaryServerLogInterceptor(app), // 日志
 			grpc_ctxtags.UnaryServerInterceptor(),
 			grpc_recovery.UnaryServerInterceptor(), // panic拦截
 		)),
@@ -71,19 +70,11 @@ func (g *GrpcService) Close() error {
 	return nil
 }
 
-// 构建上下文拦截器
-func MakeContextInterceptor(app core.IApp) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+// 日志拦截器
+func UnaryServerLogInterceptor(app core.IApp) grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		log := app.CreateLogger(info.FullMethod)
 		ctx = utils.Context.SaveLoggerToContext(ctx, log)
-		return handler(ctx, req)
-	}
-}
-
-// 日志拦截器
-func UnaryServerLogInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		log := utils.Context.MustGetLoggerFromContext(ctx)
 
 		startTime := time.Now()
 		log.Info("grpc.request", zap.Any("args", req))
