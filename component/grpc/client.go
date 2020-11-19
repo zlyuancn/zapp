@@ -10,61 +10,63 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/balancer/roundrobin"
 
+	"github.com/zlyuancn/zapp/component/grpc/balance/round_robin"
 	"github.com/zlyuancn/zapp/component/grpc/registry/local"
+	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/utils"
 )
 
-type Grpc struct {
+type Client struct {
 	app core.IApp
 	mx  sync.RWMutex
 
-	schemeMap map[string]string
 	connMap   map[string]*grpc.ClientConn
 	clientMap map[string]interface{}
 }
 
 func NewClient(app core.IApp) core.IGrpcClient {
-	schemeMap := make(map[string]string, len(app.GetConfig().Config().GrpcClient))
+	g := &Client{
+		app:       app,
+		connMap:   make(map[string]*grpc.ClientConn),
+		clientMap: make(map[string]interface{}),
+	}
+
 	for name, conf := range app.GetConfig().Config().GrpcClient {
-		scheme := conf.Registry
-		if scheme == "" {
-			scheme = local.Schema
+		if conf.Registry == "" {
+			conf.Registry = consts.DefaultConfig_GrpcClient_Registry
 		}
+		if conf.Balance == "" {
+			conf.Balance = consts.DefaultConfig_GrpcClient_Balance
+		}
+		app.GetConfig().Config().GrpcClient[name] = conf
 
-		schemeMap[name] = scheme
-
-		switch scheme {
-		case local.Schema:
+		switch conf.Registry {
+		case local.Name:
 			local.RegistryAddress(name, conf.Address)
 		default:
-			utils.Fatal("未定义的Grpc注册器", zap.String("Registry", scheme))
+			utils.Fatal("未定义的Grpc注册器", zap.String("registry", conf.Registry))
 		}
+
+		_ = g.getBalance(conf.Balance)
 	}
 
-	return &Grpc{
-		app:       app,
-		schemeMap: schemeMap,
-		connMap:   make(map[string]*grpc.ClientConn, len(schemeMap)),
-		clientMap: make(map[string]interface{}, len(schemeMap)),
-	}
+	return g
 }
 
-func (g *Grpc) Close() {
+func (g *Client) Close() {
 	for _, conn := range g.connMap {
 		_ = conn.Close()
 	}
 }
 
-func (g *Grpc) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) interface{}) interface{} {
+func (g *Client) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) interface{}) interface{} {
 	g.mx.RLock()
 	client, ok := g.clientMap[name]
 	g.mx.RUnlock()
@@ -76,20 +78,26 @@ func (g *Grpc) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) inte
 	g.mx.Lock()
 	defer g.mx.Unlock()
 
+	// todo 这里等待时间过长, 考虑加个占位符优化下
+
 	if client, ok = g.clientMap[name]; ok {
 		return client
 	}
 
 	conn, ok := g.connMap[name]
 	if !ok {
-		scheme, ok := g.schemeMap[name]
+		conf, ok := g.app.GetConfig().Config().GrpcClient[name]
 		if !ok {
 			utils.Panic("试图获取未注册的grpc客户端", zap.String("name", name))
 		}
 
-		cc, err := g.makeConn(name, scheme)
+		cc, err := g.makeConn(name, conf.Registry, conf.Balance)
 		if err != nil {
-			utils.Panic("构建grpc客户端conn失败", zap.String("name", name), zap.String("scheme", scheme), zap.Error(err))
+			utils.Panic("构建grpc客户端conn失败",
+				zap.String("name", name),
+				zap.String("registry", conf.Registry),
+				zap.String("balance", conf.Balance),
+				zap.Error(err))
 		}
 		g.connMap[name], conn = cc, cc
 	}
@@ -100,15 +108,25 @@ func (g *Grpc) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) inte
 	return client
 }
 
-func (g *Grpc) makeConn(name, scheme string) (*grpc.ClientConn, error) {
+func (g *Client) makeConn(name, scheme, balance string) (*grpc.ClientConn, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	conn, err := grpc.DialContext(ctx,
 		scheme+":///"+name,
-		grpc.WithInsecure(),                                                                                    // 不安全连接
-		grpc.WithDefaultServiceConfig(fmt.Sprintf(`{ "loadBalancingConfig": [{"%v": {}}] }`, roundrobin.Name)), // 轮询
-		grpc.WithBlock(),                                                                                       // 等待连接
+		grpc.WithInsecure(),   // 不安全连接
+		g.getBalance(balance), // 均衡器
+		grpc.WithBlock(),      // 等待连接
 	)
 	return conn, err
+}
+
+func (g *Client) getBalance(balance string) grpc.DialOption {
+	switch balance {
+	case round_robin.Name:
+		return round_robin.Balance()
+	default:
+		utils.Fatal("未定义的Grpc均衡器", zap.String("balance", balance))
+	}
+	return nil
 }

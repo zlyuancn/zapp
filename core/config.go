@@ -26,6 +26,7 @@ type Config struct {
 	GrpcClient map[string]struct { // grpc客户端
 		Address  string // 链接地址
 		Registry string // 注册器, 默认为 local
+		Balance  string // 负载均衡, 默认为 round_robin
 	}
 }
 

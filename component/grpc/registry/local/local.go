@@ -19,7 +19,7 @@ import (
 	"github.com/zlyuancn/zapp/utils"
 )
 
-const Schema = "local"
+const Name = "local"
 
 var defaultResolver = newResolver()
 
@@ -64,7 +64,7 @@ func (r *resolverCli) Build(target resolver.Target, cc resolver.ClientConn, opts
 	cc.UpdateState(resolver.State{Addresses: address})
 	return r, nil
 }
-func (r *resolverCli) Scheme() string { return Schema }
+func (r *resolverCli) Scheme() string { return Name }
 
 func (r *resolverCli) ResolveNow(options resolver.ResolveNowOptions) {}
 func (r *resolverCli) Close()                                        {}

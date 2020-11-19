@@ -64,7 +64,7 @@ func NewConfig() core.IConfig {
 	}
 
 	if c.c.FreeMemoryInterval <= 0 {
-		c.c.FreeMemoryInterval = consts.DefaultConfig_FreeMemoryInterval
+		c.c.FreeMemoryInterval = consts.DefaultConfig_App_FreeMemoryInterval
 	}
 
 	if *testConfig {

@@ -14,7 +14,12 @@ const DefaultServiceName = "default"
 // 默认配置
 const (
 	// 清理内存间隔时间(毫秒)
-	DefaultConfig_FreeMemoryInterval = 120000
+	DefaultConfig_App_FreeMemoryInterval = 120000
+
+	// grpc默认scheme
+	DefaultConfig_GrpcClient_Registry = "local"
+	// grpc默认balance
+	DefaultConfig_GrpcClient_Balance = "round_robin"
 )
 
 // 配置文件分片名
