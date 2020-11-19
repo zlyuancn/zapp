@@ -16,7 +16,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/resolver"
 
-	"github.com/zlyuancn/zapp/utils"
+	"github.com/zlyuancn/zapp/logger"
 )
 
 const Name = "local"
@@ -40,7 +40,7 @@ func newResolver() *resolverCli {
 
 func (r *resolverCli) RegistryEndpoint(endpointName, endpoints string) {
 	if endpoints == "" {
-		utils.Fatal("endpoint is empty", zap.String("name", endpointName))
+		logger.Log.Fatal("endpoint is empty", zap.String("name", endpointName))
 	}
 	address := strings.Split(endpoints, ",")
 	addr := make([]resolver.Address, len(address))

@@ -14,9 +14,9 @@ import (
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
+	"github.com/zlyuancn/zapp/logger"
 	_ "github.com/zlyuancn/zapp/service/cron"
 	_ "github.com/zlyuancn/zapp/service/grpc"
-	"github.com/zlyuancn/zapp/utils"
 )
 
 func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...string) (core.IService, bool) {
@@ -40,7 +40,7 @@ func (app *appCli) RegistryCronJob(name string, expression string, enable bool, 
 		if app.opt.IgnoreInjectOfDisableServer {
 			return
 		}
-		utils.Fatal("未启用cron服务")
+		logger.Log.Fatal("未启用cron服务")
 	}
 
 	task := zscheduler.NewTaskOfConfig(name, zscheduler.TaskConfig{
@@ -61,7 +61,7 @@ func (app *appCli) RegistryGrpcService(a func(c core.IComponent, server *grpc.Se
 		if app.opt.IgnoreInjectOfDisableServer {
 			return
 		}
-		utils.Fatal("未启用grpc服务")
+		logger.Log.Fatal("未启用grpc服务")
 	}
 
 	s.Inject(a)

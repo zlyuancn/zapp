@@ -13,6 +13,7 @@ import (
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
+	"github.com/zlyuancn/zapp/logger"
 )
 
 var Context = new(contextUtil)
@@ -35,7 +36,7 @@ func (c *contextUtil) GetLoggerFromContext(ctx context.Context) (core.ILogger, b
 func (c *contextUtil) MustGetLoggerFromContext(ctx context.Context) core.ILogger {
 	log, ok := c.GetLoggerFromContext(ctx)
 	if !ok {
-		Panic("can't load app_context from context")
+		logger.Log.Panic("can't load app_context from context")
 	}
 	return log
 }

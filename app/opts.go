@@ -13,7 +13,7 @@ import (
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
-	"github.com/zlyuancn/zapp/utils"
+	"github.com/zlyuancn/zapp/logger"
 )
 
 type Option func(opt *option)
@@ -43,7 +43,7 @@ func (o *option) AddService(serviceType core.ServiceType, serviceName ...string)
 	}
 
 	if _, ok = services[name]; ok {
-		utils.Fatal("服务类型的服务名已存在", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name))
+		logger.Log.Fatal("服务类型的服务名已存在", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name))
 	}
 
 	services[name] = struct{}{}

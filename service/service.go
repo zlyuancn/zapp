@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/core"
-	"github.com/zlyuancn/zapp/utils"
+	"github.com/zlyuancn/zapp/logger"
 )
 
 var creators = make(map[core.ServiceType]core.IServiceCreator)
@@ -20,7 +20,7 @@ var creators = make(map[core.ServiceType]core.IServiceCreator)
 // 注册建造者
 func RegisterCreator(serviceType core.ServiceType, creator core.IServiceCreator) {
 	if _, ok := creators[serviceType]; ok {
-		utils.Fatal("重复注册建造者", zap.String("serviceType", serviceType.String()))
+		logger.Log.Fatal("重复注册建造者", zap.String("serviceType", serviceType.String()))
 	}
 	creators[serviceType] = creator
 }
@@ -30,7 +30,7 @@ func NewService(serviceType core.ServiceType, app core.IApp) core.IService {
 	if creator, ok := creators[serviceType]; ok {
 		return creator.Create(app)
 	}
-	utils.Fatal("使用了未注册的建造者", zap.String("serviceType", serviceType.String()))
+	logger.Log.Fatal("使用了未注册的建造者", zap.String("serviceType", serviceType.String()))
 	return nil
 }
 

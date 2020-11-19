@@ -10,6 +10,7 @@ package grpc
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"time"
 
@@ -20,22 +21,27 @@ import (
 	"github.com/zlyuancn/zapp/component/grpc/registry/local"
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
-	"github.com/zlyuancn/zapp/utils"
+	"github.com/zlyuancn/zapp/logger"
 )
 
 type Client struct {
 	app core.IApp
 	mx  sync.RWMutex
 
-	connMap   map[string]*grpc.ClientConn
-	clientMap map[string]interface{}
+	connMap map[string]*Conn
+}
+
+type Conn struct {
+	wg     sync.WaitGroup
+	cc     *grpc.ClientConn
+	client interface{}
+	e      error
 }
 
 func NewClient(app core.IApp) core.IGrpcClient {
 	g := &Client{
-		app:       app,
-		connMap:   make(map[string]*grpc.ClientConn),
-		clientMap: make(map[string]interface{}),
+		app:     app,
+		connMap: make(map[string]*Conn),
 	}
 
 	for name, conf := range app.GetConfig().Config().GrpcClient {
@@ -51,7 +57,7 @@ func NewClient(app core.IApp) core.IGrpcClient {
 		case local.Name:
 			local.RegistryAddress(name, conf.Address)
 		default:
-			utils.Fatal("未定义的Grpc注册器", zap.String("registry", conf.Registry))
+			logger.Log.Fatal("未定义的Grpc注册器", zap.String("registry", conf.Registry))
 		}
 
 		_ = g.getBalance(conf.Balance)
@@ -62,50 +68,77 @@ func NewClient(app core.IApp) core.IGrpcClient {
 
 func (g *Client) Close() {
 	for _, conn := range g.connMap {
-		_ = conn.Close()
+		if conn.cc != nil {
+			_ = conn.cc.Close()
+		}
 	}
 }
 
 func (g *Client) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) interface{}) interface{} {
 	g.mx.RLock()
-	client, ok := g.clientMap[name]
+	conn, ok := g.connMap[name]
 	g.mx.RUnlock()
 
+	// todo 优化 conn.wg.Wait()
+
 	if ok {
-		return client
+		conn.wg.Wait()
+		if conn.e != nil {
+			logger.Log.Panic(conn.e, zap.String("name", name))
+		}
+		return conn.client
 	}
 
 	g.mx.Lock()
-	defer g.mx.Unlock()
 
-	// todo 这里等待时间过长, 考虑加个占位符优化下
+	// 再获取一次, 它可能在获取锁的过程中完成了
+	if conn, ok = g.connMap[name]; ok {
+		g.mx.Unlock()
 
-	if client, ok = g.clientMap[name]; ok {
-		return client
+		conn.wg.Wait()
+		if conn.e != nil {
+			logger.Log.Panic(conn.e, zap.String("name", name))
+		}
+		return conn.client
 	}
 
-	conn, ok := g.connMap[name]
+	// 占位置
+	conn = new(Conn)
+	conn.wg.Add(1)
+	g.connMap[name] = conn
+
+	g.mx.Unlock()
+
+	// 获取配置, 如果配置不存在则不需要删除conn, 因为它永远不会有配置了
+	conf, ok := g.app.GetConfig().Config().GrpcClient[name]
 	if !ok {
-		conf, ok := g.app.GetConfig().Config().GrpcClient[name]
-		if !ok {
-			utils.Panic("试图获取未注册的grpc客户端", zap.String("name", name))
-		}
-
-		cc, err := g.makeConn(name, conf.Registry, conf.Balance)
-		if err != nil {
-			utils.Panic("构建grpc客户端conn失败",
-				zap.String("name", name),
-				zap.String("registry", conf.Registry),
-				zap.String("balance", conf.Balance),
-				zap.Error(err))
-		}
-		g.connMap[name], conn = cc, cc
+		conn.e = errors.New("试图获取未注册的grpc客户端")
+		conn.wg.Done()
+		logger.Log.Panic(conn.e, zap.String("name", name))
 	}
 
-	client = creator(conn)
-	g.clientMap[name] = client
+	cc, err := g.makeConn(name, conf.Registry, conf.Balance)
+	if err != nil {
+		conn.e = errors.New("构建grpc客户端conn失败")
+		conn.wg.Done()
 
-	return client
+		// 删除位置
+		g.mx.Lock()
+		delete(g.connMap, name)
+		g.mx.Unlock()
+
+		logger.Log.Panic(conn.e,
+			zap.String("name", name),
+			zap.String("registry", conf.Registry),
+			zap.String("balance", conf.Balance),
+			zap.Error(err))
+	}
+
+	conn.cc = cc
+	conn.client = creator(conn.cc)
+	conn.wg.Done()
+
+	return conn.client
 }
 
 func (g *Client) makeConn(name, scheme, balance string) (*grpc.ClientConn, error) {
@@ -126,7 +159,7 @@ func (g *Client) getBalance(balance string) grpc.DialOption {
 	case round_robin.Name:
 		return round_robin.Balance()
 	default:
-		utils.Fatal("未定义的Grpc均衡器", zap.String("balance", balance))
+		logger.Log.Fatal("未定义的Grpc均衡器", zap.String("balance", balance))
 	}
 	return nil
 }

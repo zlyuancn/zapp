@@ -15,10 +15,11 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
-	"github.com/zlyuancn/zapp/utils"
+	"github.com/zlyuancn/zapp/logger"
 )
 
 const (
@@ -57,7 +58,9 @@ func NewConfig() core.IConfig {
 	for _, file := range files {
 		vp := viper.New()
 		vp.SetConfigFile(file)
-		utils.FatalOnError(vp.ReadInConfig(), "配置文件加载失败", file)
+		if err := vp.ReadInConfig(); err != nil {
+			logger.Log.Fatal("配置文件加载失败", zap.String("file", file), zap.Error(err))
+		}
 		for k, v := range vp.AllSettings() {
 			c.v.SetDefault(k, v)
 		}
@@ -72,7 +75,9 @@ func NewConfig() core.IConfig {
 		os.Exit(0)
 	}
 
-	utils.FatalOnError(c.v.Unmarshal(c.c), "配置解析失败")
+	if err := c.v.Unmarshal(c.c); err != nil {
+		logger.Log.Fatal("配置解析失败", zap.Strings("files", files), zap.Error(err))
+	}
 	return c
 }
 

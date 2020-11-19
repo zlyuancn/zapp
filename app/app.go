@@ -24,12 +24,10 @@ import (
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
 	"github.com/zlyuancn/zapp/service"
-	"github.com/zlyuancn/zapp/utils"
 )
 
 type appCli struct {
 	name   string
-	daemon daemon.Daemon
 
 	opt *option
 
@@ -51,7 +49,7 @@ type appCli struct {
 // 正常启动时会初始化所有服务
 func NewApp(appName string, opts ...Option) core.IApp {
 	if appName == "" {
-		utils.Fatal("appName must not empty")
+		logger.Log.Fatal("appName must not empty")
 	}
 	app := &appCli{
 		name:      appName,
@@ -144,21 +142,22 @@ func (app *appCli) enableDaemon() {
 	}
 
 	d, err := daemon.New(app.name, app.name, daemon.SystemDaemon)
-	utils.FatalOnError(err, "守护进程模块创建失败")
-	app.daemon = d
+	if err != nil {
+		logger.Log.Fatal("守护进程模块创建失败", zap.Error(err))
+	}
 
 	var out string
 	switch os.Args[1] {
 	case "install":
-		out, err = app.daemon.Install(os.Args[2:]...)
+		out, err = d.Install(os.Args[2:]...)
 	case "remove":
-		out, err = app.daemon.Remove()
+		out, err = d.Remove()
 	case "start":
-		out, err = app.daemon.Start()
+		out, err = d.Start()
 	case "stop":
-		out, err = app.daemon.Stop()
+		out, err = d.Stop()
 	case "status":
-		out, err = app.daemon.Status()
+		out, err = d.Status()
 	default:
 		return
 	}
