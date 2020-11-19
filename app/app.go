@@ -141,6 +141,7 @@ func (app *appCli) enableDaemon() {
 		return
 	}
 
+	// todo 优化, 在需要时再创建
 	d, err := daemon.New(app.name, app.name, daemon.SystemDaemon)
 	if err != nil {
 		logger.Log.Fatal("守护进程模块创建失败", zap.Error(err))
