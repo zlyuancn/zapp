@@ -48,6 +48,7 @@ func (c *ComponentCli) Close() {
 
 	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		c.IGrpcClient.Close()
 	}()
 

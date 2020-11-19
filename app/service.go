@@ -58,6 +58,9 @@ func (app *appCli) RegistryCronJob(name string, expression string, enable bool, 
 func (app *appCli) RegistryGrpcService(a func(c core.IComponent, server *grpc.Server)) {
 	s, ok := app.GetService(core.GrpcService)
 	if !ok {
+		if app.opt.IgnoreInjectOfDisableServer {
+			return
+		}
 		utils.Fatal("未启用grpc服务")
 	}
 
