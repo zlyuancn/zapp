@@ -9,14 +9,11 @@
 package round_robin
 
 import (
-	"fmt"
-
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/balancer/roundrobin"
 )
 
-const Name = roundrobin.Name
+const Name = "round_robin"
 
 func Balance() grpc.DialOption {
-	return grpc.WithDefaultServiceConfig(fmt.Sprintf(`{ "loadBalancingConfig": [{"%v": {}}] }`, roundrobin.Name))
+	return grpc.WithDefaultServiceConfig(`{ "loadBalancingConfig": [{"round_robin": {}}] }`)
 }
