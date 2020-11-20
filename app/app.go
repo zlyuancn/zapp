@@ -141,7 +141,16 @@ func (app *appCli) enableDaemon() {
 		return
 	}
 
-	// todo 优化, 在需要时再创建
+	switch os.Args[1] {
+	case "install":
+	case "remove":
+	case "start":
+	case "stop":
+	case "status":
+	default:
+		return
+	}
+
 	d, err := daemon.New(app.name, app.name, daemon.SystemDaemon)
 	if err != nil {
 		logger.Log.Fatal("守护进程模块创建失败", zap.Error(err))
@@ -159,8 +168,6 @@ func (app *appCli) enableDaemon() {
 		out, err = d.Stop()
 	case "status":
 		out, err = d.Status()
-	default:
-		return
 	}
 
 	if err != nil {

@@ -79,8 +79,6 @@ func (g *Client) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) in
 	conn, ok := g.connMap[name]
 	g.mx.RUnlock()
 
-	// todo 优化 conn.wg.Wait()
-
 	if ok {
 		conn.wg.Wait()
 		if conn.e != nil {

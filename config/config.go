@@ -37,7 +37,7 @@ type configCli struct {
 // 多个配置文件如果存在同配置分片则只识别最后的分片
 func NewConfig() core.IConfig {
 	confText := flag.String("c", "", "配置文件,多个文件用逗号隔开,同名配置分片会完全覆盖之前的分片")
-	testConfig := flag.Bool("t", false, "测试配置文件")
+	testFlag := flag.Bool("t", false, "测试配置文件")
 	flag.Parse()
 
 	var files []string
@@ -70,7 +70,7 @@ func NewConfig() core.IConfig {
 		c.c.FreeMemoryInterval = consts.DefaultConfig_App_FreeMemoryInterval
 	}
 
-	if *testConfig {
+	if *testFlag {
 		fmt.Println("配置文件测试成功")
 		os.Exit(0)
 	}
