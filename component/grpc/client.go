@@ -103,6 +103,7 @@ func (g *Client) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) in
 	// 占位置
 	conn = new(Conn)
 	conn.wg.Add(1)
+	defer conn.wg.Done()
 	g.connMap[name] = conn
 
 	g.mx.Unlock()
@@ -111,14 +112,12 @@ func (g *Client) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) in
 	conf, ok := g.app.GetConfig().Config().GrpcClient[name]
 	if !ok {
 		conn.e = errors.New("试图获取未注册的grpc客户端")
-		conn.wg.Done()
 		logger.Log.Panic(conn.e, zap.String("name", name))
 	}
 
 	cc, err := g.makeConn(name, conf.Registry, conf.Balance)
 	if err != nil {
 		conn.e = errors.New("构建grpc客户端conn失败")
-		conn.wg.Done()
 
 		// 删除位置
 		g.mx.Lock()
@@ -134,7 +133,6 @@ func (g *Client) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) in
 
 	conn.cc = cc
 	conn.client = creator(conn.cc)
-	conn.wg.Done()
 
 	return conn.client
 }
