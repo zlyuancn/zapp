@@ -34,11 +34,12 @@ type CronService struct {
 }
 
 func NewCronService(app core.IApp) *CronService {
+	conf := app.GetConfig().Config().CronService
 	return &CronService{
 		app: app,
 		scheduler: zscheduler.NewScheduler(
 			zscheduler.WithLogger(app.GetLogger()),
-			zscheduler.WithGoroutinePool(app.GetConfig().Config().CronService.ThreadCount, app.GetConfig().Config().CronService.JobQueueSize),
+			zscheduler.WithGoroutinePool(conf.ThreadCount, conf.JobQueueSize),
 		),
 	}
 }

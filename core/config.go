@@ -18,6 +18,9 @@ type Config struct {
 	FreeMemoryInterval int // 清理内存间隔时间(毫秒)
 
 	// grpc服务
+	//
+	// [GrpcService]
+	// Bind = ":3001"
 	GrpcService struct {
 		Bind string
 	}
@@ -25,10 +28,13 @@ type Config struct {
 	// 定时器
 	CronService struct {
 		ThreadCount  int // 线程数
-		JobQueueSize int // job队列大小
+			JobQueueSize int // job队列大小
 	}
 
 	// grpc客户端
+	//
+	// [GrpcClient.test]
+	// Address = "localhost:3001"
 	GrpcClient map[string]struct {
 		Address  string // 链接地址
 		Registry string // 注册器, 默认为 local

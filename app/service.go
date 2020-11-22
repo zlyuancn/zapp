@@ -54,6 +54,26 @@ func (app *appCli) RegistryCronJob(name string, expression string, enable bool, 
 
 	s.Inject(task)
 }
+func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigger, executor zscheduler.IExecutor, enable bool, handler func(log core.ILogger) error) {
+	s, ok := app.GetService(core.CronService)
+	if !ok {
+		if app.opt.IgnoreInjectOfDisableServer {
+			return
+		}
+		logger.Log.Fatal("未启用cron服务")
+	}
+
+	task := zscheduler.NewTaskOfConfig(name, zscheduler.TaskConfig{
+		Trigger:  trigger,
+		Executor: executor,
+		Job: func() error {
+			return handler(app.CreateLogger(name))
+		},
+		Enable: enable,
+	})
+
+	s.Inject(task)
+}
 
 func (app *appCli) RegistryGrpcService(a func(c core.IComponent, server *grpc.Server)) {
 	s, ok := app.GetService(core.GrpcService)
