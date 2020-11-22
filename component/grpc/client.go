@@ -28,7 +28,8 @@ type Client struct {
 	app core.IApp
 	mx  sync.RWMutex
 
-	connMap map[string]*Conn
+	connMap    map[string]*Conn
+	creatorMap map[string]func(cc *grpc.ClientConn) interface{}
 }
 
 type Conn struct {
@@ -40,8 +41,9 @@ type Conn struct {
 
 func NewClient(app core.IApp) core.IGrpcClient {
 	g := &Client{
-		app:     app,
-		connMap: make(map[string]*Conn),
+		app:        app,
+		connMap:    make(map[string]*Conn),
+		creatorMap: make(map[string]func(cc *grpc.ClientConn) interface{}),
 	}
 
 	for name, conf := range app.GetConfig().Config().GrpcClient {
@@ -74,7 +76,11 @@ func (g *Client) Close() {
 	}
 }
 
-func (g *Client) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) interface{}) interface{} {
+func (g *Client) RegistryGrpcClientCreator(name string, creator func(cc *grpc.ClientConn) interface{}) {
+	g.creatorMap[name] = creator
+}
+
+func (g *Client) GetGrpcClient(name string) interface{} {
 	g.mx.RLock()
 	conn, ok := g.connMap[name]
 	g.mx.RUnlock()
@@ -112,6 +118,19 @@ func (g *Client) GetGrpcClient(name string, creator func(cc *grpc.ClientConn) in
 	conf, ok := g.app.GetConfig().Config().GrpcClient[name]
 	if !ok {
 		conn.e = errors.New("试图获取未注册的grpc客户端")
+		logger.Log.Panic(conn.e, zap.String("name", name))
+	}
+
+	// 获取建造者
+	creator, ok := g.creatorMap[name]
+	if !ok {
+		conn.e = errors.New("未注册grpc客户端建造者")
+
+		// 删除位置
+		g.mx.Lock()
+		delete(g.connMap, name)
+		g.mx.Unlock()
+
 		logger.Log.Panic(conn.e, zap.String("name", name))
 	}
 

@@ -16,14 +16,20 @@ import (
 type Config struct {
 	Debug              bool
 	FreeMemoryInterval int // 清理内存间隔时间(毫秒)
-	GrpcService        struct { // grpc服务
+
+	// grpc服务
+	GrpcService struct {
 		Bind string
 	}
-	Cron struct {
+
+	// 定时器
+	CronService struct {
 		ThreadCount  int // 线程数
 		JobQueueSize int // job队列大小
-	} // 定时器
-	GrpcClient map[string]struct { // grpc客户端
+	}
+
+	// grpc客户端
+	GrpcClient map[string]struct {
 		Address  string // 链接地址
 		Registry string // 注册器, 默认为 local
 		Balance  string // 负载均衡, 默认为 round_robin

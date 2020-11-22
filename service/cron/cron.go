@@ -38,7 +38,7 @@ func NewCronService(app core.IApp) *CronService {
 		app: app,
 		scheduler: zscheduler.NewScheduler(
 			zscheduler.WithLogger(app.GetLogger()),
-			zscheduler.WithGoroutinePool(app.GetConfig().Config().Cron.ThreadCount, app.GetConfig().Config().Cron.JobQueueSize),
+			zscheduler.WithGoroutinePool(app.GetConfig().Config().CronService.ThreadCount, app.GetConfig().Config().CronService.JobQueueSize),
 		),
 	}
 }
