@@ -108,7 +108,7 @@ func UnaryServerLogInterceptor(app core.IApp) grpc.UnaryServerInterceptor {
 		ctx = utils.Context.SaveLoggerToContext(ctx, log)
 
 		startTime := time.Now()
-		log.Info("grpc.request", zap.Any("args", req))
+		log.Info("grpc.request", zap.Any("req", req))
 
 		resp, err := handler(ctx, req)
 		if err != nil {
