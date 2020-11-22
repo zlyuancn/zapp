@@ -42,6 +42,7 @@ type GrpcService struct {
 }
 
 func NewGrpcService(app core.IApp) core.IService {
+	conf := app.GetConfig().Config().GrpcService
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			UnaryServerLogInterceptor(app), // 日志
@@ -49,7 +50,7 @@ func NewGrpcService(app core.IApp) core.IService {
 			grpc_recovery.UnaryServerInterceptor(), // panic拦截
 		)),
 		grpc.KeepaliveParams(keepalive.ServerParameters{
-			Time: time.Minute, // 心跳
+			Time: time.Duration(conf.HeartbeatTime) * time.Millisecond, // 心跳
 		}),
 	)
 

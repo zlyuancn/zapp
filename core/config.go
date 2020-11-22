@@ -24,8 +24,10 @@ type Config struct {
 	//
 	// [GrpcService]
 	// Bind = ":3001"
+	// HeartbeatTime = 20000
 	GrpcService struct {
-		Bind string
+		Bind          string // bind地址
+		HeartbeatTime int    // 心跳时间(毫秒),
 	}
 
 	// 定时器
