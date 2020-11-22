@@ -14,8 +14,11 @@ import (
 
 // 配置结构
 type Config struct {
-	Debug              bool
-	FreeMemoryInterval int // 清理内存间隔时间(毫秒)
+	// debug标志
+	Debug bool
+
+	// 清理内存间隔时间(毫秒)
+	FreeMemoryInterval int
 
 	// grpc服务
 	//
@@ -26,6 +29,9 @@ type Config struct {
 	}
 
 	// 定时器
+	// [CronService]
+	// ThreadCount = 10
+	// JobQueueSize = 100
 	CronService struct {
 		ThreadCount  int // 线程数
 		JobQueueSize int // job队列大小
@@ -37,10 +43,12 @@ type Config struct {
 	// Address = "localhost:3001"
 	// Registry = "local"
 	// Balance = "round_robin"
+	// DialTimeout = 1000
 	GrpcClient map[string]struct {
-		Address  string // 链接地址
-		Registry string // 注册器, 默认为 local
-		Balance  string // 负载均衡, 默认为 round_robin
+		Address     string // 链接地址
+		Registry    string // 注册器, 默认为 local
+		Balance     string // 负载均衡, 默认为 round_robin
+		DialTimeout int    // 连接超时(毫秒), 0表示不限, 默认为 1000
 	}
 }
 

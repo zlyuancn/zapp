@@ -11,6 +11,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"reflect"
 	"sync"
 	"time"
 
@@ -22,14 +23,17 @@ import (
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
+	"github.com/zlyuancn/zapp/utils"
 )
+
+var typeOfGrpcClientConn = reflect.TypeOf((*grpc.ClientConn)(nil))
 
 type Client struct {
 	app core.IApp
 	mx  sync.RWMutex
 
 	connMap    map[string]*Conn
-	creatorMap map[string]func(cc *grpc.ClientConn) interface{}
+	creatorMap map[string]reflect.Value
 }
 
 type Conn struct {
@@ -39,11 +43,11 @@ type Conn struct {
 	e      error
 }
 
-func NewClient(app core.IApp) core.IGrpcClient {
+func NewClient(app core.IApp) core.IGrpcComponent {
 	g := &Client{
 		app:        app,
 		connMap:    make(map[string]*Conn),
-		creatorMap: make(map[string]func(cc *grpc.ClientConn) interface{}),
+		creatorMap: make(map[string]reflect.Value),
 	}
 
 	for name, conf := range app.GetConfig().Config().GrpcClient {
@@ -76,8 +80,29 @@ func (g *Client) Close() {
 	}
 }
 
-func (g *Client) RegistryGrpcClientCreator(name string, creator func(cc *grpc.ClientConn) interface{}) {
-	g.creatorMap[name] = creator
+func (g *Client) RegistryGrpcClientCreator(name string, creator interface{}) {
+	createType := reflect.TypeOf(creator)
+	if createType.Kind() != reflect.Func {
+		logger.Log.Fatal("grpc客户端建造者必须是函数")
+		return
+	}
+
+	if createType.NumIn() != 1 {
+		logger.Log.Fatal("grpc客户端建造者入参为1个")
+		return
+	}
+
+	if !createType.In(0).AssignableTo(typeOfGrpcClientConn) {
+		logger.Log.Fatal("grpc客户端建造者入参类型必须是 *grpc.ClientConn")
+		return
+	}
+
+	if createType.NumOut() != 1 {
+		logger.Log.Fatal("grpc客户端建造者必须有一个返回值")
+		return
+	}
+
+	g.creatorMap[name] = reflect.ValueOf(creator)
 }
 
 func (g *Client) GetGrpcClient(name string) interface{} {
@@ -114,7 +139,27 @@ func (g *Client) GetGrpcClient(name string) interface{} {
 
 	g.mx.Unlock()
 
-	// 获取配置, 如果配置不存在则不需要删除conn, 因为它永远不会有配置了
+	return g.makeClient(name, conn)
+}
+
+func (g *Client) makeConn(name, scheme, balance string, timeout int) (*grpc.ClientConn, error) {
+	if timeout <= 0 {
+		timeout = consts.DefaultConfig_GrpcClient_DialTimeout
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Millisecond)
+	defer cancel()
+
+	return grpc.DialContext(ctx,
+		scheme+":///"+name,
+		grpc.WithInsecure(),   // 不安全连接
+		g.getBalance(balance), // 均衡器
+		grpc.WithBlock(),      // 等待连接
+	)
+}
+
+func (g *Client) makeClient(name string, conn *Conn) interface{} {
+	// 获取配置
 	conf, ok := g.app.GetConfig().Config().GrpcClient[name]
 	if !ok {
 		conn.e = errors.New("试图获取未注册的grpc客户端")
@@ -125,48 +170,41 @@ func (g *Client) GetGrpcClient(name string) interface{} {
 	creator, ok := g.creatorMap[name]
 	if !ok {
 		conn.e = errors.New("未注册grpc客户端建造者")
-
-		// 删除位置
-		g.mx.Lock()
-		delete(g.connMap, name)
-		g.mx.Unlock()
-
 		logger.Log.Panic(conn.e, zap.String("name", name))
 	}
 
-	cc, err := g.makeConn(name, conf.Registry, conf.Balance)
+	// 构建cc
+	var cc *grpc.ClientConn
+	err := utils.Recover.WarpCall(func() error {
+		var e error
+		cc, e = g.makeConn(name, conf.Registry, conf.Balance, conf.DialTimeout)
+		return e
+	})
 	if err != nil {
-		conn.e = errors.New("构建grpc客户端conn失败")
-
-		// 删除位置
+		conn.e = err
 		g.mx.Lock()
 		delete(g.connMap, name)
 		g.mx.Unlock()
-
-		logger.Log.Panic(conn.e,
-			zap.String("name", name),
-			zap.String("registry", conf.Registry),
-			zap.String("balance", conf.Balance),
-			zap.Error(err))
+		logger.Log.Panic(conn.e, zap.String("name", name), zap.String("registry", conf.Registry), zap.String("balance", conf.Balance), zap.Error(err))
 	}
 
+	// 构建客户端
+	var client interface{}
+	err = utils.Recover.WarpCall(func() error {
+		client = creator.Call([]reflect.Value{reflect.ValueOf(cc)})[0].Interface()
+		return nil
+	})
+	if err != nil {
+		conn.e = err
+		g.mx.Lock()
+		delete(g.connMap, name)
+		g.mx.Unlock()
+		logger.Log.Panic(conn.e, zap.String("name", name), zap.String("registry", conf.Registry), zap.String("balance", conf.Balance), zap.Error(err))
+	}
+
+	conn.client = client
 	conn.cc = cc
-	conn.client = creator(conn.cc)
-
 	return conn.client
-}
-
-func (g *Client) makeConn(name, scheme, balance string) (*grpc.ClientConn, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	conn, err := grpc.DialContext(ctx,
-		scheme+":///"+name,
-		grpc.WithInsecure(),   // 不安全连接
-		g.getBalance(balance), // 均衡器
-		grpc.WithBlock(),      // 等待连接
-	)
-	return conn, err
 }
 
 func (g *Client) getBalance(balance string) grpc.DialOption {

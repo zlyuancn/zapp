@@ -23,6 +23,8 @@ const (
 	DefaultConfig_GrpcClient_Registry = "local"
 	// grpc默认balance
 	DefaultConfig_GrpcClient_Balance = "round_robin"
+	// grpc客户端默认连接超时
+	DefaultConfig_GrpcClient_DialTimeout = 1000
 )
 
 // 配置文件分片名

@@ -91,12 +91,13 @@ func (g *GrpcService) Start() error {
 		return err
 	}
 
-	g.app.GetLogger().Info("grpc启动成功", zap.String("bind", conf.Bind))
+	g.app.GetLogger().Info("grpc服务启动成功", zap.String("bind", conf.Bind))
 	return nil
 }
 
 func (g *GrpcService) Close() error {
 	g.server.GracefulStop()
+	g.app.GetLogger().Info("grpc服务已关闭")
 	return nil
 }
 

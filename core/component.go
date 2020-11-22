@@ -10,8 +10,6 @@ package core
 
 import (
 	"context"
-
-	"google.golang.org/grpc"
 )
 
 // 组件, 如db, rpc, cache, mq等
@@ -26,12 +24,12 @@ type IComponent interface {
 	// 关闭所有组件
 	Close()
 
-	IGrpcClient
+	IGrpcComponent
 }
 
-type IGrpcClient interface {
+type IGrpcComponent interface {
 	// 注册grpc客户端建造者, 这个方法应该在app.Run之前调用
-	RegistryGrpcClientCreator(name string, creator func(cc *grpc.ClientConn) interface{})
+	RegistryGrpcClientCreator(name string, creator interface{})
 	// 获取grpc客户端, 如果未注册grpc客户端建造者会panic
 	GetGrpcClient(name string) interface{}
 	// 关闭客户端

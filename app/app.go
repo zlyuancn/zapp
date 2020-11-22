@@ -71,13 +71,14 @@ func NewApp(appName string, opts ...Option) core.IApp {
 
 	app.config = config.NewConfig()
 	app.ILogger = logger.NewLogger(appName, app.config)
-	app.component = component.NewComponent(app)
 
-	app.Info("初始化服务")
-
-	// app初始化前
+	app.Info("app初始化")
 	app.handler(BeforeInitializeHandler)
 
+	// 初始化组件
+	app.component = component.NewComponent(app)
+
+	// 初始化服务
 	for serviceType, names := range app.opt.Servers {
 		services := make(map[string]core.IService, len(names))
 		for name := range names {
@@ -86,27 +87,22 @@ func NewApp(appName string, opts ...Option) core.IApp {
 		app.services[serviceType] = services
 	}
 
-	// app初始化后
 	app.handler(AfterInitializeHandler)
-
-	app.Info("服务初始化完毕")
+	app.Info("app初始化完毕")
 
 	return app
 }
 
 func (app *appCli) run() {
 	app.Info("启动app")
-
-	// app启动前
 	app.handler(BeforeStartHandler)
 
+	// 启动服务
 	app.startService()
 
 	go app.freeMemory()
 
-	// app启动后
 	app.handler(AfterStartHandler)
-
 	app.Info("app已启动")
 
 	signal.Notify(app.interrupt, os.Kill, os.Interrupt, syscall.SIGINT, syscall.SIGKILL, syscall.SIGTERM)
@@ -186,12 +182,13 @@ func (app *appCli) exit() {
 	// app退出前
 	app.handler(BeforeExitHandler)
 
+	// 关闭服务
 	app.closeService()
+	// 释放组件资源
 	app.closeComponentResource()
 
 	// app退出后
 	app.handler(AfterExitHandler)
-
 	app.Warn("app已退出")
 }
 

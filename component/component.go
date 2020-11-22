@@ -22,7 +22,7 @@ type ComponentCli struct {
 	config *core.Config
 	log    core.ILogger
 
-	core.IGrpcClient
+	core.IGrpcComponent
 }
 
 func NewComponent(app core.IApp) core.IComponent {
@@ -31,7 +31,7 @@ func NewComponent(app core.IApp) core.IComponent {
 		config: app.GetConfig().Config(),
 		log:    app.GetLogger(),
 
-		IGrpcClient: grpc.NewClient(app),
+		IGrpcComponent: grpc.NewClient(app),
 	}
 }
 
@@ -49,7 +49,7 @@ func (c *ComponentCli) Close() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		c.IGrpcClient.Close()
+		c.IGrpcComponent.Close()
 	}()
 
 	wg.Wait()
