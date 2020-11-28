@@ -26,7 +26,7 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/takama/daemon v1.0.0
 	github.com/zlyuancn/zlog v0.0.0-20201107071137-3b2b7df64ef1
-	github.com/zlyuancn/zscheduler v0.0.0-20201105060354-a118f38bdd8f
+	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b // indirect
 	golang.org/x/sys v0.0.0-20201117222635-ba5294a509c7 // indirect

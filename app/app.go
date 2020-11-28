@@ -72,7 +72,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	app.config = config.NewConfig()
 	app.ILogger = logger.NewLogger(appName, app.config)
 
-	app.Info("app初始化")
+	app.Debug("app初始化")
 	app.handler(BeforeInitializeHandler)
 
 	// 初始化组件
@@ -88,13 +88,13 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	}
 
 	app.handler(AfterInitializeHandler)
-	app.Info("app初始化完毕")
+	app.Debug("app初始化完毕")
 
 	return app
 }
 
 func (app *appCli) run() {
-	app.Info("启动app")
+	app.Debug("启动app")
 	app.handler(BeforeStartHandler)
 
 	// 启动服务
@@ -111,7 +111,7 @@ func (app *appCli) run() {
 }
 
 func (app *appCli) startService() {
-	app.Info("启动服务")
+	app.Debug("启动服务")
 	for serviceType, services := range app.services {
 		for name, s := range services {
 			if err := s.Start(); err != nil {
@@ -122,7 +122,7 @@ func (app *appCli) startService() {
 }
 
 func (app *appCli) closeService() {
-	app.Info("关闭服务")
+	app.Debug("关闭服务")
 	for serviceType, services := range app.services {
 		for name, s := range services {
 			if err := s.Close(); err != nil {
@@ -176,7 +176,7 @@ func (app *appCli) enableDaemon() {
 }
 
 func (app *appCli) exit() {
-	app.Warn("app准备退出")
+	app.Debug("app准备退出")
 	close(app.closeChan)
 
 	// app退出前

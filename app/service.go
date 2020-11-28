@@ -9,13 +9,14 @@
 package app
 
 import (
-	"github.com/zlyuancn/zscheduler"
 	"google.golang.org/grpc"
+
+	"github.com/zlyuancn/zscheduler"
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
-	_ "github.com/zlyuancn/zapp/service/cron"
+	"github.com/zlyuancn/zapp/service/cron"
 	_ "github.com/zlyuancn/zapp/service/grpc"
 )
 
@@ -46,8 +47,8 @@ func (app *appCli) RegistryCronJob(name string, expression string, enable bool, 
 	task := zscheduler.NewTaskOfConfig(name, zscheduler.TaskConfig{
 		Trigger:  zscheduler.NewCronTrigger(expression),
 		Executor: zscheduler.NewExecutor(0, 0, 1),
-		Job: func() error {
-			return handler(app.CreateLogger(name))
+		Handler: func(job zscheduler.IJob) error {
+			return handler(cron.GetLoggerFromJob(job))
 		},
 		Enable: enable,
 	})
@@ -66,8 +67,8 @@ func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigge
 	task := zscheduler.NewTaskOfConfig(name, zscheduler.TaskConfig{
 		Trigger:  trigger,
 		Executor: executor,
-		Job: func() error {
-			return handler(app.CreateLogger(name))
+		Handler: func(job zscheduler.IJob) error {
+			return handler(cron.GetLoggerFromJob(job))
 		},
 		Enable: enable,
 	})

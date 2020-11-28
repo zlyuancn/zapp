@@ -11,8 +11,10 @@ package cron
 import (
 	"fmt"
 
-	"github.com/zlyuancn/zscheduler"
 	"go.uber.org/zap"
+
+	"github.com/zlyuancn/zapp/consts"
+	"github.com/zlyuancn/zscheduler"
 
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/service"
@@ -38,8 +40,9 @@ func NewCronService(app core.IApp) *CronService {
 	return &CronService{
 		app: app,
 		scheduler: zscheduler.NewScheduler(
-			zscheduler.WithLogger(app.GetLogger()),
+			zscheduler.WithLogger(nil),
 			zscheduler.WithGoroutinePool(conf.ThreadCount, conf.JobQueueSize),
+			zscheduler.WithObserver(newObserver(app)),
 		),
 	}
 }
@@ -65,4 +68,19 @@ func (c *CronService) Start() error {
 func (c *CronService) Close() error {
 	c.scheduler.Stop()
 	return nil
+}
+
+// 将log存入job, 如果meta不是nil或map[string]interface{}会panic
+func SaveLoggerToJob(job zscheduler.IJob, log core.ILogger) {
+	if job.Meta() == nil {
+		job.SetMeta(map[string]interface{}{
+			consts.SaveFieldName_Logger: log,
+		})
+	}
+	job.Meta().(map[string]interface{})[consts.SaveFieldName_Logger] = log
+}
+
+// 从job中获取log, 如果失败会panic
+func GetLoggerFromJob(job zscheduler.IJob) core.ILogger {
+	return job.Meta().(map[string]interface{})[consts.SaveFieldName_Logger].(core.ILogger)
 }

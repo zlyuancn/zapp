@@ -92,13 +92,13 @@ func (g *GrpcService) Start() error {
 		return err
 	}
 
-	g.app.GetLogger().Info("grpc服务启动成功", zap.String("bind", conf.Bind))
+	g.app.GetLogger().Debug("grpc服务启动成功", zap.String("bind", conf.Bind))
 	return nil
 }
 
 func (g *GrpcService) Close() error {
 	g.server.GracefulStop()
-	g.app.GetLogger().Info("grpc服务已关闭")
+	g.app.GetLogger().Debug("grpc服务已关闭")
 	return nil
 }
 
@@ -113,9 +113,9 @@ func UnaryServerLogInterceptor(app core.IApp) grpc.UnaryServerInterceptor {
 
 		resp, err := handler(ctx, req)
 		if err != nil {
-			log.Error("grpc.response", zap.String("耗时", time.Since(startTime).String()), zap.Error(err))
+			log.Error("grpc.response", zap.String("spent_time", time.Since(startTime).String()), zap.Error(err))
 		} else {
-			log.Info("grpc.response", zap.String("耗时", time.Since(startTime).String()), zap.Any("resp", resp))
+			log.Info("grpc.response", zap.String("spent_time", time.Since(startTime).String()), zap.Any("resp", resp))
 		}
 
 		return resp, err

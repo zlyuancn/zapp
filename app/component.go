@@ -14,7 +14,7 @@ import (
 
 // 关闭组件内加载的资源
 func (app *appCli) closeComponentResource() {
-	app.Info("释放组件加载的资源")
+	app.Debug("释放组件加载的资源")
 	app.component.Close()
 }
 
