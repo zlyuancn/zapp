@@ -23,6 +23,8 @@ type IComponent interface {
 	// 获取配置
 	Config() *Config
 
+	// 日志
+	ILogger
 	// 从标准context获取日志
 	CtxLog(ctx context.Context) ILogger
 	// 关闭所有组件

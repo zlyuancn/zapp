@@ -23,7 +23,7 @@ import (
 type ComponentCli struct {
 	app    core.IApp
 	config *core.Config
-	log    core.ILogger
+	core.ILogger
 
 	core.IGrpcComponent
 	core.IXormComponent
@@ -33,9 +33,9 @@ type ComponentCli struct {
 
 func NewComponent(app core.IApp) core.IComponent {
 	return &ComponentCli{
-		app:    app,
-		config: app.GetConfig().Config(),
-		log:    app.GetLogger(),
+		app:     app,
+		config:  app.GetConfig().Config(),
+		ILogger: app.GetLogger(),
 
 		IGrpcComponent:  grpc.NewClient(app),
 		IXormComponent:  xorm.NewXorm(app),
@@ -46,7 +46,6 @@ func NewComponent(app core.IApp) core.IComponent {
 
 func (c *ComponentCli) App() core.IApp       { return c.app }
 func (c *ComponentCli) Config() *core.Config { return c.config }
-func (c *ComponentCli) Logger() core.ILogger { return c.log }
 
 func (c *ComponentCli) CtxLog(ctx context.Context) core.ILogger {
 	return utils.Context.MustGetLoggerFromContext(ctx)
