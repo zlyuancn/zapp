@@ -12,6 +12,7 @@ import (
 	"context"
 
 	"github.com/go-redis/redis"
+	elastic7 "github.com/olivere/elastic/v7"
 	"xorm.io/xorm"
 )
 
@@ -30,6 +31,7 @@ type IComponent interface {
 	IGrpcComponent
 	IXormComponent
 	IRedisComponent
+	IES7Component
 }
 
 type IGrpcComponent interface {
@@ -51,6 +53,13 @@ type IXormComponent interface {
 type IRedisComponent interface {
 	// 获取redis客户端
 	GetRedis(name ...string) redis.UniversalClient
+	// 关闭
+	Close()
+}
+
+type IES7Component interface {
+	// 获取es7客户端
+	GetES7(name ...string) *elastic7.Client
 	// 关闭
 	Close()
 }

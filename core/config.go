@@ -90,6 +90,30 @@ type Config struct {
 		WriteTimeout int64  // 超时(毫秒
 		DialTimeout  int64  // 超时(毫秒
 	}
+
+	// es7
+	//
+	// [ES7.default]
+	// Address = "http://127.0.0.1:9200"
+	// UserName = ""
+	// Password = ""
+	// DialTimeout = 5000
+	// Sniff = false
+	// Healthcheck = true
+	// Retry = 0
+	// RetryInterval = 0
+	// GZip = false
+	ES7 map[string]struct {
+		Address       string // 地址: http://localhost1:9200,http://localhost2:9200
+		UserName      string // 用户名
+		Password      string // 密码
+		DialTimeout   int64  // 连接超时(毫秒
+		Sniff         bool   // 开启嗅探器
+		Healthcheck   *bool  // 心跳检查(默认true
+		Retry         int    // 重试次数
+		RetryInterval int    // 重试间隔(毫秒)
+		GZip          bool   // 启用gzip压缩
+	}
 }
 
 // 配置
