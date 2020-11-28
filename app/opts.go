@@ -29,6 +29,15 @@ type option struct {
 	Handlers map[HandlerType][]Handler
 }
 
+func newOption() *option {
+	return &option{
+		EnableDaemon:                false,
+		IgnoreInjectOfDisableServer: false,
+		Servers:                     make(map[core.ServiceType]map[string]struct{}),
+		Handlers:                    make(map[HandlerType][]Handler),
+	}
+}
+
 // 添加服务
 func (o *option) AddService(serviceType core.ServiceType, serviceName ...string) {
 	name := consts.DefaultServiceName
@@ -47,14 +56,6 @@ func (o *option) AddService(serviceType core.ServiceType, serviceName ...string)
 	}
 
 	services[name] = struct{}{}
-}
-
-func newOption() *option {
-	return &option{
-		EnableDaemon: false,
-		Servers:      make(map[core.ServiceType]map[string]struct{}),
-		Handlers:     make(map[HandlerType][]Handler),
-	}
 }
 
 // 启用守护进程模块
