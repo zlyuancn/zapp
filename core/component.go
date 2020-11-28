@@ -10,6 +10,8 @@ package core
 
 import (
 	"context"
+
+	"xorm.io/xorm"
 )
 
 // 组件, 如db, rpc, cache, mq等
@@ -25,6 +27,7 @@ type IComponent interface {
 	Close()
 
 	IGrpcComponent
+	IXormComponent
 }
 
 type IGrpcComponent interface {
@@ -33,5 +36,12 @@ type IGrpcComponent interface {
 	// 获取grpc客户端, 如果未注册grpc客户端建造者会panic
 	GetGrpcClient(name string) interface{}
 	// 关闭客户端
+	Close()
+}
+
+type IXormComponent interface {
+	// 获取
+	GetXorm(name ...string) *xorm.Engine
+	// 释放
 	Close()
 }

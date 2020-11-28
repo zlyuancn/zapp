@@ -113,7 +113,7 @@ func (g *Client) GetGrpcClient(name string) interface{} {
 	if ok {
 		conn.wg.Wait()
 		if conn.e != nil {
-			logger.Log.Panic(conn.e, zap.String("name", name))
+			logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))
 		}
 		return conn.client
 	}
@@ -126,7 +126,7 @@ func (g *Client) GetGrpcClient(name string) interface{} {
 
 		conn.wg.Wait()
 		if conn.e != nil {
-			logger.Log.Panic(conn.e, zap.String("name", name))
+			logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))
 		}
 		return conn.client
 	}
@@ -163,35 +163,33 @@ func (g *Client) makeClient(name string, conn *Conn) interface{} {
 	conf, ok := g.app.GetConfig().Config().GrpcClient[name]
 	if !ok {
 		conn.e = errors.New("试图获取未注册的grpc客户端")
-		logger.Log.Panic(conn.e, zap.String("name", name))
+		logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))
 	}
 
 	// 获取建造者
 	creator, ok := g.creatorMap[name]
 	if !ok {
 		conn.e = errors.New("未注册grpc客户端建造者")
-		logger.Log.Panic(conn.e, zap.String("name", name))
+		logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))
 	}
 
 	// 构建cc
-	var cc *grpc.ClientConn
 	err := utils.Recover.WarpCall(func() error {
-		var e error
-		cc, e = g.makeConn(name, conf.Registry, conf.Balance, conf.DialTimeout)
-		return e
+		cc, err := g.makeConn(name, conf.Registry, conf.Balance, conf.DialTimeout)
+		conn.cc = cc
+		return err
 	})
 	if err != nil {
 		conn.e = err
 		g.mx.Lock()
 		delete(g.connMap, name)
 		g.mx.Unlock()
-		logger.Log.Panic(conn.e, zap.String("name", name), zap.String("registry", conf.Registry), zap.String("balance", conf.Balance), zap.Error(err))
+		logger.Log.Panic(zap.String("name", name), zap.String("registry", conf.Registry), zap.String("balance", conf.Balance), zap.Error(conn.e))
 	}
 
 	// 构建客户端
-	var client interface{}
 	err = utils.Recover.WarpCall(func() error {
-		client = creator.Call([]reflect.Value{reflect.ValueOf(cc)})[0].Interface()
+		conn.client = creator.Call([]reflect.Value{reflect.ValueOf(conn.cc)})[0].Interface()
 		return nil
 	})
 	if err != nil {
@@ -199,11 +197,8 @@ func (g *Client) makeClient(name string, conn *Conn) interface{} {
 		g.mx.Lock()
 		delete(g.connMap, name)
 		g.mx.Unlock()
-		logger.Log.Panic(conn.e, zap.String("name", name), zap.String("registry", conf.Registry), zap.String("balance", conf.Balance), zap.Error(err))
+		logger.Log.Panic(zap.String("name", name), zap.String("registry", conf.Registry), zap.String("balance", conf.Balance), zap.Error(conn.e))
 	}
-
-	conn.client = client
-	conn.cc = cc
 	return conn.client
 }
 

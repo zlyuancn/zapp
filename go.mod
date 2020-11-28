@@ -3,11 +3,15 @@ module github.com/zlyuancn/zapp
 go 1.15
 
 require (
+	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
+	github.com/lib/pq v1.7.0
 	github.com/magiconair/properties v1.8.4 // indirect
+	github.com/mattn/go-sqlite3 v1.14.0
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/afero v1.4.1 // indirect
@@ -26,4 +30,5 @@ require (
 	google.golang.org/grpc v1.33.2
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
+	xorm.io/xorm v1.0.5
 )

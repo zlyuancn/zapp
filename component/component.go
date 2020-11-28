@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"github.com/zlyuancn/zapp/component/grpc"
+	"github.com/zlyuancn/zapp/component/xorm"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/utils"
 )
@@ -23,6 +24,7 @@ type ComponentCli struct {
 	log    core.ILogger
 
 	core.IGrpcComponent
+	core.IXormComponent
 }
 
 func NewComponent(app core.IApp) core.IComponent {
@@ -32,6 +34,7 @@ func NewComponent(app core.IApp) core.IComponent {
 		log:    app.GetLogger(),
 
 		IGrpcComponent: grpc.NewClient(app),
+		IXormComponent: xorm.NewXorm(app),
 	}
 }
 
@@ -50,6 +53,12 @@ func (c *ComponentCli) Close() {
 	go func() {
 		defer wg.Done()
 		c.IGrpcComponent.Close()
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		c.IXormComponent.Close()
 	}()
 
 	wg.Wait()

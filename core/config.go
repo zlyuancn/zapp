@@ -41,7 +41,7 @@ type Config struct {
 
 	// grpc客户端
 	//
-	// [GrpcClient.test]
+	// [GrpcClient.default]
 	// Address = "localhost:3001"
 	// Registry = "local"
 	// Balance = "round_robin"
@@ -51,6 +51,22 @@ type Config struct {
 		Registry    string // 注册器, 默认为 local
 		Balance     string // 负载均衡, 默认为 round_robin
 		DialTimeout int    // 连接超时(毫秒), 0表示不限, 默认为 1000
+	}
+
+	// xorm
+	//
+	// [Xorm.test]
+	// Driver = "sqlite3"
+	// Source = "test.db"
+	// MaxIdleConns = 1
+	// MaxOpenConns = 1
+	// ConnMaxLifetime = 0
+	Xorm map[string]struct {
+		Driver          string // 驱动
+		Source          string // 连接源
+		MaxIdleConns    int    // 最大空闲连接数
+		MaxOpenConns    int    // 最大连接池个数
+		ConnMaxLifetime int    // 最大续航时间(毫秒, 0表示无限
 	}
 }
 
