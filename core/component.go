@@ -11,6 +11,7 @@ package core
 import (
 	"context"
 
+	"github.com/go-redis/redis"
 	"xorm.io/xorm"
 )
 
@@ -28,6 +29,7 @@ type IComponent interface {
 
 	IGrpcComponent
 	IXormComponent
+	IRedisComponent
 }
 
 type IGrpcComponent interface {
@@ -43,5 +45,12 @@ type IXormComponent interface {
 	// 获取
 	GetXorm(name ...string) *xorm.Engine
 	// 释放
+	Close()
+}
+
+type IRedisComponent interface {
+	// 获取redis客户端
+	GetRedis(name ...string) redis.UniversalClient
+	// 关闭
 	Close()
 }

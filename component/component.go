@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"github.com/zlyuancn/zapp/component/grpc"
+	"github.com/zlyuancn/zapp/component/redis"
 	"github.com/zlyuancn/zapp/component/xorm"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/utils"
@@ -25,6 +26,7 @@ type ComponentCli struct {
 
 	core.IGrpcComponent
 	core.IXormComponent
+	core.IRedisComponent
 }
 
 func NewComponent(app core.IApp) core.IComponent {
@@ -33,8 +35,9 @@ func NewComponent(app core.IApp) core.IComponent {
 		config: app.GetConfig().Config(),
 		log:    app.GetLogger(),
 
-		IGrpcComponent: grpc.NewClient(app),
-		IXormComponent: xorm.NewXorm(app),
+		IGrpcComponent:  grpc.NewClient(app),
+		IXormComponent:  xorm.NewXorm(app),
+		IRedisComponent: redis.NewRedis(app),
 	}
 }
 
@@ -59,6 +62,12 @@ func (c *ComponentCli) Close() {
 	go func() {
 		defer wg.Done()
 		c.IXormComponent.Close()
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		c.IRedisComponent.Close()
 	}()
 
 	wg.Wait()

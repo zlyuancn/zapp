@@ -68,6 +68,28 @@ type Config struct {
 		MaxOpenConns    int    // 最大连接池个数
 		ConnMaxLifetime int    // 最大续航时间(毫秒, 0表示无限
 	}
+
+	// redis
+	//
+	// [Redis.default]
+	// Address = "127.0.0.1:6379"
+	// Password = ""
+	// DB = 0
+	// IsCluster = false
+	// PoolSize = 20
+	// ReadTimeout = 5000
+	// WriteTimeout = 5000
+	// DialTimeout = 5000
+	Redis map[string]struct {
+		Address      string // 地址: host1:port1,host2:port2
+		Password     string // 密码
+		DB           int    // db, 只有单点有效
+		IsCluster    bool   // 是否为集群
+		PoolSize     int    // 客户端池大小
+		ReadTimeout  int64  // 超时(毫秒
+		WriteTimeout int64  // 超时(毫秒
+		DialTimeout  int64  // 超时(毫秒
+	}
 }
 
 // 配置
