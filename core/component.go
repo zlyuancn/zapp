@@ -30,10 +30,21 @@ type IComponent interface {
 	// 关闭所有组件
 	Close()
 
+	// 校验器
+	IValidator
+
 	IGrpcComponent
 	IXormComponent
 	IRedisComponent
 	IES7Component
+}
+
+// 校验器
+type IValidator interface {
+	// 校验一个结构体
+	Valid(a interface{}) error
+	// 校验一个字段
+	ValidField(a interface{}, tag string) error
 }
 
 type IGrpcComponent interface {

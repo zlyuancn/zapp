@@ -15,6 +15,7 @@ import (
 	"github.com/zlyuancn/zapp/component/es7"
 	"github.com/zlyuancn/zapp/component/grpc"
 	"github.com/zlyuancn/zapp/component/redis"
+	"github.com/zlyuancn/zapp/component/validator"
 	"github.com/zlyuancn/zapp/component/xorm"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/utils"
@@ -24,6 +25,8 @@ type ComponentCli struct {
 	app    core.IApp
 	config *core.Config
 	core.ILogger
+
+	core.IValidator
 
 	core.IGrpcComponent
 	core.IXormComponent
@@ -36,6 +39,8 @@ func NewComponent(app core.IApp) core.IComponent {
 		app:     app,
 		config:  app.GetConfig().Config(),
 		ILogger: app.GetLogger(),
+
+		IValidator: validator.NewValidator(),
 
 		IGrpcComponent:  grpc.NewClient(app),
 		IXormComponent:  xorm.NewXorm(app),
