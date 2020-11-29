@@ -49,7 +49,7 @@ func (app *appCli) RegistryApiRouter(fn func(c core.IComponent, router iris.Part
 	s.Inject(api_service.RegisterApiRouterFunc(fn))
 }
 
-func (app *appCli) RegistryCronJob(name string, expression string, enable bool, handler func(log core.ILogger) error) {
+func (app *appCli) RegistryCronJob(name string, expression string, enable bool, handler func(cronJob core.ICronJob) error) {
 	s, ok := app.GetService(core.CronService)
 	if !ok {
 		if app.opt.IgnoreInjectOfDisableServer {
@@ -62,14 +62,14 @@ func (app *appCli) RegistryCronJob(name string, expression string, enable bool, 
 		Trigger:  zscheduler.NewCronTrigger(expression),
 		Executor: zscheduler.NewExecutor(0, 0, 1),
 		Handler: func(job zscheduler.IJob) error {
-			return handler(cron_service.MustGetLoggerFromJob(job))
+			return handler(cron_service.NewCronJob(job))
 		},
 		Enable: enable,
 	})
 
 	s.Inject(task)
 }
-func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigger, executor zscheduler.IExecutor, enable bool, handler func(log core.ILogger) error) {
+func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigger, executor zscheduler.IExecutor, enable bool, handler func(cronJob core.ICronJob) error) {
 	s, ok := app.GetService(core.CronService)
 	if !ok {
 		if app.opt.IgnoreInjectOfDisableServer {
@@ -82,7 +82,7 @@ func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigge
 		Trigger:  trigger,
 		Executor: executor,
 		Handler: func(job zscheduler.IJob) error {
-			return handler(cron_service.MustGetLoggerFromJob(job))
+			return handler(cron_service.NewCronJob(job))
 		},
 		Enable: enable,
 	})

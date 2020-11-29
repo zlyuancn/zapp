@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-redis/redis"
 	elastic7 "github.com/olivere/elastic/v7"
+	"github.com/zlyuancn/zscheduler"
 	"xorm.io/xorm"
 )
 
@@ -75,4 +76,9 @@ type IES7Component interface {
 	GetES7(name ...string) *elastic7.Client
 	// 关闭
 	Close()
+}
+
+type ICronJob interface {
+	ILogger
+	zscheduler.IJob
 }
