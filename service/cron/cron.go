@@ -13,8 +13,9 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zscheduler"
+
+	"github.com/zlyuancn/zapp/consts"
 
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/service"
@@ -51,11 +52,11 @@ func (c *CronService) Inject(a ...interface{}) {
 	for _, v := range a {
 		task, ok := v.(zscheduler.ITask)
 		if !ok {
-			c.app.GetLogger().Fatal("Cron服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
+			c.app.Fatal("Cron服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
 		}
 
 		if ok := c.scheduler.AddTask(task); !ok {
-			c.app.GetLogger().Fatal("添加Cron任务失败, 可能是名称重复", zap.String("name", task.Name()))
+			c.app.Fatal("添加Cron任务失败, 可能是名称重复", zap.String("name", task.Name()))
 		}
 	}
 }
@@ -81,6 +82,6 @@ func SaveLoggerToJob(job zscheduler.IJob, log core.ILogger) {
 }
 
 // 从job中获取log, 如果失败会panic
-func GetLoggerFromJob(job zscheduler.IJob) core.ILogger {
+func MustGetLoggerFromJob(job zscheduler.IJob) core.ILogger {
 	return job.Meta().(map[string]interface{})[consts.SaveFieldName_Logger].(core.ILogger)
 }

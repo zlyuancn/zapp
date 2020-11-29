@@ -9,6 +9,7 @@
 package core
 
 import (
+	"github.com/kataras/iris/v12"
 	"github.com/zlyuancn/zscheduler"
 	"google.golang.org/grpc"
 )
@@ -40,6 +41,8 @@ type IApp interface {
 
 	// 获取服务
 	GetService(serviceType ServiceType, serviceName ...string) (IService, bool)
+	// 注册api路由
+	RegistryApiRouter(fn func(c IComponent, router iris.Party))
 	// 注册cron任务
 	RegistryCronJob(name string, expression string, enable bool, handler func(log ILogger) error)
 	// 注册cron任务自定义

@@ -3,37 +3,26 @@ module github.com/zlyuancn/zapp
 go 1.15
 
 require (
-	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/Joker/hpp v1.0.0 // indirect
+	github.com/denisenkom/go-mssqldb v0.9.0
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gogo/protobuf v1.3.1 // indirect
-	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
-	github.com/lib/pq v1.7.0
-	github.com/magiconair/properties v1.8.4 // indirect
-	github.com/mattn/go-sqlite3 v1.14.0
-	github.com/mitchellh/mapstructure v1.3.3 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
+	github.com/iris-contrib/middleware/cors v0.0.0-20201115103636-07e8bced147f
+	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
+	github.com/kataras/iris/v12 v12.2.0-alpha.0.20201113181155-4d09475c290d
+	github.com/lib/pq v1.8.0
+	github.com/mattn/go-sqlite3 v1.14.5
 	github.com/olivere/elastic/v7 v7.0.22
-	github.com/pelletier/go-toml v1.8.1 // indirect
-	github.com/spf13/afero v1.4.1 // indirect
-	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/jwalterweatherman v1.1.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
 	github.com/takama/daemon v1.0.0
+	github.com/yudai/pp v2.0.1+incompatible // indirect
 	github.com/zlyuancn/zlog v0.0.0-20201107071137-3b2b7df64ef1
 	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b // indirect
-	golang.org/x/sys v0.0.0-20201117222635-ba5294a509c7 // indirect
-	golang.org/x/text v0.3.4 // indirect
-	google.golang.org/genproto v0.0.0-20201117123952-62d171c70ae1 // indirect
 	google.golang.org/grpc v1.33.2
-	gopkg.in/ini.v1 v1.62.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 	xorm.io/xorm v1.0.5
 )

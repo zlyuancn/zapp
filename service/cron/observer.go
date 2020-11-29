@@ -33,11 +33,11 @@ func (o *Observer) JobStart(job zscheduler.IJob) {
 	log.Debug("cron.start")
 }
 func (o *Observer) JobErr(job zscheduler.IJob, err error) {
-	log := GetLoggerFromJob(job)
+	log := MustGetLoggerFromJob(job)
 	log.Warn("cron.error! try retry", zap.Error(err))
 }
 func (o *Observer) JobEnd(job zscheduler.IJob, executeInfo *zscheduler.ExecuteInfo) {
-	log := GetLoggerFromJob(job)
+	log := MustGetLoggerFromJob(job)
 	if executeInfo.ExecuteSuccess {
 		log.Debug("cron.success")
 	} else {

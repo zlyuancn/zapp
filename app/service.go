@@ -9,6 +9,7 @@
 package app
 
 import (
+	"github.com/kataras/iris/v12"
 	"google.golang.org/grpc"
 
 	"github.com/zlyuancn/zscheduler"
@@ -16,8 +17,9 @@ import (
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
-	"github.com/zlyuancn/zapp/service/cron"
-	_ "github.com/zlyuancn/zapp/service/grpc"
+	api_service "github.com/zlyuancn/zapp/service/api"
+	cron_service "github.com/zlyuancn/zapp/service/cron"
+	grpc_service "github.com/zlyuancn/zapp/service/grpc"
 )
 
 func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...string) (core.IService, bool) {
@@ -35,6 +37,18 @@ func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...strin
 	return s, ok
 }
 
+func (app *appCli) RegistryApiRouter(fn func(c core.IComponent, router iris.Party)) {
+	s, ok := app.GetService(core.ApiService)
+	if !ok {
+		if app.opt.IgnoreInjectOfDisableServer {
+			return
+		}
+		logger.Log.Fatal("未启用api服务")
+	}
+
+	s.Inject(api_service.RegisterApiRouterFunc(fn))
+}
+
 func (app *appCli) RegistryCronJob(name string, expression string, enable bool, handler func(log core.ILogger) error) {
 	s, ok := app.GetService(core.CronService)
 	if !ok {
@@ -48,7 +62,7 @@ func (app *appCli) RegistryCronJob(name string, expression string, enable bool, 
 		Trigger:  zscheduler.NewCronTrigger(expression),
 		Executor: zscheduler.NewExecutor(0, 0, 1),
 		Handler: func(job zscheduler.IJob) error {
-			return handler(cron.GetLoggerFromJob(job))
+			return handler(cron_service.MustGetLoggerFromJob(job))
 		},
 		Enable: enable,
 	})
@@ -68,7 +82,7 @@ func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigge
 		Trigger:  trigger,
 		Executor: executor,
 		Handler: func(job zscheduler.IJob) error {
-			return handler(cron.GetLoggerFromJob(job))
+			return handler(cron_service.MustGetLoggerFromJob(job))
 		},
 		Enable: enable,
 	})
@@ -85,5 +99,5 @@ func (app *appCli) RegistryGrpcService(a func(c core.IComponent, server *grpc.Se
 		logger.Log.Fatal("未启用grpc服务")
 	}
 
-	s.Inject(a)
+	s.Inject(grpc_service.RegistryGrpcServiceFunc(a))
 }

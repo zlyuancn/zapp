@@ -32,8 +32,8 @@ type IServiceCreator interface {
 type ServiceType uint8
 
 const (
-	// http服务
-	HttpService ServiceType = iota
+	// api服务
+	ApiService ServiceType = iota
 	// grpc服务
 	GrpcService
 	// cron服务
@@ -42,8 +42,8 @@ const (
 
 func (t ServiceType) String() string {
 	switch t {
-	case HttpService:
-		return "http"
+	case ApiService:
+		return "api"
 	case GrpcService:
 		return "grpc"
 	case CronService:

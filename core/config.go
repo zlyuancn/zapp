@@ -20,6 +20,18 @@ type Config struct {
 	// 清理内存间隔时间(毫秒)
 	FreeMemoryInterval int
 
+	// api服务
+	//
+	// [ApiService]
+	// Bind = ":3000"
+	// IPWithNginxForwarded = false
+	// IPWithNginxReal = false
+	ApiService struct {
+		Bind                 string // bind地址
+		IPWithNginxForwarded bool   // 适配nginx的Forwarded获取ip, 优先级高于nginx的Real
+		IPWithNginxReal      bool   // 适配nginx的Real获取ip, 优先级高于sock连接的ip
+	}
+
 	// grpc服务
 	//
 	// [GrpcService]

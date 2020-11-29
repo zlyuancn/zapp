@@ -11,6 +11,8 @@ package utils
 import (
 	"context"
 
+	"github.com/kataras/iris/v12"
+
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
@@ -39,4 +41,14 @@ func (c *contextUtil) MustGetLoggerFromContext(ctx context.Context) core.ILogger
 		logger.Log.Panic("can't load app_context from context")
 	}
 	return log
+}
+
+// 将log保存在iris上下文中
+func (c *contextUtil) SaveLoggerToIrisContext(ctx iris.Context, log core.ILogger) {
+	ctx.Values().Set(consts.SaveFieldName_Logger, log)
+}
+
+// 从iris上下文中获取log, 如果失败会panic
+func (c *contextUtil) MustGetLoggerFromIrisContext(ctx iris.Context) core.ILogger {
+	return ctx.Values().Get(consts.SaveFieldName_Logger).(core.ILogger)
 }

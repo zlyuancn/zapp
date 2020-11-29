@@ -84,15 +84,22 @@ func WithIgnoreInjectOfDisableServer(ignore ...bool) Option {
 	}
 }
 
-// 启用Cron服务
-func WithCron() Option {
+// 启用api服务
+func WithApiService() Option {
+	return func(opt *option) {
+		opt.AddService(core.ApiService)
+	}
+}
+
+// 启用cron服务
+func WithCronService() Option {
 	return func(opt *option) {
 		opt.AddService(core.CronService)
 	}
 }
 
 // 启用grpc服务
-func WithGrpc() Option {
+func WithGrpcService() Option {
 	return func(opt *option) {
 		opt.AddService(core.GrpcService)
 	}
