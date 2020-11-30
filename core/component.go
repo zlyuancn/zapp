@@ -12,7 +12,6 @@ import (
 	"context"
 
 	"github.com/go-redis/redis"
-	"github.com/kataras/iris/v12"
 	elastic7 "github.com/olivere/elastic/v7"
 	"github.com/zlyuancn/zscheduler"
 	"xorm.io/xorm"
@@ -47,8 +46,6 @@ type IValidator interface {
 	Valid(a interface{}) error
 	// 校验一个字段
 	ValidField(a interface{}, tag string) error
-	// bind api数据, 它会将api数据反序列化到a中, 如果a是结构体会验证a
-	Bind(ctx iris.Context, a interface{}) error
 }
 
 type IGrpcComponent interface {

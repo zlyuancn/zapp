@@ -10,13 +10,11 @@ package validator
 
 import (
 	"errors"
-	"reflect"
 
 	zhongwen "github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zh_translations "github.com/go-playground/validator/v10/translations/zh"
-	"github.com/kataras/iris/v12"
 
 	"github.com/zlyuancn/zapp/core"
 )
@@ -46,26 +44,6 @@ func (v *Validator) Valid(a interface{}) error {
 func (v *Validator) ValidField(a interface{}, tag string) error {
 	err := v.validate.Var(a, tag)
 	return v.translateValidateErr(err)
-}
-func (v *Validator) Bind(ctx iris.Context, a interface{}) error {
-	if err := ctx.ReadBody(a); err != nil {
-		return err
-	}
-
-	val := reflect.ValueOf(a)
-	if val.Kind() == reflect.Interface || val.Kind() == reflect.Ptr {
-		val = val.Elem()
-	}
-	if val.Kind() != reflect.Struct {
-		return nil
-	}
-
-	err := v.Valid(a)
-	if err != nil {
-		// todo 转为参数错误
-		return err
-	}
-	return nil
 }
 
 func (v *Validator) translateValidateErr(err error) error {

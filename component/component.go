@@ -21,6 +21,8 @@ import (
 	"github.com/zlyuancn/zapp/utils"
 )
 
+var defaultComponent core.IComponent
+
 type ComponentCli struct {
 	app    core.IApp
 	config *core.Config
@@ -35,7 +37,7 @@ type ComponentCli struct {
 }
 
 func NewComponent(app core.IApp) core.IComponent {
-	return &ComponentCli{
+	c := &ComponentCli{
 		app:     app,
 		config:  app.GetConfig().Config(),
 		ILogger: app.GetLogger(),
@@ -47,6 +49,8 @@ func NewComponent(app core.IApp) core.IComponent {
 		IRedisComponent: redis.NewRedis(app),
 		IES7Component:   es7.NewES7(app),
 	}
+	defaultComponent = c
+	return c
 }
 
 func (c *ComponentCli) App() core.IApp       { return c.app }
@@ -85,3 +89,6 @@ func (c *ComponentCli) Close() {
 
 	wg.Wait()
 }
+
+// 获取全局component
+func GlobalComponent() core.IComponent { return defaultComponent }

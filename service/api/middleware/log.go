@@ -21,21 +21,29 @@ import (
 
 func LoggerMiddleware(app core.IApp) iris.Handler {
 	return func(ctx iris.Context) {
-		log := app.CreateLogger(ctx.Method(), ctx.Path())
+		log := app.CreateLogger(ctx.Method(), ctx.Request().RequestURI)
 		utils.Context.SaveLoggerToIrisContext(ctx, log)
 
 		startTime := time.Now()
-		// todo 打印请求信息
 		log.Debug("api.request")
 
 		ctx.Next()
+
+		fields := []interface{}{
+			"api.response",
+			zap.String("latency", time.Since(startTime).String()),
+			zap.String("ip", ctx.RemoteAddr()),
+		}
+
 		if err, ok := ctx.Values().Get("error").(error); ok {
 			if err == nil {
-				err = fmt.Errorf("nil")
+				err = fmt.Errorf("err{nil}")
 			}
-			log.Warn("api.response", zap.String("spent_time", time.Since(startTime).String()), zap.Error(err))
+			fields = append(fields, zap.Error(err))
+			log.Warn(fields...)
 		} else {
-			log.Debug("api.response", zap.String("spent_time", time.Since(startTime).String()))
+			fields = append(fields, zap.Any("result", ctx.Values().Get("result")))
+			log.Debug(fields...)
 		}
 	}
 }

@@ -115,9 +115,9 @@ func UnaryServerLogInterceptor(app core.IApp) grpc.UnaryServerInterceptor {
 
 		resp, err := handler(ctx, req)
 		if err != nil {
-			log.Error("grpc.response", zap.String("spent_time", time.Since(startTime).String()), zap.Error(err))
+			log.Error("grpc.response", zap.String("latency", time.Since(startTime).String()), zap.Error(err))
 		} else {
-			log.Debug("grpc.response", zap.String("spent_time", time.Since(startTime).String()), zap.Any("resp", resp))
+			log.Debug("grpc.response", zap.String("latency", time.Since(startTime).String()), zap.Any("resp", resp))
 		}
 
 		return resp, err

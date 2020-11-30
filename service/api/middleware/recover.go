@@ -16,47 +16,51 @@ import (
 
 	"github.com/kataras/iris/v12"
 
+	"github.com/zlyuancn/zapp/component"
 	"github.com/zlyuancn/zapp/utils"
 )
 
 func Recover() iris.Handler {
 	return func(ctx iris.Context) {
-		defer func() {
-			err := recover()
-			if err == nil {
-				return
+		err := utils.Recover.WarpCall(func() error {
+			ctx.Next()
+			return nil
+		})
+		if err == nil {
+			return
+		}
+
+		if ctx.IsStopped() { // handled by other middleware.
+			return
+		}
+
+		var callers []string
+		for i := 1; ; i++ {
+			_, file, line, got := runtime.Caller(i)
+			if !got {
+				break
 			}
 
-			if ctx.IsStopped() { // handled by other middleware.
-				return
-			}
+			callers = append(callers, fmt.Sprintf("%s:%d", file, line))
+		}
 
-			var callers []string
-			for i := 1; ; i++ {
-				_, file, line, got := runtime.Caller(i)
-				if !got {
-					break
-				}
+		logMessage := fmt.Sprintf("Recovered from a route's Handler('%s')\n", ctx.HandlerName())
+		logMessage += fmt.Sprint(getRequestLogs(ctx))
+		logMessage += fmt.Sprintf("err: %s\n", err)
+		logMessage += strings.Join(callers, "\n")
+		log := utils.Context.MustGetLoggerFromIrisContext(ctx)
+		log.Error(logMessage)
+		ctx.Values().Set("error", err)
 
-				callers = append(callers, fmt.Sprintf("%s:%d", file, line))
-			}
-
-			logMessage := fmt.Sprintf("Recovered from a route's Handler('%s')\n", ctx.HandlerName())
-			logMessage += fmt.Sprint(getRequestLogs(ctx))
-			logMessage += fmt.Sprintf("%s\n", err)
-			logMessage += fmt.Sprintf("%s\n", strings.Join(callers, "\n"))
-			log := utils.Context.MustGetLoggerFromIrisContext(ctx)
-			log.Warn(logMessage)
-			ctx.Values().Set("error", err)
-			ctx.Values().Set("panic", err)
-
-			_, _ = ctx.JSON(map[string]interface{}{
-				"err_code": 1,
-				"err_msg":  "Internal server error",
-			})
-			ctx.StopExecution()
-		}()
-		ctx.Next()
+		result := map[string]interface{}{
+			"err_code": 1,
+			"err_msg":  "Internal server error",
+		}
+		if component.GlobalComponent().Config().Debug {
+			result["data"] = strings.Split(logMessage, "\n")
+		}
+		_, _ = ctx.JSON(result)
+		ctx.StopExecution()
 	}
 }
 
@@ -66,5 +70,5 @@ func getRequestLogs(ctx iris.Context) string {
 	path = ctx.Path()
 	method = ctx.Method()
 	ip = ctx.RemoteAddr()
-	return fmt.Sprintf("%v %s %s %s", status, path, method, ip)
+	return fmt.Sprintf("%v %s %s %s\n", status, path, method, ip)
 }
