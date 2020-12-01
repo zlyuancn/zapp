@@ -54,10 +54,10 @@ func Recover() iris.Handler {
 
 		result := map[string]interface{}{
 			"err_code": 1,
-			"err_msg":  "Internal server error",
+			"err_msg":  "service internal error",
 		}
 		if component.GlobalComponent().Config().Debug {
-			result["data"] = strings.Split(logMessage, "\n")
+			result["err_msg"] = strings.Split(logMessage, "\n")
 		}
 		_, _ = ctx.JSON(result)
 		ctx.StopExecution()

@@ -11,6 +11,8 @@ package api
 import (
 	"github.com/kataras/iris/v12"
 	iris_context "github.com/kataras/iris/v12/context"
+
+	"github.com/zlyuancn/zapp/component"
 )
 
 type Response struct {
@@ -26,12 +28,15 @@ func Wrap(handler func(ctx *Context) interface{}) iris.Handler {
 
 		if err, ok := result.(error); ok {
 			ctx.Values().Set("error", err)
-			// todo 错误处理, debug输出错误内容
+			code, message := decodeErr(err)
+			if component.GlobalComponent().Config().Debug {
+				message = err.Error()
+			}
 			_, _ = ctx.JSON(Response{
-				ErrCode: 1,
-				ErrMsg:  err.Error(),
-				Data:    err.Error(),
+				ErrCode: code,
+				ErrMsg:  message,
 			})
+			ctx.StopExecution()
 			return
 		}
 

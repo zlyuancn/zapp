@@ -50,8 +50,7 @@ func (c *Context) Bind(a interface{}) error {
 
 	err := component.GlobalComponent().Valid(a)
 	if err != nil {
-		// todo 转为参数错误
-		return err
+		return ParamError.WithError(err)
 	}
 	return nil
 }
