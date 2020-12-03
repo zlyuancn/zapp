@@ -104,3 +104,10 @@ func WithGrpcService() Option {
 		opt.AddService(core.GrpcService)
 	}
 }
+
+// 启动mysql-binlog服务
+func WithMysqlBinlogService() Option {
+	return func(opt *option) {
+		opt.AddService(core.MysqlBinlogService)
+	}
+}

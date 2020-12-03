@@ -42,13 +42,38 @@ type Config struct {
 		HeartbeatTime int    // 心跳时间(毫秒),
 	}
 
-	// 定时器
+	// 定时服务
+	//
 	// [CronService]
 	// ThreadCount = 10
 	// JobQueueSize = 100
 	CronService struct {
 		ThreadCount  int // 线程数
 		JobQueueSize int // job队列大小
+	}
+
+	// mysql-binlog服务
+	//
+	// [MysqlBinlogService]
+	// Host = "localhost:3306"
+	// UserName = "root"
+	// Password = "password"
+	// Charset = "utf8mb4"
+	// IncludeTableRegex = []
+	// ExcludeTableRegex = []
+	// DiscardNoMetaRowEvent = false
+	// DumpExecutionPath = ""
+	// IgnoreWKBDataParseError = true
+	MysqlBinlogService struct {
+		Host                    string   // mysql 主机地址
+		UserName                string   // 用户名, 最好是root
+		Password                string   // 密码
+		Charset                 *string  // 字符集, 一般为utf8mb4
+		IncludeTableRegex       []string // 包含的表正则匹配, 匹配的数据为 dbName.tableName
+		ExcludeTableRegex       []string // 排除的表正则匹配, 匹配的数据为 dbName.tableName
+		DiscardNoMetaRowEvent   bool     // 放弃没有表元数据的row事件
+		DumpExecutionPath       string   // mysqldump执行路径, 如果为空则忽略mysqldump只使用binlog, mysqldump执行路径一般为mysqldump
+		IgnoreWKBDataParseError bool     // 忽略wkb数据解析错误, 一般为POINT, GEOMETRY类型
 	}
 
 	// grpc客户端

@@ -9,8 +9,6 @@
 package cron
 
 import (
-	"fmt"
-
 	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zscheduler"
@@ -52,7 +50,7 @@ func (c *CronService) Inject(a ...interface{}) {
 	for _, v := range a {
 		task, ok := v.(zscheduler.ITask)
 		if !ok {
-			c.app.Fatal("Cron服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
+			c.app.Fatal("Cron服务注入类型错误, 它必须能转为 zscheduler.ITask")
 		}
 
 		if ok := c.scheduler.AddTask(task); !ok {

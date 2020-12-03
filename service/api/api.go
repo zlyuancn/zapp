@@ -22,7 +22,7 @@ import (
 )
 
 // api注入函数定义
-type RegisterApiRouterFunc func(c core.IComponent, router iris.Party)
+type RegisterApiRouterFunc = func(c core.IComponent, router iris.Party)
 
 func init() {
 	service.RegisterCreator(core.ApiService, new(apiCreator))
@@ -89,7 +89,7 @@ func (a *ApiService) Start() error {
 	}(errChan)
 
 	select {
-	case <-time.After(time.Millisecond * 500):
+	case <-time.After(time.Second):
 	case err := <-errChan:
 		return err
 	}

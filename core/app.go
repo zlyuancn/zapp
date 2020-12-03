@@ -11,7 +11,6 @@ package core
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/zlyuancn/zscheduler"
-	"google.golang.org/grpc"
 )
 
 // app
@@ -48,5 +47,7 @@ type IApp interface {
 	// 注册cron任务自定义
 	RegistryCronJobCustom(name string, trigger zscheduler.ITrigger, executor zscheduler.IExecutor, enable bool, handler func(job ICronJob) error)
 	// 注册grpc服务
-	RegistryGrpcService(a func(c IComponent, server *grpc.Server))
+	RegistryGrpcService(a ...interface{})
+	// 注册mysql-binlog服务handler
+	RegistryMysqlBinlogHandler(a interface{})
 }

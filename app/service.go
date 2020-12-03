@@ -10,16 +10,15 @@ package app
 
 import (
 	"github.com/kataras/iris/v12"
-	"google.golang.org/grpc"
-
 	"github.com/zlyuancn/zscheduler"
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
-	api_service "github.com/zlyuancn/zapp/service/api"
+	_ "github.com/zlyuancn/zapp/service/api"
 	cron_service "github.com/zlyuancn/zapp/service/cron"
-	grpc_service "github.com/zlyuancn/zapp/service/grpc"
+	_ "github.com/zlyuancn/zapp/service/grpc"
+	_ "github.com/zlyuancn/zapp/service/mysql-binlog"
 )
 
 func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...string) (core.IService, bool) {
@@ -46,7 +45,7 @@ func (app *appCli) RegistryApiRouter(fn func(c core.IComponent, router iris.Part
 		logger.Log.Fatal("未启用api服务")
 	}
 
-	s.Inject(api_service.RegisterApiRouterFunc(fn))
+	s.Inject(fn)
 }
 
 func (app *appCli) RegistryCronJob(name string, expression string, enable bool, handler func(cronJob core.ICronJob) error) {
@@ -90,7 +89,7 @@ func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigge
 	s.Inject(task)
 }
 
-func (app *appCli) RegistryGrpcService(a func(c core.IComponent, server *grpc.Server)) {
+func (app *appCli) RegistryGrpcService(a ...interface{}) {
 	s, ok := app.GetService(core.GrpcService)
 	if !ok {
 		if app.opt.IgnoreInjectOfDisableServer {
@@ -99,5 +98,17 @@ func (app *appCli) RegistryGrpcService(a func(c core.IComponent, server *grpc.Se
 		logger.Log.Fatal("未启用grpc服务")
 	}
 
-	s.Inject(grpc_service.RegistryGrpcServiceFunc(a))
+	s.Inject(a...)
+}
+
+func (app *appCli) RegistryMysqlBinlogHandler(a interface{}) {
+	s, ok := app.GetService(core.MysqlBinlogService)
+	if !ok {
+		if app.opt.IgnoreInjectOfDisableServer {
+			return
+		}
+		logger.Log.Fatal("未启用mysql-binlog服务")
+	}
+
+	s.Inject(a)
 }

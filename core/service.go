@@ -38,6 +38,8 @@ const (
 	GrpcService
 	// cron服务
 	CronService
+	// mysql-binlog服务
+	MysqlBinlogService
 )
 
 func (t ServiceType) String() string {
@@ -48,6 +50,8 @@ func (t ServiceType) String() string {
 		return "grpc"
 	case CronService:
 		return "cron"
+	case MysqlBinlogService:
+		return "mysql-binlog"
 	default:
 		if desc, ok := serviceTypeDescribeMap[t]; ok {
 			return desc

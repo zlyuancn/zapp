@@ -10,7 +10,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"time"
 
@@ -26,7 +25,7 @@ import (
 	"github.com/zlyuancn/zapp/utils"
 )
 
-type RegistryGrpcServiceFunc func(c core.IComponent, server *grpc.Server)
+type RegistryGrpcServiceFunc = func(c core.IComponent, server *grpc.Server)
 
 func init() {
 	service.RegisterCreator(core.GrpcService, new(grpcCreator))
@@ -66,7 +65,7 @@ func (g *GrpcService) Inject(a ...interface{}) {
 	for _, v := range a {
 		fn, ok := v.(RegistryGrpcServiceFunc)
 		if !ok {
-			g.app.Fatal("Grpc服务注入类型错误", zap.String("type", fmt.Sprintf("%T", v)))
+			g.app.Fatal("Grpc服务注入类型错误, 它必须能转为 grpc.RegistryGrpcServiceFunc")
 		}
 
 		fn(g.app.GetComponent(), g.server)
@@ -89,7 +88,7 @@ func (g *GrpcService) Start() error {
 	}(errChan)
 
 	select {
-	case <-time.After(time.Millisecond * 500):
+	case <-time.After(time.Second):
 	case err := <-errChan:
 		return err
 	}
