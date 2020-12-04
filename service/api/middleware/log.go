@@ -21,7 +21,7 @@ import (
 
 func LoggerMiddleware(app core.IApp) iris.Handler {
 	return func(ctx iris.Context) {
-		log := app.CreateLogger(ctx.Method(), ctx.Request().URL.Path, ctx.Request().URL.RawQuery)
+		log := app.CreateLogger(ctx.Method(), ctx.Path(), ctx.Request().URL.RawQuery)
 		utils.Context.SaveLoggerToIrisContext(ctx, log)
 
 		startTime := time.Now()

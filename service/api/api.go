@@ -75,6 +75,7 @@ func (a *ApiService) Start() error {
 			iris.WithoutPathCorrection,             // 不自动补全斜杠
 			iris.WithOptimizations,                 // 启用性能优化
 			iris.WithoutStartupLog,                 // 不要打印iris启动信息
+			iris.WithPathEscape,                    // 解析path转义
 		}
 		if conf.IPWithNginxForwarded {
 			opts = append(opts, iris.WithRemoteAddrHeader("X-Forwarded-For"))
