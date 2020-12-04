@@ -22,10 +22,6 @@ import (
 	"github.com/zlyuancn/zapp/logger"
 )
 
-const (
-	DefaultConfigFile = "./configs/default.toml,./configs/local.toml"
-)
-
 type configCli struct {
 	v     *viper.Viper
 	c     *core.Config
@@ -42,8 +38,8 @@ func NewConfig() core.IConfig {
 
 	var files []string
 	if *confText == "" {
-		*confText = DefaultConfigFile
-		fmt.Printf("未指定配置文件, 将使用 %s 配置文件\n", DefaultConfigFile)
+		*confText = consts.DefaultConfig_ConfigFiles
+		fmt.Printf("未指定配置文件, 将使用 %s 配置文件\n", consts.DefaultConfig_ConfigFiles)
 	}
 	files = strings.Split(*confText, ",")
 
