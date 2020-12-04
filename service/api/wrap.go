@@ -15,13 +15,15 @@ import (
 	"github.com/zlyuancn/zapp/component"
 )
 
+type Handler = func(ctx *Context) interface{}
+
 type Response struct {
 	ErrCode int         `json:"err_code"`
 	ErrMsg  string      `json:"err_msg"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
-func Wrap(handler func(ctx *Context) interface{}) iris.Handler {
+func Wrap(handler Handler) iris.Handler {
 	return func(irisCtx *iris_context.Context) {
 		ctx := newContext(irisCtx)
 		result := handler(ctx)
