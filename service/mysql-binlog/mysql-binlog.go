@@ -20,7 +20,7 @@ import (
 	"github.com/zlyuancn/zapp/service"
 )
 
-type RegistryMysqlBinlogHandlerFunc = func (c core.IComponent) IEventHandler
+type RegistryMysqlBinlogHandlerFunc = func(c core.IComponent) IEventHandler
 
 func init() {
 	service.RegisterCreator(core.MysqlBinlogService, new(mysqlBinlogCreator))

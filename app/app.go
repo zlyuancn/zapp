@@ -27,7 +27,7 @@ import (
 )
 
 type appCli struct {
-	name   string
+	name string
 
 	opt *option
 
