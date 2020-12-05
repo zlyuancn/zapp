@@ -17,7 +17,7 @@ const DefaultComponentName = "default"
 // 默认配置
 const (
 	// 配置文件
-	DefaultConfig_ConfigFiles = "./configs/default.toml,./configs/local.toml"
+	DefaultConfig_ConfigFiles = "./configs/default.toml"
 	// 清理内存间隔时间(毫秒)
 	DefaultConfig_App_FreeMemoryInterval = 120000
 
