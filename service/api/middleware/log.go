@@ -21,16 +21,16 @@ import (
 
 func LoggerMiddleware(app core.IApp) iris.Handler {
 	return func(ctx iris.Context) {
-		log := app.CreateLogger(ctx.Method(), ctx.Path(), ctx.Request().URL.RawQuery)
+		log := app.CreateLogger(ctx.Method(), ctx.Path())
 		utils.Context.SaveLoggerToIrisContext(ctx, log)
 
 		startTime := time.Now()
-		log.Debug("api.request")
+		log.Debug("api.request", zap.String("query", ctx.Request().URL.RawQuery))
 
 		ctx.Next()
 
 		fields := []interface{}{
-			"api.response",
+			"api.response", zap.String("query", ctx.Request().URL.RawQuery),
 			zap.String("latency", time.Since(startTime).String()),
 			zap.String("ip", ctx.RemoteAddr()),
 		}
