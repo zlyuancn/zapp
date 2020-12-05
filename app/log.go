@@ -42,6 +42,6 @@ func (app *appCli) GetLogger() core.ILogger {
 }
 
 func (app *appCli) CreateLogger(tag ...string) core.ILogger {
-	log, _ := zlog.WrapZapFields(app.ILogger, zap.String("logId", app.nextLoggerId()), zap.Strings("logTag", tag))
+	log, _ := zlog.WrapZapFieldsWithLoger(app.ILogger, zap.String("logId", app.nextLoggerId()), zap.Strings("logTag", tag))
 	return log
 }

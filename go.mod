@@ -47,7 +47,7 @@ require (
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.0+incompatible // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	github.com/zlyuancn/zlog v0.0.0-20201107071137-3b2b7df64ef1
+	github.com/zlyuancn/zlog v0.0.0-20201205103801-1940aa419738
 	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
 	go.uber.org/zap v1.16.0
 	google.golang.org/grpc v1.33.2

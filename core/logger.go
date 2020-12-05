@@ -13,4 +13,4 @@ import (
 )
 
 // 记录器
-type ILogger zlog.Logfer
+type ILogger zlog.Loger
