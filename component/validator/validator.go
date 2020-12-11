@@ -10,6 +10,8 @@ package validator
 
 import (
 	"errors"
+	"regexp"
+	"time"
 
 	zhongwen "github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
@@ -30,10 +32,32 @@ func NewValidator() core.IValidator {
 
 	validate := validator.New()
 	_ = zh_translations.RegisterDefaultTranslations(validate, vt)
+
+	_ = validate.RegisterValidation("regex", validateRegex)
+	_ = validate.RegisterValidation("time", validateTime)
 	return &Validator{
 		validateTrans: vt,
 		validate:      validate,
 	}
+}
+
+// 正则匹配
+func validateRegex(f validator.FieldLevel) bool {
+	compile := f.Param()
+	text := f.Field().String()
+	return regexp.MustCompile(compile).MatchString(text)
+}
+
+// 时间匹配
+func validateTime(f validator.FieldLevel) bool {
+	layout := f.Param()
+	if layout == "" {
+		layout = "2006-01-02 15:04:05"
+	}
+	text := f.Field().String()
+
+	_, err := time.ParseInLocation(layout, text, time.Local)
+	return err == nil
 }
 
 func (v *Validator) Valid(a interface{}) error {
