@@ -9,7 +9,6 @@
 package app
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/zlyuancn/zscheduler"
 
 	"github.com/zlyuancn/zapp/consts"
@@ -36,7 +35,14 @@ func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...strin
 	return s, ok
 }
 
-func (app *appCli) RegistryApiRouter(fn func(c core.IComponent, router iris.Party)) {
+// 注册api路由
+//
+// a 必须是 func(c core.IComponent, router iris.Party)
+// 示例:
+//    a.RegistryApiRouter(func(c core.IComponent, router iris.Party) {
+//        router.Get("/", api.Wrap(func(ctx *api.Context) interface{} { return "hello" }))
+//    })
+func (app *appCli) RegistryApiRouter(a interface{}) {
 	s, ok := app.GetService(core.ApiService)
 	if !ok {
 		if app.opt.IgnoreInjectOfDisableServer {
@@ -45,7 +51,7 @@ func (app *appCli) RegistryApiRouter(fn func(c core.IComponent, router iris.Part
 		logger.Log.Fatal("未启用api服务")
 	}
 
-	s.Inject(fn)
+	s.Inject(a)
 }
 
 func (app *appCli) RegistryCronJob(name string, expression string, enable bool, handler func(cronJob core.ICronJob) error) {
@@ -89,6 +95,13 @@ func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigge
 	s.Inject(task)
 }
 
+// 注册grpc服务
+//
+// a 必须是 func(c core.IComponent, server *grpc.Server)
+// 示例:
+//     app.RegistryGrpcService(func(c core.IComponent, service *grpc.Server) {
+//         pb.RegisterXXXServer(service, &srvObj)
+//     })
 func (app *appCli) RegistryGrpcService(a ...interface{}) {
 	s, ok := app.GetService(core.GrpcService)
 	if !ok {
@@ -101,6 +114,17 @@ func (app *appCli) RegistryGrpcService(a ...interface{}) {
 	s.Inject(a...)
 }
 
+// 注册mysql-binlog服务handler
+//
+// a 必须是 func(c core.IComponent) mysql_binlog.IEventHandler
+// 示例:
+//     type Handler struct {
+//         c core.IComponent
+//         mysql_binlog.BaseEventHandler
+//     }
+//     app.RegistryMysqlBinlogHandler(func(c core.IComponent) mysql_binlog.IEventHandler {
+//         return &Handler{c: c}
+//     })
 func (app *appCli) RegistryMysqlBinlogHandler(a interface{}) {
 	s, ok := app.GetService(core.MysqlBinlogService)
 	if !ok {
