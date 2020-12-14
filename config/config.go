@@ -63,9 +63,9 @@ func NewConfig() core.IConfig {
 		}
 	}
 
-	c.c.Frame.FreeMemoryInterval = zutils.Ternary.Or(c.c.Frame.FreeMemoryInterval, consts.DefaultConfig_App_FreeMemoryInterval).(int)
-	c.c.Frame.WaitServiceRunTime = zutils.Ternary.Or(c.c.Frame.WaitServiceRunTime, consts.DefaultConfig_WaitServiceRunTime).(int)
-	c.c.Frame.ContinueWaitServiceRunTime = zutils.Ternary.Or(c.c.Frame.ContinueWaitServiceRunTime, consts.DefaultConfig_ContinueWaitServiceRunTime).(int)
+	c.c.Frame.FreeMemoryInterval = zutils.Ternary.Or(c.c.Frame.FreeMemoryInterval, consts.FrameConfig_FreeMemoryInterval).(int)
+	c.c.Frame.WaitServiceRunTime = zutils.Ternary.Or(c.c.Frame.WaitServiceRunTime, consts.FrameConfig_WaitServiceRunTime).(int)
+	c.c.Frame.ContinueWaitServiceRunTime = zutils.Ternary.Or(c.c.Frame.ContinueWaitServiceRunTime, consts.FrameConfig_ContinueWaitServiceRunTime).(int)
 
 	if *testFlag {
 		fmt.Println("配置文件测试成功")
