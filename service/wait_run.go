@@ -14,7 +14,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/component"
-	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/logger"
 )
 
@@ -40,7 +39,7 @@ func WaitRun(opt *WaitRunOption) error {
 		errChan <- opt.RunServiceFn()
 	}(errChan)
 
-	wait := time.NewTimer(time.Duration(consts.DefaultConfig_WaitServiceRunTime) * time.Millisecond) // 等待启动提前返回
+	wait := time.NewTimer(time.Duration(component.GlobalComponent().Config().Frame.WaitServiceRunTime) * time.Millisecond) // 等待启动提前返回
 	select {
 	case <-wait.C:
 	case <-component.GlobalComponent().App().BaseContext().Done():
@@ -56,7 +55,7 @@ func WaitRun(opt *WaitRunOption) error {
 
 	// 开始等待服务启动阶段2
 	go func(errChan chan error) {
-		wait = time.NewTimer(time.Duration(consts.DefaultConfig_ContinueWaitServiceRunTime) * time.Millisecond)
+		wait = time.NewTimer(time.Duration(component.GlobalComponent().Config().Frame.ContinueWaitServiceRunTime) * time.Millisecond)
 		select {
 		case <-wait.C:
 		case <-component.GlobalComponent().App().BaseContext().Done():

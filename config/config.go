@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"github.com/zlyuancn/zutils"
 	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/consts"
@@ -62,9 +63,9 @@ func NewConfig() core.IConfig {
 		}
 	}
 
-	if c.c.FreeMemoryInterval <= 0 {
-		c.c.FreeMemoryInterval = consts.DefaultConfig_App_FreeMemoryInterval
-	}
+	c.c.Frame.FreeMemoryInterval = zutils.Ternary.Or(c.c.Frame.FreeMemoryInterval, consts.DefaultConfig_App_FreeMemoryInterval).(int)
+	c.c.Frame.WaitServiceRunTime = zutils.Ternary.Or(c.c.Frame.WaitServiceRunTime, consts.DefaultConfig_WaitServiceRunTime).(int)
+	c.c.Frame.ContinueWaitServiceRunTime = zutils.Ternary.Or(c.c.Frame.ContinueWaitServiceRunTime, consts.DefaultConfig_ContinueWaitServiceRunTime).(int)
 
 	if *testFlag {
 		fmt.Println("配置文件测试成功")

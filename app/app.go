@@ -224,7 +224,7 @@ func (app *appCli) BaseContext() context.Context {
 }
 
 func (app *appCli) freeMemory() {
-	t := time.NewTicker(time.Millisecond * time.Duration(app.config.Config().FreeMemoryInterval))
+	t := time.NewTicker(time.Duration(app.config.Config().Frame.FreeMemoryInterval) * time.Millisecond)
 	for {
 		select {
 		case <-app.closeChan:

@@ -17,8 +17,15 @@ type Config struct {
 	// debug标志
 	Debug bool
 
-	// 清理内存间隔时间(毫秒)
-	FreeMemoryInterval int
+	// 框架配置
+	Frame struct {
+		// 清理内存间隔时间(毫秒)
+		FreeMemoryInterval int
+		// 等待服务启动阶段1, 等待时间(毫秒), 如果时间到则临时认为服务启动成功并提前返回
+		WaitServiceRunTime int
+		// 等待服务启动阶段2, 等待服务启动阶段1时间到后继续等待服务启动, 等待时间(毫秒), 如果时间到则真正认为服务启动成功
+		ContinueWaitServiceRunTime int
+	}
 
 	// api服务
 	//
