@@ -199,6 +199,10 @@ func (app *appCli) exit() {
 	app.Warn("app已退出")
 }
 
+func (app *appCli) Name() string {
+	return app.name
+}
+
 // 启动服务
 //
 // 启动所有服务并挂起进程, 直到收到退出信号或主动结束

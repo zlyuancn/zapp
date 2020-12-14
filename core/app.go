@@ -18,6 +18,8 @@ import (
 //
 // 用于将所有模块连起来
 type IApp interface {
+	// app名
+	Name() string
 	// 运行
 	//
 	// 开启所有服务并挂起
