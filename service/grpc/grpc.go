@@ -1,6 +1,6 @@
 /*
 -------------------------------------------------
-   Author :       Zhang Fan
+   Author :       zlyuancn
    date：         2020/11/17
    Description :
 -------------------------------------------------
@@ -80,16 +80,15 @@ func (g *GrpcService) Start() error {
 		return err
 	}
 
-	errChan := make(chan error, 1)
-	go func(errChan chan error) {
-		if err := g.server.Serve(listener); err != nil {
-			errChan <- err
-		}
-	}(errChan)
-
-	select {
-	case <-time.After(time.Second):
-	case err := <-errChan:
+	err = service.WaitRun(&service.WaitRunOption{
+		ServiceName:       "grpc",
+		IgnoreErrs:        nil,
+		FatalOnErrOfWait2: true,
+		RunServiceFn: func() error {
+			return g.server.Serve(listener)
+		},
+	})
+	if err != nil {
 		return err
 	}
 

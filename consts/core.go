@@ -1,6 +1,6 @@
 /*
 -------------------------------------------------
-   Author :       Zhang Fan
+   Author :       zlyuancn
    date：         2020/7/21
    Description :
 -------------------------------------------------
@@ -20,6 +20,11 @@ const (
 	DefaultConfig_ConfigFiles = "./configs/default.toml"
 	// 清理内存间隔时间(毫秒)
 	DefaultConfig_App_FreeMemoryInterval = 120000
+
+	// 等待服务启动阶段1, 等待时间(毫秒), 如果时间到则临时任务服务启动成功并提前返回
+	DefaultConfig_WaitServiceRunTime = 1000
+	// 等待服务启动阶段2, 等待服务启动阶段1时间到后继续等待服务启动, 等待时间(毫秒), 如果时间到则真正认为服务启动成功.
+	DefaultConfig_ContinueWaitServiceRunTime = 30000
 
 	// grpc默认scheme
 	DefaultConfig_GrpcClient_Registry = "local"

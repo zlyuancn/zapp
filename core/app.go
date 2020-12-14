@@ -1,6 +1,6 @@
 /*
 -------------------------------------------------
-   Author :       Zhang Fan
+   Author :       zlyuancn
    date：         2020/7/2
    Description :
 -------------------------------------------------
@@ -9,6 +9,8 @@
 package core
 
 import (
+	"context"
+
 	"github.com/zlyuancn/zscheduler"
 )
 
@@ -26,6 +28,8 @@ type IApp interface {
 	Close()
 	// 获取配置
 	GetConfig() IConfig
+	// 基础上下文, 这个用于监听服务结束, app会在关闭服务之前调用cancel()
+	BaseContext() context.Context
 
 	// 日志组件
 	ILogger

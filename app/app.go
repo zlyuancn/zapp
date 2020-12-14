@@ -1,6 +1,6 @@
 /*
 -------------------------------------------------
-   Author :       Zhang Fan
+   Author :       zlyuancn
    date：         2020/7/2
    Description :
 -------------------------------------------------
@@ -9,6 +9,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -31,8 +32,10 @@ type appCli struct {
 
 	opt *option
 
-	closeChan chan struct{}
-	interrupt chan os.Signal
+	closeChan     chan struct{}
+	interrupt     chan os.Signal
+	baseCtx       context.Context
+	baseCtxCancel context.CancelFunc
 
 	config core.IConfig
 
@@ -51,6 +54,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	if appName == "" {
 		logger.Log.Fatal("appName must not empty")
 	}
+
 	app := &appCli{
 		name:      appName,
 		closeChan: make(chan struct{}),
@@ -58,6 +62,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 		services:  make(map[core.ServiceType]map[string]core.IService),
 		opt:       newOption(),
 	}
+	app.baseCtx, app.baseCtxCancel = context.WithCancel(context.Background())
 
 	// 初始化选项
 	for _, o := range opts {
@@ -182,6 +187,8 @@ func (app *appCli) exit() {
 	// app退出前
 	app.handler(BeforeExitHandler)
 
+	// 关闭基础上下文
+	app.baseCtxCancel()
 	// 关闭服务
 	app.closeService()
 	// 释放组件资源
@@ -206,6 +213,10 @@ func (app *appCli) Close() {
 
 func (app *appCli) GetConfig() core.IConfig {
 	return app.config
+}
+
+func (app *appCli) BaseContext() context.Context {
+	return app.baseCtx
 }
 
 func (app *appCli) freeMemory() {

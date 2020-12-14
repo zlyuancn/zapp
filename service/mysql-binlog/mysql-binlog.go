@@ -1,6 +1,6 @@
 /*
 -------------------------------------------------
-   Author :       Zhang Fan
+   Author :       zlyuancn
    date：         2020/12/3
    Description :
 -------------------------------------------------
@@ -111,31 +111,26 @@ func (m *MysqlBinlogService) Start() error {
 		return err
 	}
 
-	errChan := make(chan error, 1)
-	go func(errChan chan error) {
-		switch binlogName {
-		case OldestPos:
-			if err := m.canal.Run(); err != nil {
-				errChan <- err
+	err = service.WaitRun(&service.WaitRunOption{
+		ServiceName:       "mysql-binlog",
+		IgnoreErrs:        nil,
+		FatalOnErrOfWait2: true,
+		RunServiceFn: func() error {
+			switch binlogName {
+			case OldestPos: // 最旧的位置
+				return m.canal.Run()
+			case LatestPos: // 最新的位置
+				pos, err := m.canal.GetMasterPos()
+				if err != nil {
+					return err
+				}
+				return m.canal.RunFrom(pos)
+			default: // 指定位置
+				return m.canal.RunFrom(mysql.Position{Name: binlogName, Pos: pos})
 			}
-		case LatestPos:
-			pos, err := m.canal.GetMasterPos()
-			if err == nil {
-				err = m.canal.RunFrom(pos)
-			}
-			if err != nil {
-				errChan <- err
-			}
-		default:
-			if err := m.canal.RunFrom(mysql.Position{Name: binlogName, Pos: pos}); err != nil {
-				errChan <- err
-			}
-		}
-	}(errChan)
-
-	select {
-	case <-time.After(time.Second):
-	case err := <-errChan:
+		},
+	})
+	if err != nil {
 		return err
 	}
 

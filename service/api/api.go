@@ -1,6 +1,6 @@
 /*
 -------------------------------------------------
-   Author :       Zhang Fan
+   Author :       zlyuancn
    date：         2020/11/29
    Description :
 -------------------------------------------------
@@ -10,7 +10,6 @@ package api
 
 import (
 	"context"
-	"time"
 
 	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/iris/v12"
@@ -68,30 +67,28 @@ func (a *ApiService) Inject(sc ...interface{}) {
 func (a *ApiService) Start() error {
 	conf := a.app.GetConfig().Config().ApiService
 
-	errChan := make(chan error, 1)
-	go func(errChan chan error) {
-		opts := []iris.Configurator{
-			iris.WithoutBodyConsumptionOnUnmarshal, // 重复消费
-			iris.WithoutPathCorrection,             // 不自动补全斜杠
-			iris.WithOptimizations,                 // 启用性能优化
-			iris.WithoutStartupLog,                 // 不要打印iris启动信息
-			iris.WithPathEscape,                    // 解析path转义
-		}
-		if conf.IPWithNginxForwarded {
-			opts = append(opts, iris.WithRemoteAddrHeader("X-Forwarded-For"))
-		}
-		if conf.IPWithNginxReal {
-			opts = append(opts, iris.WithRemoteAddrHeader("X-Real-IP"))
-		}
-
-		if err := a.Run(iris.Addr(conf.Bind), opts...); err != nil && err != iris.ErrServerClosed {
-			errChan <- err
-		}
-	}(errChan)
-
-	select {
-	case <-time.After(time.Second):
-	case err := <-errChan:
+	err := service.WaitRun(&service.WaitRunOption{
+		ServiceName:       "api",
+		IgnoreErrs:        []error{iris.ErrServerClosed},
+		FatalOnErrOfWait2: true,
+		RunServiceFn: func() error {
+			opts := []iris.Configurator{
+				iris.WithoutBodyConsumptionOnUnmarshal, // 重复消费
+				iris.WithoutPathCorrection,             // 不自动补全斜杠
+				iris.WithOptimizations,                 // 启用性能优化
+				iris.WithoutStartupLog,                 // 不要打印iris启动信息
+				iris.WithPathEscape,                    // 解析path转义
+			}
+			if conf.IPWithNginxForwarded {
+				opts = append(opts, iris.WithRemoteAddrHeader("X-Forwarded-For"))
+			}
+			if conf.IPWithNginxReal {
+				opts = append(opts, iris.WithRemoteAddrHeader("X-Real-IP"))
+			}
+			return a.Run(iris.Addr(conf.Bind), opts...)
+		},
+	})
+	if err != nil {
 		return err
 	}
 
