@@ -18,6 +18,7 @@ import (
 	"github.com/zlyuancn/zapp/component/validator"
 	"github.com/zlyuancn/zapp/component/xorm"
 	"github.com/zlyuancn/zapp/core"
+	"github.com/zlyuancn/zapp/logger"
 	"github.com/zlyuancn/zapp/utils"
 )
 
@@ -91,4 +92,9 @@ func (c *ComponentCli) Close() {
 }
 
 // 获取全局component
-func GlobalComponent() core.IComponent { return defaultComponent }
+func GlobalComponent() core.IComponent {
+	if defaultComponent == nil{
+		logger.Log.Panic("GlobalComponent is uninitialized")
+	}
+	return defaultComponent
+}
