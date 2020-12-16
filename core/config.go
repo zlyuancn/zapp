@@ -14,11 +14,10 @@ import (
 
 // 配置结构
 type Config struct {
-	// debug标志
-	Debug bool
-
 	// 框架配置
 	Frame struct {
+		// debug标志
+		Debug bool
 		// 清理内存间隔时间(毫秒)
 		FreeMemoryInterval int
 		// 等待服务启动阶段1, 等待时间(毫秒), 如果时间到则临时认为服务启动成功并提前返回
