@@ -19,6 +19,8 @@ import (
 type Option func(opt *option)
 
 type option struct {
+	// 配置
+	defaultConfig *core.Config
 	// 启用守护
 	EnableDaemon bool
 	// 忽略未启用的服务注入
@@ -81,6 +83,13 @@ func WithHandler(t HandlerType, hs ...Handler) Option {
 func WithIgnoreInjectOfDisableServer(ignore ...bool) Option {
 	return func(opt *option) {
 		opt.IgnoreInjectOfDisableServer = len(ignore) == 0 || ignore[0]
+	}
+}
+
+// 设置config, 优先级最低, 如果命令行指定从文件加载会忽略这个配置
+func WithConfig(conf *core.Config) Option {
+	return func(opt *option) {
+		opt.defaultConfig = conf
 	}
 }
 
