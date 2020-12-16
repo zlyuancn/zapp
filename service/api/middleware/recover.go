@@ -21,6 +21,8 @@ import (
 )
 
 func Recover() iris.Handler {
+	isProduction := !component.GlobalComponent().Config().Frame.Debug
+	showDetailedErrorOfProduction := component.GlobalComponent().Config().ApiService.ShowDetailedErrorOfProduction
 	return func(ctx iris.Context) {
 		err := utils.Recover.WarpCall(func() error {
 			ctx.Next()
@@ -54,10 +56,10 @@ func Recover() iris.Handler {
 
 		result := map[string]interface{}{
 			"err_code": 1,
-			"err_msg":  "service internal error",
+			"err_msg":  strings.Split(logMessage, "\n"),
 		}
-		if component.GlobalComponent().Config().Frame.Debug {
-			result["err_msg"] = strings.Split(logMessage, "\n")
+		if isProduction && !showDetailedErrorOfProduction {
+			result["err_msg"] = "service internal error"
 		}
 		_, _ = ctx.JSON(result)
 		ctx.StopExecution()

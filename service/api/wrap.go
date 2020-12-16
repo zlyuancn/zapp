@@ -24,6 +24,8 @@ type Response struct {
 }
 
 func Wrap(handler Handler) iris.Handler {
+	isProduction := !component.GlobalComponent().Config().Frame.Debug
+	showDetailedErrorOfProduction := component.GlobalComponent().Config().ApiService.ShowDetailedErrorOfProduction
 	return func(irisCtx *iris_context.Context) {
 		ctx := newContext(irisCtx)
 		result := handler(ctx)
@@ -31,7 +33,7 @@ func Wrap(handler Handler) iris.Handler {
 		if err, ok := result.(error); ok {
 			ctx.Values().Set("error", err)
 			code, message := decodeErr(err)
-			if component.GlobalComponent().Config().Debug {
+			if !isProduction || showDetailedErrorOfProduction {
 				message = err.Error()
 			}
 			_, _ = ctx.JSON(Response{
