@@ -41,6 +41,7 @@ require (
 	github.com/pingcap/tidb v2.0.11+incompatible // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/ryanuber/columnize v2.1.0+incompatible // indirect
+	github.com/shima-park/agollo v1.2.10
 	github.com/siddontang/go-mysql v1.1.0
 	github.com/spf13/viper v1.7.1
 	github.com/takama/daemon v1.0.0

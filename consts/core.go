@@ -36,12 +36,6 @@ const (
 	FrameConfig_ContinueWaitServiceRunTime int = 30000
 )
 
-// 配置文件分片名
-const (
-	// 日志
-	ConfigShardName_Log = "log"
-)
-
 // 用户储存的字段名
 const (
 	// log

@@ -10,6 +10,7 @@ package core
 
 import (
 	"github.com/spf13/viper"
+	"github.com/zlyuancn/zlog"
 )
 
 // 配置结构
@@ -25,6 +26,9 @@ type Config struct {
 		// 等待服务启动阶段2, 等待服务启动阶段1时间到后继续等待服务启动, 等待时间(毫秒), 如果时间到则真正认为服务启动成功
 		ContinueWaitServiceRunTime int
 	}
+
+	// log配置
+	Log zlog.LogConfig
 
 	// api服务
 	//
