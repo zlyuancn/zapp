@@ -37,7 +37,7 @@ func newConfig() *core.Config {
 // 解析配置
 //
 // 配置来源优先级 命令行 > WithViper > WithConfig > WithFiles > WithApollo > 默认配置文件
-// 注意: 多个配置文件如果存在同配置分片则只识别最后的分片
+// 注意: 多个配置文件如果存在同配置分片会智能合并, 完全相同的配置节点以最后的文件为准, 从apollo拉取的配置优先级最高
 func NewConfig(opts ...Option) core.IConfig {
 	opt := newOptions()
 	for _, o := range opts {
@@ -124,8 +124,8 @@ func makeViperFromFile(files []string) (*viper.Viper, error) {
 		if err := vp.ReadInConfig(); err != nil {
 			return nil, fmt.Errorf("配置文件'%s'加载失败: %s", file, err)
 		}
-		for k, v := range vp.AllSettings() {
-			vi.SetDefault(k, v)
+		if err := vi.MergeConfigMap(vp.AllSettings()); err != nil {
+			return nil, fmt.Errorf("合并配置文件'%s'失败: %s", file, err)
 		}
 	}
 	return vi, nil

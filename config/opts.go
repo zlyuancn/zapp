@@ -17,10 +17,10 @@ import (
 type Option func(o *Options)
 
 type Options struct {
-	vi               *viper.Viper  // viper
-	conf             *core.Config  // 配置结构
-	files            []string      // 配置文件
-	apolloConfig     *ApolloConfig // apollo配置结构
+	vi           *viper.Viper  // viper
+	conf         *core.Config  // 配置结构
+	files        []string      // 配置文件
+	apolloConfig *ApolloConfig // apollo配置结构
 }
 
 func newOptions() *Options {
@@ -45,5 +45,12 @@ func WithConfig(conf *core.Config) Option {
 func WithFiles(files ...string) Option {
 	return func(o *Options) {
 		o.files = files
+	}
+}
+
+// 从apollo加载配置, 必须是规范的设置
+func WithApollo(conf *ApolloConfig) Option {
+	return func(o *Options) {
+		o.apolloConfig = conf
 	}
 }

@@ -47,13 +47,6 @@ type ApolloConfig struct {
 	Namespaces           []Namespace // 要加载的命名空间, 一个命名空间相当于一个配置组
 }
 
-// 从apollo加载配置, 必须是规范的设置
-func WithApollo(conf *ApolloConfig) Option {
-	return func(o *Options) {
-		o.apolloConfig = conf
-	}
-}
-
 // 从viper构建apollo配置
 func makeApolloConfigFromViper(vi *viper.Viper) (*ApolloConfig, error) {
 	var conf ApolloConfig
