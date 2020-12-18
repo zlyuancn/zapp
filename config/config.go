@@ -52,7 +52,6 @@ func NewConfig(appName string, defaultConfig *core.Config) core.IConfig {
 	}
 	if *confText != "" { // 不管是命令行指定的还是由于没有主动设置配置选择默认配置文件
 		files := strings.Split(*confText, ",")
-		log := zlog.DefaultConfig
 		c.c = newConfig()
 		c.files = files
 		for _, file := range files {
