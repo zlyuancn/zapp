@@ -36,6 +36,14 @@ const (
 	FrameConfig_ContinueWaitServiceRunTime int = 30000
 )
 
+// 配置组名
+const (
+	// 日志
+	ConfigGroupName_Log = "log"
+	// apollo
+	ConfigGroupName_Apollo = "apollo"
+)
+
 // 用户储存的字段名
 const (
 	// log

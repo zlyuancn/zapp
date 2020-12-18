@@ -11,6 +11,7 @@ package app
 import (
 	"go.uber.org/zap"
 
+	"github.com/zlyuancn/zapp/config"
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
@@ -19,8 +20,8 @@ import (
 type Option func(opt *option)
 
 type option struct {
-	// 配置
-	defaultConfig *core.Config
+	// 配置选项
+	configOpts []config.Option
 	// 启用守护
 	EnableDaemon bool
 	// 忽略未启用的服务注入
@@ -86,10 +87,10 @@ func WithIgnoreInjectOfDisableServer(ignore ...bool) Option {
 	}
 }
 
-// 设置config, 优先级最低, 如果命令行指定从文件加载会忽略这个配置
-func WithConfig(conf *core.Config) Option {
+// 设置config选项
+func WithConfigOption(opts ...config.Option) Option {
 	return func(opt *option) {
-		opt.defaultConfig = conf
+		opt.configOpts = append(opt.configOpts, opts...)
 	}
 }
 

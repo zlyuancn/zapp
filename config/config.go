@@ -9,15 +9,14 @@
 package config
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"os"
-	"runtime"
 	"strings"
 
-	"github.com/shima-park/agollo"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/spf13/viper"
-	"github.com/zlyuancn/zlog"
 	"github.com/zlyuancn/zutils"
 	"go.uber.org/zap"
 
@@ -27,50 +26,83 @@ import (
 )
 
 type configCli struct {
-	v     *viper.Viper
-	c     *core.Config
-	files []string
+	vi *viper.Viper
+	c  *core.Config
+}
+
+func newConfig() *core.Config {
+	return &core.Config{}
 }
 
 // 解析配置
 //
-// 多个配置文件如果存在同配置分片则只识别最后的分片
-func NewConfig(appName string, defaultConfig *core.Config) core.IConfig {
-	c := &configCli{
-		v:     viper.New(),
-		c:     defaultConfig,
-		files: []string{},
+// 配置来源优先级 命令行 > WithViper > WithConfig > WithFiles > WithApollo > 默认配置文件
+// 注意: 多个配置文件如果存在同配置分片则只识别最后的分片
+func NewConfig(opts ...Option) core.IConfig {
+	opt := newOptions()
+	for _, o := range opts {
+		o(opt)
 	}
 
 	confText := flag.String("c", "", "配置文件,多个文件用逗号隔开,同名配置分片会完全覆盖之前的分片")
 	testFlag := flag.Bool("t", false, "测试配置文件")
 	flag.Parse()
 
-	if *confText == "" && defaultConfig == nil { // 如果命令行没有指定配置文件 且 没有主动设置配置
-		*confText = consts.DefaultConfig_ConfigFiles
-		fmt.Printf("未指定配置文件, 将使用 %s 配置文件\n", consts.DefaultConfig_ConfigFiles)
-	}
-	if *confText != "" { // 不管是命令行指定的还是由于没有主动设置配置选择默认配置文件
+	var vi *viper.Viper
+	var err error
+	if *confText != "" { // 命令行
 		files := strings.Split(*confText, ",")
-		c.c = newConfig()
-		c.files = files
-		for _, file := range files {
-			vp := viper.New()
-			vp.SetConfigFile(file)
-			if err := vp.ReadInConfig(); err != nil {
-				logger.Log.Fatal("配置文件加载失败", zap.String("file", file), zap.Error(err))
-			}
-			for k, v := range vp.AllSettings() {
-				c.v.SetDefault(k, v)
-			}
+		vi, err = makeViperFromFile(files)
+		if err != nil {
+			logger.Log.Fatal("从命令指定文件构建viper失败", zap.Strings("files", files), zap.Error(err))
 		}
-
-		if err := c.v.Unmarshal(c.c); err != nil {
-			logger.Log.Fatal("配置解析失败", zap.Strings("files", files), zap.Error(err))
+	} else if opt.vi != nil { // WithViper
+		vi = opt.vi
+	} else if opt.conf != nil { // WithConfig
+		vi, err = makeViperFromStruct(opt.conf)
+		if err != nil {
+			logger.Log.Fatal("从配置结构构建viper失败", zap.Any("config", opt.conf), zap.Error(err))
+		}
+	} else if len(opt.files) > 0 { // WithFiles
+		vi, err = makeViperFromFile(opt.files)
+		if err != nil {
+			logger.Log.Fatal("从用户指定文件构建viper失败", zap.Strings("files", opt.files), zap.Error(err))
+		}
+	} else if opt.apolloConfig != nil { // WithApollo
+		vi, err = makeViperFromApollo(opt.apolloConfig)
+		if err != nil {
+			logger.Log.Fatal("从apollo构建viper失败", zap.Any("apolloConfig", opt.apolloConfig), zap.Error(err))
+		}
+	} else { // 默认
+		files := strings.Split(consts.DefaultConfig_ConfigFiles, ",")
+		logger.Log.Debug("使用默认配置文件", zap.Strings("files", files))
+		vi, err = makeViperFromFile(files)
+		if err != nil {
+			logger.Log.Fatal("从默认配置文件构建viper失败", zap.Strings("files", files), zap.Error(err))
 		}
 	}
 
-	c.checkDefaultConfig(appName, c.c)
+	// 如果从viper中发现了apollo配置
+	if vi.IsSet(consts.ConfigGroupName_Apollo) {
+		apolloConf, err := makeApolloConfigFromViper(vi)
+		if err != nil {
+			logger.Log.Fatal("解析apollo配置失败", zap.Error(err))
+		}
+		vi, err = makeViperFromApollo(apolloConf)
+		if err != nil {
+			logger.Log.Fatal("从apollo构建viper失败", zap.Any("apolloConfig", apolloConf), zap.Error(err))
+		}
+	}
+
+	c := &configCli{
+		vi: vi,
+		c:  newConfig(),
+	}
+	if err = vi.Unmarshal(c.c); err != nil {
+		logger.Log.Fatal("配置解析失败", zap.Error(err))
+	}
+
+	c.checkDefaultConfig(c.c)
 
 	if *testFlag {
 		fmt.Println("配置文件测试成功")
@@ -80,112 +112,59 @@ func NewConfig(appName string, defaultConfig *core.Config) core.IConfig {
 	return c
 }
 
-func newConfig() *core.Config {
-	return &core.Config{
-		Log: zlog.DefaultConfig,
-	}
-}
-
-type ApolloConfig struct {
-	Address              string // apollo-api地址, 多个地址用英文逗号连接
-	AppId                string // 应用名
-	AccessKey            string // 验证key, 优先级高于基础认证
-	AuthBasicUser        string // 基础认证用户名
-	AuthBasicPassword    string // 基础认证密码
-	Cluster              string // 集群名
-	AlwaysLoadFromRemote bool   // 总是从远程获取, 如果为false, 在远程加载失败时从备份文件加载
-	BackupFile           string // 备份文件名
-}
-
-// 从apollo中获取配置结构
-func GetConfigFromApollo(conf *ApolloConfig, nameSpaces ...Namespace) (*core.Config, error) {
-	// 构建选项
-	opts := []agollo.Option{
-		agollo.AutoFetchOnCacheMiss(),                                       // 当本地缓存中namespace不存在时，尝试去apollo缓存接口去获取
-		agollo.Cluster(zutils.Ternary.Or(conf.Cluster, "default").(string)), // 集群名
-	}
-	if !conf.AlwaysLoadFromRemote {
-		opts = append(opts, agollo.FailTolerantOnBackupExists()) // 从服务获取数据失败时从备份文件加载
-	}
-	if conf.BackupFile != "" {
-		opts = append(opts, agollo.BackupFile(conf.BackupFile))
-	} else if runtime.GOOS == "windows" {
-		opts = append(opts, agollo.BackupFile("/nul"))
-	} else {
-		opts = append(opts, agollo.BackupFile("/dev/null"))
-	}
-
-	// 验证方式
-	if conf.AccessKey != "" {
-		opts = append(opts, agollo.AccessKey(conf.AccessKey))
-	} else if conf.AuthBasicUser != "" {
-		opts = append(opts,
-			agollo.WithClientOptions(
-				agollo.WithAccessKey("basic "+zutils.Crypto.Base64Encode(conf.AuthBasicUser+":"+conf.AuthBasicPassword)),
-				agollo.WithSignatureFunc(func(ctx *agollo.SignatureContext) agollo.Header {
-					return agollo.Header{"authorization": ctx.AccessKey}
-				}),
-			))
-	}
-
-	// 构建apollo客户端
-	apolloClient, err := agollo.New(conf.Address, conf.AppId, opts...)
-	if err != nil {
-		return nil, fmt.Errorf("初始化agollo失败: %s", err)
-	}
-
-	// 加载数据
-	data := make(map[string]interface{}, len(nameSpaces))
-	for _, name := range nameSpaces {
-		d := apolloClient.GetNameSpace(string(name))
-		if len(d) == 0 {
-			return nil, fmt.Errorf("命名空间[%s]的数据为空", name)
+// 从文件构建viper
+func makeViperFromFile(files []string) (*viper.Viper, error) {
+	vi := viper.New()
+	for _, file := range files {
+		vp := viper.New()
+		vp.SetConfigFile(file)
+		if err := vp.ReadInConfig(); err != nil {
+			return nil, fmt.Errorf("配置文件'%s'加载失败: %s", file, err)
 		}
-		data[strings.ReplaceAll(string(name), "_", "")] = d
+		for k, v := range vp.AllSettings() {
+			vi.SetDefault(k, v)
+		}
 	}
-
-	// 反序列化
-	v := viper.New()
-	if err = v.MergeConfigMap(data); err != nil {
-		return nil, fmt.Errorf("合并配置失败: %s", err)
-	}
-
-	out := newConfig()
-	if err = v.Unmarshal(out); err != nil {
-		return nil, fmt.Errorf("反序列化失败: %s", err)
-	}
-
-	return out, nil
+	return vi, nil
 }
 
-func (c *configCli) checkDefaultConfig(appName string, conf *core.Config) {
+// 从结构体构建viper
+func makeViperFromStruct(a interface{}) (*viper.Viper, error) {
+	bs, err := jsoniter.Marshal(a)
+	if err != nil {
+		return nil, fmt.Errorf("编码失败: %s", err)
+	}
+
+	vi := viper.New()
+	vi.SetConfigType("json")
+	err = vi.ReadConfig(bytes.NewReader(bs))
+	if err != nil {
+		return nil, fmt.Errorf("数据解析失败: %s", err)
+	}
+	return vi, nil
+}
+
+func (c *configCli) checkDefaultConfig(conf *core.Config) {
 	conf.Frame.FreeMemoryInterval = zutils.Ternary.Or(conf.Frame.FreeMemoryInterval, consts.FrameConfig_FreeMemoryInterval).(int)
 	conf.Frame.WaitServiceRunTime = zutils.Ternary.Or(conf.Frame.WaitServiceRunTime, consts.FrameConfig_WaitServiceRunTime).(int)
 	conf.Frame.ContinueWaitServiceRunTime = zutils.Ternary.Or(conf.Frame.ContinueWaitServiceRunTime, consts.FrameConfig_ContinueWaitServiceRunTime).(int)
-	if conf.Log.Name == "" {
-		conf.Log.Name = appName
-	}
 }
 
 func (c *configCli) Config() *core.Config {
 	return c.c
 }
 
-func (c *configCli) ConfigFiles() []string {
-	return c.files
-}
-
 func (c *configCli) Parse(outPtr interface{}) error {
-	return c.v.Unmarshal(outPtr)
+	return c.vi.Unmarshal(outPtr)
 }
 
 func (c *configCli) ParseShard(shard string, outPtr interface{}) error {
-	if !c.v.IsSet(shard) {
+	if !c.vi.IsSet(shard) {
 		return fmt.Errorf("分片<%s>不存在", shard)
 	}
-	return c.v.UnmarshalKey(shard, outPtr)
+	return c.vi.UnmarshalKey(shard, outPtr)
 }
 
 func (c *configCli) GetViper() *viper.Viper {
-	return c.v
+	return c.vi
 }
