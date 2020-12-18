@@ -88,9 +88,12 @@ func NewConfig(opts ...Option) core.IConfig {
 		if err != nil {
 			logger.Log.Fatal("解析apollo配置失败", zap.Error(err))
 		}
-		vi, err = makeViperFromApollo(apolloConf)
+		newVi, err := makeViperFromApollo(apolloConf)
 		if err != nil {
 			logger.Log.Fatal("从apollo构建viper失败", zap.Any("apolloConfig", apolloConf), zap.Error(err))
+		}
+		if err = vi.MergeConfigMap(newVi.AllSettings()); err != nil {
+			logger.Log.Fatal("合并apollo配置失败", zap.Error(err))
 		}
 	}
 

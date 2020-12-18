@@ -105,7 +105,7 @@ func makeViperFromApollo(conf *ApolloConfig) (*viper.Viper, error) {
 		if len(d) == 0 {
 			return nil, fmt.Errorf("命名空间[%s]的数据为空", name)
 		}
-		data[strings.ReplaceAll(string(name), "_", "")] = d
+		data[strings.ReplaceAll(string(name), "_", "")] = map[string]interface{}(d)
 	}
 
 	// 构建viper
