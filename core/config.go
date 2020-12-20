@@ -211,7 +211,7 @@ type ES7Config struct {
 
 // 缓存配置
 type CacheConfig struct {
-	CacheDB                  string // 缓存db; default, memory, redis
+	CacheDB                  string // 缓存db; default, no, memory, redis
 	Codec                    string // 编解码器; default, byte, json, jsoniter, msgpack, proto_buffer
 	DirectReturnOnCacheFault bool   // 在缓存故障时直接返回缓存错误(默认)
 	PanicOnLoaderExists      bool   // 注册加载器时如果加载器已存在会panic(默认), 设为false会替换旧的加载器

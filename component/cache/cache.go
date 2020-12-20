@@ -15,6 +15,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/zlyuancn/zcache"
 	memory_cache "github.com/zlyuancn/zcache/cachedb/memory-cache"
+	no_cache "github.com/zlyuancn/zcache/cachedb/no-cache"
 	redis_cache "github.com/zlyuancn/zcache/cachedb/redis-cache"
 	no_sf "github.com/zlyuancn/zcache/single_flight/no-sf"
 	single_sf "github.com/zlyuancn/zcache/single_flight/single-sf"
@@ -87,6 +88,8 @@ func makeCacheDB(conf *core.CacheConfig) cache_core.ICacheDB {
 		return makeMemoryCacheDB(conf)
 	case "redis":
 		return makeRedisCacheDB(conf)
+	case "no":
+		return no_cache.NoCache()
 	}
 	logger.Log.Fatal("不支持的CacheDB", zap.String("CacheDB", conf.CacheDB))
 	return nil
