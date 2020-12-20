@@ -40,6 +40,7 @@ func NewCache(app core.IApp) core.ICache {
 	conf := app.GetConfig().Config().Cache
 	cache := zcache.NewCache(
 		zcache.WithCacheDB(makeCacheDB(&conf)),
+		zcache.WithDefaultExpire(time.Duration(conf.DefaultExpire)*time.Millisecond, time.Duration(conf.DefaultExpireMax)*time.Millisecond),
 		zcache.WithDirectReturnOnCacheFault(conf.DirectReturnOnCacheFault),
 		zcache.WithPanicOnLoaderExists(conf.PanicOnLoaderExists),
 		zcache.WithCodec(makeCodec(conf.Codec)),
