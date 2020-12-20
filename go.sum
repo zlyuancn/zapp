@@ -654,6 +654,8 @@ github.com/yudai/pp v2.0.1+incompatible/go.mod h1:PuxR/8QJ7cyCkFp/aUDS+JY727OFEZ
 github.com/ziutek/mymysql v1.5.4/go.mod h1:LMSpPZ6DbqWFxNCHW77HeMg9I646SAhApZ/wKdgO/C0=
 github.com/zlyuancn/zcache v0.0.0-20201220033639-ec6f1c84eb35 h1:yhkSfmyxmCIZyGdBRHjnE6G8IuGyF2ldtLPrdRP3NzQ=
 github.com/zlyuancn/zcache v0.0.0-20201220033639-ec6f1c84eb35/go.mod h1:MFCcMHJ/t94K7r/monFPpti8kSn5gtUKlnFF2kpJUNs=
+github.com/zlyuancn/zcache v0.0.0-20201220104017-45060eb0bdad h1:ReUdumat35b3nkTqyqzixDkY3dfqmtjZ416b8afNWJc=
+github.com/zlyuancn/zcache v0.0.0-20201220104017-45060eb0bdad/go.mod h1:MFCcMHJ/t94K7r/monFPpti8kSn5gtUKlnFF2kpJUNs=
 github.com/zlyuancn/zgpool v0.0.0-20201028093712-18bf87b9f38e h1:TLiEOdD0/VoxqEIXES9mjCwX+EfRKnM/y19APbq3HCk=
 github.com/zlyuancn/zgpool v0.0.0-20201028093712-18bf87b9f38e/go.mod h1:hcTFkqRHzZYl33RX4BQZZ3WV9rrY7XAYk1HlOE2emxQ=
 github.com/zlyuancn/zlog v0.0.0-20200510075342-5831b7d2f6c6 h1:CiIGNOGjLSV35KrG5+XwtZbBWJRAexLGCAaKEtRA+xk=

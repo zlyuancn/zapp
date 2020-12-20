@@ -215,6 +215,7 @@ type CacheConfig struct {
 	Codec                    string // 编解码器; default, byte, json, jsoniter, msgpack, proto_buffer
 	DirectReturnOnCacheFault bool   // 在缓存故障时直接返回缓存错误(默认)
 	PanicOnLoaderExists      bool   // 注册加载器时如果加载器已存在会panic(默认), 设为false会替换旧的加载器
+	SingleFlight             string // 单跑; default, no, single
 
 	MemoryCacheDB struct {
 		CleanupInterval int64 // 清除过期key时间间隔(毫秒)

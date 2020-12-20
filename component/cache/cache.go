@@ -16,6 +16,8 @@ import (
 	"github.com/zlyuancn/zcache"
 	memory_cache "github.com/zlyuancn/zcache/cachedb/memory-cache"
 	redis_cache "github.com/zlyuancn/zcache/cachedb/redis-cache"
+	no_sf "github.com/zlyuancn/zcache/single_flight/no-sf"
+	single_sf "github.com/zlyuancn/zcache/single_flight/single-sf"
 	"go.uber.org/zap"
 
 	cache_codec "github.com/zlyuancn/zcache/codec"
@@ -36,11 +38,12 @@ func (c *Cache) Cache() *zcache.Cache {
 func NewCache(app core.IApp) core.ICache {
 	conf := app.GetConfig().Config().Cache
 	cache := zcache.NewCache(
-		zcache.WithLogger(app.GetLogger()),
 		zcache.WithCacheDB(makeCacheDB(&conf)),
-		zcache.WithCodec(makeCodec(conf.Codec)),
 		zcache.WithDirectReturnOnCacheFault(conf.DirectReturnOnCacheFault),
 		zcache.WithPanicOnLoaderExists(conf.PanicOnLoaderExists),
+		zcache.WithCodec(makeCodec(conf.Codec)),
+		zcache.WithSingleFlight(makeSingleFlight(conf.SingleFlight)),
+		zcache.WithLogger(app.GetLogger()),
 	)
 	return &Cache{cache: cache}
 }
@@ -62,6 +65,18 @@ func makeCodec(codecType string) cache_core.ICodec {
 		return cache_codec.ProtoBuffer
 	}
 	logger.Log.Fatal("不支持的Codec", zap.String("Codec", codecType))
+	return nil
+}
+
+// 构建单跑模块
+func makeSingleFlight(sf string) cache_core.ISingleFlight {
+	switch strings.ToLower(sf) {
+	case "", "default", "single":
+		return single_sf.NewSingleFlight()
+	case "no":
+		return no_sf.NoSingleFlight()
+	}
+	logger.Log.Fatal("不支持的SingleFlight", zap.String("SingleFlight", sf))
 	return nil
 }
 
