@@ -216,8 +216,8 @@ type CacheConfig struct {
 	DirectReturnOnCacheFault bool   // 在缓存故障时直接返回缓存错误(默认)
 	PanicOnLoaderExists      bool   // 注册加载器时如果加载器已存在会panic(默认), 设为false会替换旧的加载器
 	SingleFlight             string // 单跑; default, no, single
-	DefaultExpire            int64  // 默认有效期, <= 0 表示永久
-	DefaultExpireMax         int64  // 默认最大有效时间, 如果 > 0 且 DefaultExpire > 0, 则默认过期时间在 [DefaultExpire, DefaultExpireMax-1] 区间随机
+	DefaultExpire            int64  // 默认有效时间, 毫秒, <= 0 表示永久
+	DefaultExpireMax         int64  // 默认最大有效时间, 毫秒, 如果 > 0 且 DefaultExpire > 0, 则默认有效时间在 [DefaultExpire, DefaultExpireMax-1] 区间随机
 
 	MemoryCacheDB struct {
 		CleanupInterval int64 // 清除过期key时间间隔(毫秒)
