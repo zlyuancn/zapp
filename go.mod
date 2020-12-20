@@ -50,12 +50,12 @@ require (
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.0+incompatible // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
+	github.com/zlyuancn/zcache v0.0.0-20201220033639-ec6f1c84eb35
 	github.com/zlyuancn/zlog v0.0.0-20201214101451-7d0a723e032f
 	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
 	github.com/zlyuancn/zutils v0.0.0-20201214131021-e3c761ffaed5
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9 // indirect
-	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11 // indirect
 	golang.org/x/sys v0.0.0-20201214095126-aec9a390925b // indirect
 	google.golang.org/grpc v1.33.2
 	google.golang.org/grpc/examples v0.0.0-20201130222003-4a0125ac5808 // indirect

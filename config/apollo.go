@@ -33,6 +33,7 @@ const (
 	XormNamespace                         = "xorm"
 	RedisNamespace                        = "redis"
 	ES7Namespace                          = "es7"
+	CacheNamespace                        = "cache"
 )
 
 type ApolloConfig struct {

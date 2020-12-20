@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-redis/redis"
 	elastic7 "github.com/olivere/elastic/v7"
+	"github.com/zlyuancn/zcache"
 	"github.com/zlyuancn/zscheduler"
 	"xorm.io/xorm"
 )
@@ -38,6 +39,7 @@ type IComponent interface {
 	IXormComponent
 	IRedisComponent
 	IES7Component
+	ICache
 }
 
 // 校验器
@@ -81,4 +83,8 @@ type IES7Component interface {
 type ICronJob interface {
 	ILogger
 	zscheduler.IJob
+}
+
+type ICache interface {
+	Cache() *zcache.Cache
 }

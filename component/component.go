@@ -12,6 +12,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/zlyuancn/zapp/component/cache"
 	"github.com/zlyuancn/zapp/component/es7"
 	"github.com/zlyuancn/zapp/component/grpc"
 	"github.com/zlyuancn/zapp/component/redis"
@@ -35,6 +36,7 @@ type ComponentCli struct {
 	core.IXormComponent
 	core.IRedisComponent
 	core.IES7Component
+	core.ICache
 }
 
 func NewComponent(app core.IApp) core.IComponent {
@@ -49,6 +51,7 @@ func NewComponent(app core.IApp) core.IComponent {
 		IXormComponent:  xorm.NewXorm(app),
 		IRedisComponent: redis.NewRedis(app),
 		IES7Component:   es7.NewES7(app),
+		ICache:          cache.NewCache(app),
 	}
 	defaultComponent = c
 	return c
@@ -93,7 +96,7 @@ func (c *ComponentCli) Close() {
 
 // 获取全局component
 func GlobalComponent() core.IComponent {
-	if defaultComponent == nil{
+	if defaultComponent == nil {
 		logger.Log.Panic("GlobalComponent is uninitialized")
 	}
 	return defaultComponent
