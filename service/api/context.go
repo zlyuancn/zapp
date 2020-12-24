@@ -25,7 +25,7 @@ type Context struct {
 	*iris_context.Context
 }
 
-func newContext(ctx iris.Context) *Context {
+func makeContext(ctx iris.Context) *Context {
 	return &Context{
 		ILogger: utils.Context.MustGetLoggerFromIrisContext(ctx),
 		Context: ctx,
