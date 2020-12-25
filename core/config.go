@@ -107,7 +107,7 @@ type Config struct {
 	// Codec = "msgpack"
 	// DirectReturnOnCacheFault = true
 	// PanicOnLoaderExists = true
-	Cache CacheConfig
+	Cache map[string]CacheConfig
 }
 
 // 配置

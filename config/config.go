@@ -32,8 +32,6 @@ type configCli struct {
 
 func newConfig() *core.Config {
 	conf := &core.Config{}
-	conf.Cache.DirectReturnOnCacheFault = true
-	conf.Cache.PanicOnLoaderExists = true
 	return conf
 }
 

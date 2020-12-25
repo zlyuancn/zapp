@@ -9,6 +9,7 @@
 package cache
 
 import (
+	"errors"
 	"strings"
 	"time"
 
@@ -24,30 +25,45 @@ import (
 	cache_codec "github.com/zlyuancn/zcache/codec"
 	cache_core "github.com/zlyuancn/zcache/core"
 
+	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
 )
 
 type Cache struct {
-	cache *zcache.Cache
+	caches map[string]*zcache.Cache
 }
 
-func (c *Cache) Cache() *zcache.Cache {
-	return c.cache
+func (c *Cache) Cache(name ...string) *zcache.Cache {
+	n := consts.DefaultComponentName
+	if len(name) > 0 {
+		n = name[0]
+	}
+	cache := c.caches[n]
+
+	if cache == nil {
+		logger.Log.Panic(zap.String("name", n), zap.Error(errors.New("试图获取未注册的cache")))
+	}
+
+	return cache
 }
 
 func NewCache(app core.IApp) core.ICache {
-	conf := app.GetConfig().Config().Cache
-	cache := zcache.NewCache(
-		zcache.WithCacheDB(makeCacheDB(&conf)),
-		zcache.WithDefaultExpire(time.Duration(conf.DefaultExpire)*time.Millisecond, time.Duration(conf.DefaultExpireMax)*time.Millisecond),
-		zcache.WithDirectReturnOnCacheFault(conf.DirectReturnOnCacheFault),
-		zcache.WithPanicOnLoaderExists(conf.PanicOnLoaderExists),
-		zcache.WithCodec(makeCodec(conf.Codec)),
-		zcache.WithSingleFlight(makeSingleFlight(conf.SingleFlight)),
-		zcache.WithLogger(app.GetLogger()),
-	)
-	return &Cache{cache: cache}
+	configs := app.GetConfig().Config().Cache
+	caches := make(map[string]*zcache.Cache, len(configs))
+	for name, conf := range configs {
+		cache := zcache.NewCache(
+			zcache.WithCacheDB(makeCacheDB(&conf)),
+			zcache.WithDefaultExpire(time.Duration(conf.DefaultExpire)*time.Millisecond, time.Duration(conf.DefaultExpireMax)*time.Millisecond),
+			zcache.WithDirectReturnOnCacheFault(conf.DirectReturnOnCacheFault),
+			zcache.WithPanicOnLoaderExists(conf.PanicOnLoaderExists),
+			zcache.WithCodec(makeCodec(conf.Codec)),
+			zcache.WithSingleFlight(makeSingleFlight(conf.SingleFlight)),
+			zcache.WithLogger(app.GetLogger()),
+		)
+		caches[name] = cache
+	}
+	return &Cache{caches: caches}
 }
 
 // 构建编解码器

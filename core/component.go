@@ -86,5 +86,5 @@ type ICronJob interface {
 }
 
 type ICache interface {
-	Cache() *zcache.Cache
+	Cache(name ...string) *zcache.Cache
 }
