@@ -55,41 +55,9 @@ type LogConfig = zlog.LogConfig
 
 // 服务配置
 type ServicesConfig struct {
-	// api服务
-	//
-	// [ApiService]
-	// Bind = ":3000"
-	// IPWithNginxForwarded = false
-	// IPWithNginxReal = false
-	// ShowDetailedErrorOfProduction = false
-	ApiService ApiServiceConfig
-
-	// grpc服务
-	//
-	// [GrpcService]
-	// Bind = ":3001"
-	// HeartbeatTime = 20000
-	GrpcService GrpcServiceConfig
-
-	// 定时服务
-	//
-	// [CronService]
-	// ThreadCount = 10
-	// JobQueueSize = 100
-	CronService CronServiceConfig
-
-	// mysql-binlog服务
-	//
-	// [MysqlBinlogService]
-	// Host = "localhost:3306"
-	// UserName = "root"
-	// Password = "password"
-	// Charset = "utf8mb4"
-	// IncludeTableRegex = []
-	// ExcludeTableRegex = []
-	// DiscardNoMetaRowEvent = false
-	// DumpExecutionPath = ""
-	// IgnoreWKBDataParseError = true
+	ApiService         ApiServiceConfig
+	GrpcService        GrpcServiceConfig
+	CronService        CronServiceConfig
 	MysqlBinlogService MysqlBinlogServiceConfig
 }
 
@@ -128,60 +96,11 @@ type MysqlBinlogServiceConfig struct {
 
 // 组件配置
 type ComponentsConfig struct {
-	// grpc客户端
-	//
-	// [GrpcClient.default]
-	// Address = "localhost:3001"
-	// Registry = "local"
-	// Balance = "round_robin"
-	// DialTimeout = 1000
 	GrpcClient map[string]GrpcClientConfig
-
-	// xorm
-	//
-	// [Xorm.test]
-	// Driver = "sqlite3"
-	// Source = "test.db"
-	// MaxIdleConns = 1
-	// MaxOpenConns = 1
-	// ConnMaxLifetime = 0
-	Xorm map[string]XormConfig
-
-	// redis
-	//
-	// [Redis.default]
-	// Address = "127.0.0.1:6379"
-	// Password = ""
-	// DB = 0
-	// IsCluster = false
-	// PoolSize = 20
-	// ReadTimeout = 5000
-	// WriteTimeout = 5000
-	// DialTimeout = 5000
-	Redis map[string]RedisConfig
-
-	// es7
-	//
-	// [ES7.default]
-	// Address = "http://127.0.0.1:9200"
-	// UserName = ""
-	// Password = ""
-	// DialTimeout = 5000
-	// Sniff = false
-	// Healthcheck = true
-	// Retry = 0
-	// RetryInterval = 0
-	// GZip = false
-	ES7 map[string]ES7Config
-
-	// cache
-	//
-	// [Cache.default]
-	// CacheDB = "memory"
-	// Codec = "msgpack"
-	// DirectReturnOnCacheFault = true
-	// PanicOnLoaderExists = true
-	Cache map[string]CacheConfig
+	Xorm       map[string]XormConfig
+	Redis      map[string]RedisConfig
+	ES7        map[string]ES7Config
+	Cache      map[string]CacheConfig
 }
 
 // grpc客户端配置
@@ -230,8 +149,8 @@ type ES7Config struct {
 type CacheConfig struct {
 	CacheDB                  string // 缓存db; default, no, memory, redis
 	Codec                    string // 编解码器; default, byte, json, jsoniter, msgpack, proto_buffer
-	DirectReturnOnCacheFault bool   // 在缓存故障时直接返回缓存错误(默认)
-	PanicOnLoaderExists      bool   // 注册加载器时如果加载器已存在会panic(默认), 设为false会替换旧的加载器
+	DirectReturnOnCacheFault bool   // 在缓存故障时直接返回缓存错误
+	PanicOnLoaderExists      bool   // 注册加载器时如果加载器已存在会panic, 设为false会替换旧的加载器
 	SingleFlight             string // 单跑; default, no, single
 	DefaultExpire            int64  // 默认有效时间, 毫秒, <= 0 表示永久
 	DefaultExpireMax         int64  // 默认最大有效时间, 毫秒, 如果 > 0 且 DefaultExpire > 0, 则默认有效时间在 [DefaultExpire, DefaultExpireMax-1] 区间随机

@@ -41,8 +41,8 @@ func newConfig() *core.Config {
 
 // 解析配置
 //
-// 配置来源优先级 命令行 > WithViper > WithConfig > WithFiles > WithApollo > 默认配置文件
-// 注意: 多个配置文件如果存在同配置分片会智能合并, 完全相同的配置节点以最后的文件为准, 从apollo拉取的配置优先级最高
+// 配置来源优先级 命令行 > WithViper > WithConfig > WithFiles(Apollo分片优先级最高) > WithApollo > 默认配置文件
+// 注意: 多个配置文件如果存在同配置分片会智能合并, 同分片中完全相同的配置节点以最后的文件为准, 从apollo拉取的配置会覆盖相同的文件配置节点
 func NewConfig(appName string, opts ...Option) core.IConfig {
 	opt := newOptions()
 	for _, o := range opts {
