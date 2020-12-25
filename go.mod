@@ -53,10 +53,11 @@ require (
 	github.com/zlyuancn/zcache v0.0.0-20201220104017-45060eb0bdad
 	github.com/zlyuancn/zlog v0.0.0-20201214101451-7d0a723e032f
 	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
-	github.com/zlyuancn/zutils v0.0.0-20201214131021-e3c761ffaed5
+	github.com/zlyuancn/zutils v0.0.0-20201222070147-17a7b8cc6197
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9 // indirect
-	golang.org/x/sys v0.0.0-20201214095126-aec9a390925b // indirect
+	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
+	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
+	golang.org/x/sys v0.0.0-20201223074533-0d417f636930 // indirect
 	google.golang.org/grpc v1.33.2
 	google.golang.org/grpc/examples v0.0.0-20201130222003-4a0125ac5808 // indirect
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect

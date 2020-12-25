@@ -91,7 +91,7 @@ func (e *ES7) getClient(name string) *elastic7.Client {
 
 func (e *ES7) makeClient(name string, client *Client) *elastic7.Client {
 	// 获取配置
-	conf, ok := e.app.GetConfig().Config().ES7[name]
+	conf, ok := e.app.GetConfig().Config().Components.ES7[name]
 	if !ok {
 		client.e = errors.New("试图获取未注册的es7")
 		logger.Log.Panic(zap.String("name", name), zap.Error(client.e))

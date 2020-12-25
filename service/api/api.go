@@ -65,7 +65,7 @@ func (a *ApiService) Inject(sc ...interface{}) {
 }
 
 func (a *ApiService) Start() error {
-	conf := a.app.GetConfig().Config().ApiService
+	conf := a.app.GetConfig().Config().Services.ApiService
 
 	err := service.WaitRun(&service.WaitRunOption{
 		ServiceName:       "api",

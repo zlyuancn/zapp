@@ -44,7 +44,7 @@ type MysqlBinlogService struct {
 }
 
 func NewMysqlBinlogService(app core.IApp) core.IService {
-	conf := app.GetConfig().Config().MysqlBinlogService
+	conf := app.GetConfig().Config().Services.MysqlBinlogService
 	cfg := &canal.Config{
 		Addr:                  conf.Host,
 		User:                  conf.UserName,

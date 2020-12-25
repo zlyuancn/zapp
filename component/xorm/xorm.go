@@ -93,7 +93,7 @@ func (x *Xorm) getEngine(name string) *xorm.Engine {
 
 func (x *Xorm) makeClient(name string, engine *Engine) *xorm.Engine {
 	// 获取配置
-	conf, ok := x.app.GetConfig().Config().Xorm[name]
+	conf, ok := x.app.GetConfig().Config().Components.Xorm[name]
 	if !ok {
 		engine.e = errors.New("试图获取未注册的xorm")
 		logger.Log.Panic(zap.String("name", name), zap.Error(engine.e))

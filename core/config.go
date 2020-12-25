@@ -10,6 +10,7 @@ package core
 
 import (
 	"github.com/spf13/viper"
+	"github.com/zlyuancn/zlog"
 )
 
 // 配置结构
@@ -17,6 +18,43 @@ type Config struct {
 	// 框架配置
 	Frame FrameConfig
 
+	// 服务配置
+	Services ServicesConfig
+
+	// 组件配置
+	Components ComponentsConfig
+}
+
+// 配置
+type IConfig interface {
+	// 获取配置
+	Config() *Config
+	// 解析数据到结构中
+	Parse(outPtr interface{}) error
+	// 解析指定分片的数据到结构中
+	ParseShard(shard string, outPtr interface{}) error
+	// 获取配置viper结构
+	GetViper() *viper.Viper
+}
+
+// frame配置
+type FrameConfig struct {
+	// debug标志
+	Debug bool
+	// 清理内存间隔时间(毫秒)
+	FreeMemoryInterval int
+	// 等待服务启动阶段1, 等待时间(毫秒), 如果时间到则临时认为服务启动成功并提前返回
+	WaitServiceRunTime int
+	// 等待服务启动阶段2, 等待服务启动阶段1时间到后继续等待服务启动, 等待时间(毫秒), 如果时间到则真正认为服务启动成功
+	ContinueWaitServiceRunTime int
+	// log配置
+	Log LogConfig
+}
+
+type LogConfig = zlog.LogConfig
+
+// 服务配置
+type ServicesConfig struct {
 	// api服务
 	//
 	// [ApiService]
@@ -53,7 +91,43 @@ type Config struct {
 	// DumpExecutionPath = ""
 	// IgnoreWKBDataParseError = true
 	MysqlBinlogService MysqlBinlogServiceConfig
+}
 
+// api服务配置
+type ApiServiceConfig struct {
+	Bind                          string // bind地址
+	IPWithNginxForwarded          bool   // 适配nginx的Forwarded获取ip, 优先级高于nginx的Real
+	IPWithNginxReal               bool   // 适配nginx的Real获取ip, 优先级高于sock连接的ip
+	ShowDetailedErrorOfProduction bool   // 生产环境显示详细的错误
+}
+
+// grpc服务配置
+type GrpcServiceConfig struct {
+	Bind          string // bind地址
+	HeartbeatTime int    // 心跳时间(毫秒),
+}
+
+// CronService配置
+type CronServiceConfig struct {
+	ThreadCount  int // 线程数
+	JobQueueSize int // job队列大小
+}
+
+// MysqlBinlogService配置
+type MysqlBinlogServiceConfig struct {
+	Host                    string   // mysql 主机地址
+	UserName                string   // 用户名, 最好是root
+	Password                string   // 密码
+	Charset                 *string  // 字符集, 一般为utf8mb4
+	IncludeTableRegex       []string // 包含的表正则匹配, 匹配的数据为 dbName.tableName
+	ExcludeTableRegex       []string // 排除的表正则匹配, 匹配的数据为 dbName.tableName
+	DiscardNoMetaRowEvent   bool     // 放弃没有表元数据的row事件
+	DumpExecutionPath       string   // mysqldump执行路径, 如果为空则忽略mysqldump只使用binlog, mysqldump执行路径一般为mysqldump
+	IgnoreWKBDataParseError bool     // 忽略wkb数据解析错误, 一般为POINT, GEOMETRY类型
+}
+
+// 组件配置
+type ComponentsConfig struct {
 	// grpc客户端
 	//
 	// [GrpcClient.default]
@@ -102,69 +176,12 @@ type Config struct {
 
 	// cache
 	//
-	// [Cache]
+	// [Cache.default]
 	// CacheDB = "memory"
 	// Codec = "msgpack"
 	// DirectReturnOnCacheFault = true
 	// PanicOnLoaderExists = true
 	Cache map[string]CacheConfig
-}
-
-// 配置
-type IConfig interface {
-	// 获取配置
-	Config() *Config
-	// 解析数据到结构中
-	Parse(outPtr interface{}) error
-	// 解析指定分片的数据到结构中
-	ParseShard(shard string, outPtr interface{}) error
-	// 获取配置viper结构
-	GetViper() *viper.Viper
-}
-
-// frame配置
-type FrameConfig struct {
-	// debug标志
-	Debug bool
-	// 清理内存间隔时间(毫秒)
-	FreeMemoryInterval int
-	// 等待服务启动阶段1, 等待时间(毫秒), 如果时间到则临时认为服务启动成功并提前返回
-	WaitServiceRunTime int
-	// 等待服务启动阶段2, 等待服务启动阶段1时间到后继续等待服务启动, 等待时间(毫秒), 如果时间到则真正认为服务启动成功
-	ContinueWaitServiceRunTime int
-}
-
-// api服务配置
-type ApiServiceConfig struct {
-	Bind                          string // bind地址
-	IPWithNginxForwarded          bool   // 适配nginx的Forwarded获取ip, 优先级高于nginx的Real
-	IPWithNginxReal               bool   // 适配nginx的Real获取ip, 优先级高于sock连接的ip
-	ShowDetailedErrorOfProduction bool   // 生产环境显示详细的错误
-}
-
-// grpc服务配置
-type GrpcServiceConfig struct {
-	Bind          string // bind地址
-	HeartbeatTime int    // 心跳时间(毫秒),
-}
-
-// CronService配置
-type CronServiceConfig struct {
-	ThreadCount  int // 线程数
-	JobQueueSize int // job队列大小
-}
-
-// MysqlBinlogService配置
-type MysqlBinlogServiceConfig struct {
-	Host                    string   // mysql 主机地址
-	UserName                string   // 用户名, 最好是root
-	Password                string   // 密码
-	Charset                 *string  // 字符集, 一般为utf8mb4
-	IncludeTableRegex       []string // 包含的表正则匹配, 匹配的数据为 dbName.tableName
-	ExcludeTableRegex       []string // 排除的表正则匹配, 匹配的数据为 dbName.tableName
-	DiscardNoMetaRowEvent   bool     // 放弃没有表元数据的row事件
-	DumpExecutionPath       string   // mysqldump执行路径, 如果为空则忽略mysqldump只使用binlog, mysqldump执行路径一般为mysqldump
-	IgnoreWKBDataParseError bool     // 忽略wkb数据解析错误, 一般为POINT, GEOMETRY类型
 }
 
 // grpc客户端配置

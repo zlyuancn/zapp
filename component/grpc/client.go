@@ -50,14 +50,15 @@ func NewClient(app core.IApp) core.IGrpcComponent {
 		creatorMap: make(map[string]reflect.Value),
 	}
 
-	for name, conf := range app.GetConfig().Config().GrpcClient {
+	configs := app.GetConfig().Config().Components.GrpcClient
+	for name, conf := range configs {
 		if conf.Registry == "" {
 			conf.Registry = consts.DefaultConfig_GrpcClient_Registry
 		}
 		if conf.Balance == "" {
 			conf.Balance = consts.DefaultConfig_GrpcClient_Balance
 		}
-		app.GetConfig().Config().GrpcClient[name] = conf
+		configs[name] = conf
 
 		switch conf.Registry {
 		case local.Name:
@@ -160,7 +161,7 @@ func (g *Client) makeConn(name, scheme, balance string, timeout int) (*grpc.Clie
 
 func (g *Client) makeClient(name string, conn *Conn) interface{} {
 	// 获取配置
-	conf, ok := g.app.GetConfig().Config().GrpcClient[name]
+	conf, ok := g.app.GetConfig().Config().Components.GrpcClient[name]
 	if !ok {
 		conn.e = errors.New("试图获取未注册的grpc客户端")
 		logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))

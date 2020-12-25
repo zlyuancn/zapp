@@ -74,7 +74,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 		app.enableDaemon()
 	}
 
-	app.config = config.NewConfig(app.opt.configOpts...)
+	app.config = config.NewConfig(appName, app.opt.configOpts...)
 	app.ILogger = logger.NewLogger(appName, app.config)
 
 	app.Debug("app初始化")

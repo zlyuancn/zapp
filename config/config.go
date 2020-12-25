@@ -31,7 +31,11 @@ type configCli struct {
 }
 
 func newConfig() *core.Config {
-	conf := &core.Config{}
+	conf := &core.Config{
+		Frame: core.FrameConfig{
+			Debug: true,
+		},
+	}
 	return conf
 }
 
@@ -39,7 +43,7 @@ func newConfig() *core.Config {
 //
 // 配置来源优先级 命令行 > WithViper > WithConfig > WithFiles > WithApollo > 默认配置文件
 // 注意: 多个配置文件如果存在同配置分片会智能合并, 完全相同的配置节点以最后的文件为准, 从apollo拉取的配置优先级最高
-func NewConfig(opts ...Option) core.IConfig {
+func NewConfig(appName string, opts ...Option) core.IConfig {
 	opt := newOptions()
 	for _, o := range opts {
 		o(opt)
@@ -106,7 +110,7 @@ func NewConfig(opts ...Option) core.IConfig {
 		logger.Log.Fatal("配置解析失败", zap.Error(err))
 	}
 
-	c.checkDefaultConfig(c.c)
+	c.checkDefaultConfig(appName, c.c)
 
 	if *testFlag {
 		fmt.Println("配置文件测试成功")
@@ -148,7 +152,7 @@ func makeViperFromStruct(a interface{}) (*viper.Viper, error) {
 	return vi, nil
 }
 
-func (c *configCli) checkDefaultConfig(conf *core.Config) {
+func (c *configCli) checkDefaultConfig(appName string, conf *core.Config) {
 	conf.Frame.FreeMemoryInterval = zutils.Ternary.Or(conf.Frame.FreeMemoryInterval, consts.FrameConfig_FreeMemoryInterval).(int)
 	conf.Frame.WaitServiceRunTime = zutils.Ternary.Or(conf.Frame.WaitServiceRunTime, consts.FrameConfig_WaitServiceRunTime).(int)
 	conf.Frame.ContinueWaitServiceRunTime = zutils.Ternary.Or(conf.Frame.ContinueWaitServiceRunTime, consts.FrameConfig_ContinueWaitServiceRunTime).(int)

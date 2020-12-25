@@ -49,7 +49,7 @@ func (c *Cache) Cache(name ...string) *zcache.Cache {
 }
 
 func NewCache(app core.IApp) core.ICache {
-	configs := app.GetConfig().Config().Cache
+	configs := app.GetConfig().Config().Components.Cache
 	caches := make(map[string]*zcache.Cache, len(configs))
 	for name, conf := range configs {
 		cache := zcache.NewCache(

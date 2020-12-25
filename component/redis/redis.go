@@ -89,7 +89,7 @@ func (r *Redis) getClient(name string) redis.UniversalClient {
 
 func (r *Redis) makeClient(name string, client *Client) redis.UniversalClient {
 	// 获取配置
-	conf, ok := r.app.GetConfig().Config().Redis[name]
+	conf, ok := r.app.GetConfig().Config().Components.Redis[name]
 	if !ok {
 		client.e = errors.New("试图获取未注册的redis")
 		logger.Log.Panic(zap.String("name", name), zap.Error(client.e))

@@ -38,8 +38,6 @@ const (
 
 // 配置组名
 const (
-	// 日志
-	ConfigGroupName_Log = "log"
 	// apollo
 	ConfigGroupName_Apollo = "apollo"
 )
