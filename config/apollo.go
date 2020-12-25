@@ -20,10 +20,13 @@ import (
 	"github.com/zlyuancn/zapp/consts"
 )
 
+// 命名空间
 type Namespace string
 
+// 命名空间定义
 const (
-	FrameNamespace              Namespace = "frame"
+	AllNamespaces               Namespace = "all" // 表示所有支持的命名空间
+	FrameNamespace                        = "frame"
 	LogNamespace                          = "log"
 	ApiServiceNamespace                   = "api_service"
 	GrpcServiceNamespace                  = "grpc_service"
@@ -35,6 +38,21 @@ const (
 	ES7Namespace                          = "es7"
 	CacheNamespace                        = "cache"
 )
+
+// 所有支持的命名空间
+var allNamespaces = []Namespace{
+	FrameNamespace,
+	LogNamespace,
+	ApiServiceNamespace,
+	GrpcServiceNamespace,
+	CronServiceNamespace,
+	MysqlBinlogServiceNamespace,
+	GrpcClientNamespace,
+	XormNamespace,
+	RedisNamespace,
+	ES7Namespace,
+	CacheNamespace,
+}
 
 type ApolloConfig struct {
 	Address              string      // apollo-api地址, 多个地址用英文逗号连接
@@ -51,6 +69,7 @@ type ApolloConfig struct {
 // 从viper构建apollo配置
 func makeApolloConfigFromViper(vi *viper.Viper) (*ApolloConfig, error) {
 	var conf ApolloConfig
+	conf.Namespaces = []Namespace{AllNamespaces}
 	err := vi.UnmarshalKey(consts.ConfigGroupName_Apollo, &conf)
 	return &conf, err
 }
@@ -86,20 +105,31 @@ func makeViperFromApollo(conf *ApolloConfig) (*viper.Viper, error) {
 			))
 	}
 
+	// 加载数据
+	var namespaces []string
+	if len(conf.Namespaces) == 1 && conf.Namespaces[0] == AllNamespaces {
+		namespaces = make([]string, len(allNamespaces))
+		for i, r := range allNamespaces {
+			namespaces[i] = string(r)
+		}
+	} else {
+		namespaces = make([]string, len(conf.Namespaces))
+		for i, r := range conf.Namespaces {
+			namespaces[i] = string(r)
+		}
+	}
+	opts = append(opts, agollo.PreloadNamespaces(namespaces...))
+
 	// 构建apollo客户端
 	apolloClient, err := agollo.New(conf.Address, conf.AppId, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("初始化agollo失败: %s", err)
 	}
 
-	// 加载数据
-	data := make(map[string]interface{}, len(conf.Namespaces))
-	for _, name := range conf.Namespaces {
-		d := apolloClient.GetNameSpace(string(name))
-		if len(d) == 0 {
-			return nil, fmt.Errorf("命名空间[%s]的数据为空", name)
-		}
-		data[strings.ReplaceAll(string(name), "_", "")] = map[string]interface{}(d)
+	data := make(map[string]interface{}, len(namespaces))
+	for _, name := range namespaces {
+		d := apolloClient.GetNameSpace(name)
+		data[strings.ReplaceAll(name, "_", "")] = map[string]interface{}(d)
 	}
 
 	// 构建viper
