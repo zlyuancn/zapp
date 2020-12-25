@@ -26,6 +26,7 @@ func NewLogger(appName string, c core.IConfig) core.ILogger {
 	if conf.Log.Name == "" {
 		conf.Log.Name = appName
 	}
+	c.Config().Frame.Log = conf.Log
 
 	Log = zlog.New(conf.Log)
 	return Log
