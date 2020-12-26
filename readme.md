@@ -2,9 +2,17 @@
 # 用于快速构建项目的基础库
 
 ---
+<!-- TOC -->
 
-[toc]
+- [配置](#%E9%85%8D%E7%BD%AE)
+    - [从文件加载配置](#%E4%BB%8E%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE)
+    - [从viper加载配置](#%E4%BB%8Eviper%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE)
+    - [从配置结构体加载配置](#%E4%BB%8E%E9%85%8D%E7%BD%AE%E7%BB%93%E6%9E%84%E4%BD%93%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE)
+    - [从apollo加载配置](#%E4%BB%8Eapollo%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE)
+        - [apollo命名空间和配置说明](#apollo%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E5%92%8C%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E)
+        - [配置文件和apollo混用](#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%92%8Capollo%E6%B7%B7%E7%94%A8)
 
+<!-- /TOC -->
 ---
 
 # 配置
@@ -23,7 +31,7 @@
 [frame]
 Debug = true # debug 标志
 FreeMemoryInterval = 120000 # 主动清理内存间隔时间(毫秒), <= 0 表示禁用
-...
+#...
 ```
 
 + 服务配置示例
@@ -117,20 +125,20 @@ apollo的配置是扁平化的, 多级的key应该用点连接起来, 所以配�
     [frame]
     Debug = true
     FreeMemoryInterval = 120000
-    ...
+    #...
     Log.Level = true
     Log.WriteToStream = true
-    ...
+    #...
 
     [services]
     Api.Bind = ":8080"
-    ...
+    #...
     Grpc.Bind = ":3000"
-    ...
+    #...
 
     [components]
     Xorm.default.Driver = "mysql"
-    ...
-    Redis.default.Address =127.0.0.1:6379
-    ...
+    #...
+    Redis.default.Address = "127.0.0.1:6379"
+    #...
     ```
