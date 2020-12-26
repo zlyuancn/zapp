@@ -33,7 +33,8 @@ type configCli struct {
 func newConfig() *core.Config {
 	conf := &core.Config{
 		Frame: core.FrameConfig{
-			Debug: true,
+			Debug:              true,
+			FreeMemoryInterval: consts.FrameConfig_FreeMemoryInterval,
 		},
 	}
 	return conf
@@ -153,7 +154,6 @@ func makeViperFromStruct(a interface{}) (*viper.Viper, error) {
 }
 
 func (c *configCli) checkDefaultConfig(appName string, conf *core.Config) {
-	conf.Frame.FreeMemoryInterval = zutils.Ternary.Or(conf.Frame.FreeMemoryInterval, consts.FrameConfig_FreeMemoryInterval).(int)
 	conf.Frame.WaitServiceRunTime = zutils.Ternary.Or(conf.Frame.WaitServiceRunTime, consts.FrameConfig_WaitServiceRunTime).(int)
 	conf.Frame.ContinueWaitServiceRunTime = zutils.Ternary.Or(conf.Frame.ContinueWaitServiceRunTime, consts.FrameConfig_ContinueWaitServiceRunTime).(int)
 }

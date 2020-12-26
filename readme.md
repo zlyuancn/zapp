@@ -3,19 +3,27 @@
 
 ---
 
-# 配置文件说明
+[toc]
 
-> 一般使用toml作为配置文件, 可以使用命令行-c支持多配置文件<br>
-> 配置来源优先级 命令行 > WithViper > WithConfig > WithFiles(Apollo分片优先级最高) > WithApollo > 默认配置文件<br>
-> 注意: 多个配置文件如果存在同配置分片会智能合并, 同分片中完全相同的配置节点以最后的文件为准, 从apollo拉取的配置会覆盖相同的文件配置节点
+---
+
+# 配置
+
+> 配置来源优先级: 命令行指定文件 > WithViper > WithConfig > WithFiles > WithApollo > 默认配置文件
+> 任何来源的配置都会构建为 [viper](https://github.com/spf13/viper) 结构, 然后再反序列化为配置结构体 [core.Config](./core/config.go)
+
+## 从文件加载配置
+
+> 1.一般使用toml作为配置文件, 可以使用命令行 `-c` 手动指定配置文件, 如果有多个配置文件用英文逗号分隔
+> 2.可以使用 `WithFiles` 在代码中指定配置文件
+> 3.多个配置文件如果存在同配置分片会智能合并, 从apollo拉取的配置会覆盖相同的文件配置节点
 
 + 框架配置示例
 ```toml
 [frame]
-Debug = true
-FreeMemoryInterval = 2000
-WaitServiceRunTime = 500
-ContinueWaitServiceRunTime = 120000
+Debug = true # debug 标志
+FreeMemoryInterval = 120000 # 主动清理内存间隔时间(毫秒), <= 0 表示禁用
+...
 ```
 
 + 服务配置示例
@@ -29,6 +37,8 @@ ShowDetailedErrorOfProduction = false
 [services.grpc]
 Bind = ":3000"
 HeartbeatTime = 20000
+
+[...]
 ```
 
 + 组件配置示例
@@ -38,6 +48,89 @@ CacheDB = "memory"
 Codec = "msgpack"
 DirectReturnOnCacheFault = true
 MemoryCacheDB.CleanupInterval = 300000
+
+[...]
 ```
 
 + 更多配置参考 [core.Config](./core/config.go)
+
+## 从viper加载配置
+
+> 使用 `WithViper` 设置 [viper](https://github.com/spf13/viper) 结构
+
+## 从配置结构体加载配置
+
+> 使用 `WithConfig` 设置配置结构体 [core.Config](./core/config.go)
+
+## 从apollo加载配置
+
+> 使用 `WithApollo` 设置apollo来源和如何加载
+
+### apollo命名空间和配置说明
+
+```text
+apollo命名空间主要为三部分:
+    frame: 框架配置
+    services: 服务配置
+    components: 组件配置
+apollo的配置是扁平化的, 多级的key应该用点连接起来, 所以配置应该类似于这样:
+    frame:
+        Debug                   true            debug标志
+        FreeMemoryInterval      120000          清理内存间隔时间(毫秒)
+        ...
+        Log.Level               debug           日志等级, debug, info, warn, error, dpanic, panic, fatal
+        Log.WriteToStream       true            输出到屏幕
+        ...
+    services:
+        Api.Bind                :8080           ...
+        ...
+        Grpc.Bind               :3000           ...
+        ...
+    components:
+        Xorm.default.Driver     mysql           ...
+        ...
+        Redis.default.Address   127.0.0.1:6379  ...
+        ...
+```
+
+### 配置文件和apollo混用
+
+> 从apollo拉取的配置会覆盖文件的配置
+
+1. 文件中添加如下设置, 参考 [config.ApolloConfig](./config/apollo.go)
+
+    ```toml
+    [apollo]
+    Address = "http://127.0.0.1:8080"
+    AppId = "your-appid"
+    AccessKey = "" # 验证key, 优先级高于基础认证
+    AuthBasicUser = "" # 基础认证用户名
+    AuthBasicPassword = "" # 基础认证密码
+    Cluster = "default" # 集群名
+    AlwaysLoadFromRemote = false # 总是从远程获取, 在远程加载失败时不会从备份文件加载, 这将导致无法启动app
+    BackupFile = "./configs/backup.apollo" # 本地备份文件, 留空表示不使用备份
+    ```
+
+2. 对于混用配置, 由于apollo的配置是扁平化的, 多级key用点连接, 所以文件的配置应该改为如下样式以适应:
+
+    ```toml
+    [frame]
+    Debug = true
+    FreeMemoryInterval = 120000
+    ...
+    Log.Level = true
+    Log.WriteToStream = true
+    ...
+
+    [services]
+    Api.Bind = ":8080"
+    ...
+    Grpc.Bind = ":3000"
+    ...
+
+    [components]
+    Xorm.default.Driver = "mysql"
+    ...
+    Redis.default.Address =127.0.0.1:6379
+    ...
+    ```
