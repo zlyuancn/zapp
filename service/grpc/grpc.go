@@ -43,7 +43,7 @@ type GrpcService struct {
 }
 
 func NewGrpcService(app core.IApp) core.IService {
-	conf := app.GetConfig().Config().Services.GrpcService
+	conf := app.GetConfig().Config().Services.Grpc
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			UnaryServerLogInterceptor(app), // 日志
@@ -73,7 +73,7 @@ func (g *GrpcService) Inject(a ...interface{}) {
 }
 
 func (g *GrpcService) Start() error {
-	conf := g.app.GetConfig().Config().Services.GrpcService
+	conf := g.app.GetConfig().Config().Services.Grpc
 
 	listener, err := net.Listen("tcp", conf.Bind)
 	if err != nil {

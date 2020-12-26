@@ -55,10 +55,10 @@ type LogConfig = zlog.LogConfig
 
 // 服务配置
 type ServicesConfig struct {
-	ApiService         ApiServiceConfig
-	GrpcService        GrpcServiceConfig
-	CronService        CronServiceConfig
-	MysqlBinlogService MysqlBinlogServiceConfig
+	Api         ApiServiceConfig
+	Grpc        GrpcServiceConfig
+	Cron        CronServiceConfig
+	MysqlBinlog MysqlBinlogServiceConfig
 }
 
 // api服务配置

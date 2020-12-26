@@ -20,56 +20,34 @@ import (
 	"github.com/zlyuancn/zapp/consts"
 )
 
-// 命名空间
-type Namespace string
-
 // 命名空间定义
 const (
-	AllNamespaces               Namespace = "all" // 表示所有支持的命名空间
-	FrameNamespace                        = "frame"
-	LogNamespace                          = "log"
-	ApiServiceNamespace                   = "api_service"
-	GrpcServiceNamespace                  = "grpc_service"
-	CronServiceNamespace                  = "cron_service"
-	MysqlBinlogServiceNamespace           = "mysql_binlog_service"
-	GrpcClientNamespace                   = "grpc_client"
-	XormNamespace                         = "xorm"
-	RedisNamespace                        = "redis"
-	ES7Namespace                          = "es7"
-	CacheNamespace                        = "cache"
+	FrameNamespace      = "frame"
+	ServicesNamespace   = "services"
+	ComponentsNamespace = "components"
 )
 
 // 所有支持的命名空间
-var allNamespaces = []Namespace{
+var allNamespaces = []string{
 	FrameNamespace,
-	LogNamespace,
-	ApiServiceNamespace,
-	GrpcServiceNamespace,
-	CronServiceNamespace,
-	MysqlBinlogServiceNamespace,
-	GrpcClientNamespace,
-	XormNamespace,
-	RedisNamespace,
-	ES7Namespace,
-	CacheNamespace,
+	ServicesNamespace,
+	ComponentsNamespace,
 }
 
 type ApolloConfig struct {
-	Address              string      // apollo-api地址, 多个地址用英文逗号连接
-	AppId                string      // 应用名
-	AccessKey            string      // 验证key, 优先级高于基础认证
-	AuthBasicUser        string      // 基础认证用户名
-	AuthBasicPassword    string      // 基础认证密码
-	Cluster              string      // 集群名
-	AlwaysLoadFromRemote bool        // 总是从远程获取, 在远程加载失败时不会从备份文件加载
-	BackupFile           string      // 备份文件名
-	Namespaces           []Namespace // 要加载的命名空间, 一个命名空间相当于一个配置组
+	Address              string // apollo-api地址, 多个地址用英文逗号连接
+	AppId                string // 应用名
+	AccessKey            string // 验证key, 优先级高于基础认证
+	AuthBasicUser        string // 基础认证用户名
+	AuthBasicPassword    string // 基础认证密码
+	Cluster              string // 集群名
+	AlwaysLoadFromRemote bool   // 总是从远程获取, 在远程加载失败时不会从备份文件加载
+	BackupFile           string // 备份文件名
 }
 
 // 从viper构建apollo配置
 func makeApolloConfigFromViper(vi *viper.Viper) (*ApolloConfig, error) {
 	var conf ApolloConfig
-	conf.Namespaces = []Namespace{AllNamespaces}
 	err := vi.UnmarshalKey(consts.ConfigGroupName_Apollo, &conf)
 	return &conf, err
 }
@@ -105,20 +83,8 @@ func makeViperFromApollo(conf *ApolloConfig) (*viper.Viper, error) {
 			))
 	}
 
-	// 加载数据
-	var namespaces []string
-	if len(conf.Namespaces) == 1 && conf.Namespaces[0] == AllNamespaces {
-		namespaces = make([]string, len(allNamespaces))
-		for i, r := range allNamespaces {
-			namespaces[i] = string(r)
-		}
-	} else {
-		namespaces = make([]string, len(conf.Namespaces))
-		for i, r := range conf.Namespaces {
-			namespaces[i] = string(r)
-		}
-	}
-	opts = append(opts, agollo.PreloadNamespaces(namespaces...))
+	// 预加载数据, 从远程或本地加载成功就不会返回错误
+	opts = append(opts, agollo.PreloadNamespaces(allNamespaces...))
 
 	// 构建apollo客户端
 	apolloClient, err := agollo.New(conf.Address, conf.AppId, opts...)
@@ -126,8 +92,8 @@ func makeViperFromApollo(conf *ApolloConfig) (*viper.Viper, error) {
 		return nil, fmt.Errorf("初始化agollo失败: %s", err)
 	}
 
-	data := make(map[string]interface{}, len(namespaces))
-	for _, name := range namespaces {
+	data := make(map[string]interface{}, len(allNamespaces))
+	for _, name := range allNamespaces {
 		d := apolloClient.GetNameSpace(name)
 		data[strings.ReplaceAll(name, "_", "")] = map[string]interface{}(d)
 	}

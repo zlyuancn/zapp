@@ -22,7 +22,7 @@ import (
 
 func Recover() iris.Handler {
 	isProduction := !component.GlobalComponent().Config().Frame.Debug
-	showDetailedErrorOfProduction := component.GlobalComponent().Config().Services.ApiService.ShowDetailedErrorOfProduction
+	showDetailedErrorOfProduction := component.GlobalComponent().Config().Services.Api.ShowDetailedErrorOfProduction
 	return func(ctx iris.Context) {
 		err := utils.Recover.WarpCall(func() error {
 			ctx.Next()

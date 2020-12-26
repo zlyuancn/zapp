@@ -35,7 +35,7 @@ type CronService struct {
 }
 
 func NewCronService(app core.IApp) *CronService {
-	conf := app.GetConfig().Config().Services.CronService
+	conf := app.GetConfig().Config().Services.Cron
 	return &CronService{
 		app: app,
 		scheduler: zscheduler.NewScheduler(

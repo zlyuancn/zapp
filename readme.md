@@ -11,7 +11,7 @@
 
 + 框架配置示例
 ```toml
-[Frame]
+[frame]
 Debug = true
 FreeMemoryInterval = 2000
 WaitServiceRunTime = 500
@@ -20,16 +20,20 @@ ContinueWaitServiceRunTime = 120000
 
 + 服务配置示例
 ```toml
-[Services.ApiService]
+[services.api]
 Bind = ":8080"
 IPWithNginxForwarded = false
 IPWithNginxReal = false
 ShowDetailedErrorOfProduction = false
+
+[services.grpc]
+Bind = ":3000"
+HeartbeatTime = 20000
 ```
 
 + 组件配置示例
 ```toml
-[Components.Cache.default]
+[components.cache.default]
 CacheDB = "memory"
 Codec = "msgpack"
 DirectReturnOnCacheFault = true
