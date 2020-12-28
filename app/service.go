@@ -36,12 +36,6 @@ func (app *appCli) GetService(serviceType core.ServiceType, serviceName ...strin
 }
 
 // 注册api路由
-//
-// a 必须是 func(c core.IComponent, router iris.Party)
-// 示例:
-//    a.RegistryApiRouter(func(c core.IComponent, router iris.Party) {
-//        router.Get("/", api.Wrap(func(ctx *api.Context) interface{} { return "hello" }))
-//    })
 func (app *appCli) RegistryApiRouter(a interface{}) {
 	s, ok := app.GetService(core.ApiService)
 	if !ok {
@@ -96,12 +90,6 @@ func (app *appCli) RegistryCronJobCustom(name string, trigger zscheduler.ITrigge
 }
 
 // 注册grpc服务
-//
-// a 必须是 func(c core.IComponent, server *grpc.Server)
-// 示例:
-//     app.RegistryGrpcService(func(c core.IComponent, service *grpc.Server) {
-//         pb.RegisterXXXServer(service, &srvObj)
-//     })
 func (app *appCli) RegistryGrpcService(a ...interface{}) {
 	s, ok := app.GetService(core.GrpcService)
 	if !ok {
@@ -115,16 +103,6 @@ func (app *appCli) RegistryGrpcService(a ...interface{}) {
 }
 
 // 注册mysql-binlog服务handler
-//
-// a 必须是 func(c core.IComponent) mysql_binlog.IEventHandler
-// 示例:
-//     type Handler struct {
-//         c core.IComponent
-//         mysql_binlog.BaseEventHandler
-//     }
-//     app.RegistryMysqlBinlogHandler(func(c core.IComponent) mysql_binlog.IEventHandler {
-//         return &Handler{c: c}
-//     })
 func (app *appCli) RegistryMysqlBinlogHandler(a interface{}) {
 	s, ok := app.GetService(core.MysqlBinlogService)
 	if !ok {

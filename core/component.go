@@ -52,6 +52,10 @@ type IValidator interface {
 
 type IGrpcComponent interface {
 	// 注册grpc客户端建造者, 这个方法应该在app.Run之前调用
+	//
+	// creator 必须实现 func (cc *grpc.ClientConn) Any
+	// 示例:
+	//     c.RegistryGrpcClientCreator("xxx", pb.NewXXXClient)
 	RegistryGrpcClientCreator(name string, creator interface{})
 	// 获取grpc客户端, 如果未注册grpc客户端建造者会panic
 	GetGrpcClient(name string) interface{}
