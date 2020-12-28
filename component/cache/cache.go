@@ -34,7 +34,7 @@ type Cache struct {
 	caches map[string]*zcache.Cache
 }
 
-func (c *Cache) Cache(name ...string) *zcache.Cache {
+func (c *Cache) GetCache(name ...string) *zcache.Cache {
 	n := consts.DefaultComponentName
 	if len(name) > 0 {
 		n = name[0]

@@ -90,5 +90,5 @@ type ICronJob interface {
 }
 
 type ICache interface {
-	Cache(name ...string) *zcache.Cache
+	GetCache(name ...string) *zcache.Cache
 }
