@@ -68,9 +68,9 @@ func (a *ApiService) Start() error {
 	conf := a.app.GetConfig().Config().Services.Api
 
 	err := service.WaitRun(&service.WaitRunOption{
-		ServiceName:       "api",
-		IgnoreErrs:        []error{iris.ErrServerClosed},
-		FatalOnErrOfWait2: true,
+		ServiceName:      "api",
+		IgnoreErrs:       []error{iris.ErrServerClosed},
+		ExitOnErrOfWait2: true,
 		RunServiceFn: func() error {
 			opts := []iris.Configurator{
 				iris.WithoutBodyConsumptionOnUnmarshal, // 重复消费

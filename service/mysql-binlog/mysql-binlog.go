@@ -112,9 +112,9 @@ func (m *MysqlBinlogService) Start() error {
 	}
 
 	err = service.WaitRun(&service.WaitRunOption{
-		ServiceName:       "mysql-binlog",
-		IgnoreErrs:        nil,
-		FatalOnErrOfWait2: true,
+		ServiceName:      "mysql-binlog",
+		IgnoreErrs:       nil,
+		ExitOnErrOfWait2: true,
 		RunServiceFn: func() error {
 			switch binlogName {
 			case OldestPos: // 最旧的位置

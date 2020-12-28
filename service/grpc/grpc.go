@@ -81,9 +81,9 @@ func (g *GrpcService) Start() error {
 	}
 
 	err = service.WaitRun(&service.WaitRunOption{
-		ServiceName:       "grpc",
-		IgnoreErrs:        nil,
-		FatalOnErrOfWait2: true,
+		ServiceName:      "grpc",
+		IgnoreErrs:       nil,
+		ExitOnErrOfWait2: true,
 		RunServiceFn: func() error {
 			return g.server.Serve(listener)
 		},
