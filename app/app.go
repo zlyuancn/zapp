@@ -32,7 +32,6 @@ type appCli struct {
 
 	opt *option
 
-	closeChan     chan struct{}
 	interrupt     chan os.Signal
 	baseCtx       context.Context
 	baseCtxCancel context.CancelFunc
@@ -57,7 +56,6 @@ func NewApp(appName string, opts ...Option) core.IApp {
 
 	app := &appCli{
 		name:      appName,
-		closeChan: make(chan struct{}),
 		interrupt: make(chan os.Signal, 1),
 		services:  make(map[core.ServiceType]map[string]core.IService),
 		opt:       newOption(),
@@ -182,7 +180,6 @@ func (app *appCli) enableDaemon() {
 
 func (app *appCli) exit() {
 	app.Debug("app准备退出")
-	close(app.closeChan)
 
 	// app退出前
 	app.handler(BeforeExitHandler)
@@ -232,7 +229,7 @@ func (app *appCli) freeMemory() {
 	t := time.NewTicker(time.Duration(interval) * time.Millisecond)
 	for {
 		select {
-		case <-app.closeChan:
+		case <-app.baseCtx.Done():
 			t.Stop()
 			return
 		case <-t.C:
