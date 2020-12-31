@@ -21,9 +21,10 @@ import (
 //
 // 将数值转为32进制, 因为求余2的次幂可以用位运算所以采用 数字+22位英文字母
 func (app *appCli) nextLoggerId() string {
-	id := atomic.AddUint64(&app.loggerId, 1)
-	bs := []byte{48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48} // 补0位, 32^13等于2^65
-	i := 12
+	id := atomic.AddUint32(&app.loggerId, 1)
+	bs := []byte{48, 48, 48, 48, 48, 48, 48}
+
+	i := len(bs) - 1
 	for {
 		bs[i] = byte(31&id) + 48 // 从字符0开始
 		if bs[i] > 57 {          // 超过数字用字母表示

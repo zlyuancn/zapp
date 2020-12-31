@@ -39,7 +39,7 @@ type appCli struct {
 
 	config core.IConfig
 
-	loggerId uint64
+	loggerId uint32
 	core.ILogger
 
 	component core.IComponent
