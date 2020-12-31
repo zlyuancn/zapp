@@ -316,6 +316,8 @@ github.com/juju/testing v0.0.0-20180402130637-44801989f0f7/go.mod h1:63prj8cnj0t
 github.com/juju/testing v0.0.0-20190723135506-ce30eb24acd2/go.mod h1:63prj8cnj0tU0S9OHjGJn+b1h0ZghCndfnbQolrYTwA=
 github.com/juju/testing v0.0.0-20201030020617-7189b3728523 h1:U110nevNNIKtBz4E4YMhpOtHplDo65ZgJS8MsqQ4Vdk=
 github.com/juju/testing v0.0.0-20201030020617-7189b3728523/go.mod h1:IbSKFoKW0bzmbDZ7rBwF/L3lO3b1bpmOIhTXQl/WJxw=
+github.com/juju/testing v0.0.0-20201216035041-2be42bba85f3 h1:ram7cW6jDPTu6cv9xDMwa+tO7RsO4BdsubxrJ4EEw+E=
+github.com/juju/testing v0.0.0-20201216035041-2be42bba85f3/go.mod h1:IbSKFoKW0bzmbDZ7rBwF/L3lO3b1bpmOIhTXQl/WJxw=
 github.com/juju/utils v0.0.0-20180424094159-2000ea4ff043/go.mod h1:6/KLg8Wz/y2KVGWEpkK9vMNGkOnu4k/cqs8Z1fKjTOk=
 github.com/juju/utils v0.0.0-20200116185830-d40c2fe10647/go.mod h1:6/KLg8Wz/y2KVGWEpkK9vMNGkOnu4k/cqs8Z1fKjTOk=
 github.com/juju/utils/v2 v2.0.0-20200923005554-4646bfea2ef1/go.mod h1:fdlDtQlzundleLLz/ggoYinEt/LmnrpNKcNTABQATNI=
@@ -486,6 +488,8 @@ github.com/pingcap/goleveldb v0.0.0-20191226122134-f82aafb29989 h1:surzm05a8C9dN
 github.com/pingcap/goleveldb v0.0.0-20191226122134-f82aafb29989/go.mod h1:O17XtbryoCJhkKGbT62+L2OlrniwqiGLSqrmdHCMzZw=
 github.com/pingcap/kvproto v0.0.0-20201203065642-3c1ff6599f5e h1:WG7o8NDm8zvcfDpsvHEPZIJ40LF2ExgV2OjwVlZyKHE=
 github.com/pingcap/kvproto v0.0.0-20201203065642-3c1ff6599f5e/go.mod h1:IOdRDPLyda8GX2hE/jO7gqaCV/PNFh8BZQCQZXfIOqI=
+github.com/pingcap/kvproto v0.0.0-20201218082734-fc36d7869035 h1:3z0mHkzekCfmmwFinKr11yiP5yGFGyykh2OqtD+V+ZE=
+github.com/pingcap/kvproto v0.0.0-20201218082734-fc36d7869035/go.mod h1:IOdRDPLyda8GX2hE/jO7gqaCV/PNFh8BZQCQZXfIOqI=
 github.com/pingcap/parser v0.0.0-20190506092653-e336082eb825 h1:U9Kdnknj4n2v76Mg7wazevZ5N9U1OIaMwSNRVLEcLX0=
 github.com/pingcap/parser v0.0.0-20190506092653-e336082eb825/go.mod h1:1FNvfp9+J0wvc4kl8eGNh7Rqrxveg15jJoWo/a0uHwA=
 github.com/pingcap/pd v1.1.0-beta h1:gCImjH2ylOfFjT+YfdmoWZMN1qvNke6tcZrkid2F6Rk=
@@ -831,6 +835,7 @@ golang.org/x/sys v0.0.0-20200724161237-0e2f3a69832c/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20201028094953-708e7fb298ac h1:bplbaOojU0hnrC9nvWJ5Nvp/gPIWKFMiGBFI9Cpp16I=
 golang.org/x/sys v0.0.0-20201028094953-708e7fb298ac/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 h1:nxC68pudNYkKU6jWhgrqdreuFiOQWj1Fs7T3VrH4Pjw=
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20201214095126-aec9a390925b h1:tv7/y4pd+sR8bcNb2D6o7BNU6zjWm0VjQLac+w7fNNM=
 golang.org/x/sys v0.0.0-20201214095126-aec9a390925b/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
@@ -927,6 +932,8 @@ google.golang.org/grpc v1.34.0 h1:raiipEjMOIC/TO2AvyTxP25XFdLxNIBwzDh3FM3XztI=
 google.golang.org/grpc v1.34.0/go.mod h1:WotjhfgOW/POjDeRt8vscBtXq+2VjORFy659qA51WJ8=
 google.golang.org/grpc/examples v0.0.0-20201130222003-4a0125ac5808 h1:DxCLVxI1pG2384TVKtyyAjY9QD+XeFV7Y5w3YGn4k8c=
 google.golang.org/grpc/examples v0.0.0-20201130222003-4a0125ac5808/go.mod h1:Ly7ZA/ARzg8fnPU9TyZIxoz33sEUuWX7txiqs8lPTgE=
+google.golang.org/grpc/examples v0.0.0-20201226181154-53788aa5dcb4 h1:tfxAh8kBsG9GdCdaDiSCA1qqpd8lMOqgEebUyqTtnH8=
+google.golang.org/grpc/examples v0.0.0-20201226181154-53788aa5dcb4/go.mod h1:Ly7ZA/ARzg8fnPU9TyZIxoz33sEUuWX7txiqs8lPTgE=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
 google.golang.org/protobuf v0.0.0-20200221191635-4d8936d0db64/go.mod h1:kwYJMbMJ01Woi6D6+Kah6886xMZcty6N08ah7+eCXa0=
 google.golang.org/protobuf v0.0.0-20200228230310-ab0ca4ff8a60/go.mod h1:cfTl7dwQJ+fmap5saPgwCLgHXTUD7jkjRqWcaiX5VyM=
