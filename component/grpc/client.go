@@ -11,42 +11,38 @@ package grpc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"reflect"
-	"sync"
 	"time"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
+	"github.com/zlyuancn/zapp/component/conn"
 	"github.com/zlyuancn/zapp/component/grpc/balance/round_robin"
 	"github.com/zlyuancn/zapp/component/grpc/registry/local"
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
-	"github.com/zlyuancn/zapp/utils"
 )
 
 var typeOfGrpcClientConn = reflect.TypeOf((*grpc.ClientConn)(nil))
 
 type Client struct {
-	app core.IApp
-	mx  sync.RWMutex
-
-	connMap    map[string]*Conn
+	app        core.IApp
+	conn       *conn.Conn
 	creatorMap map[string]reflect.Value
 }
 
 type Conn struct {
-	wg     sync.WaitGroup
 	cc     *grpc.ClientConn
 	client interface{}
-	e      error
 }
 
 func NewClient(app core.IApp) core.IGrpcComponent {
 	g := &Client{
 		app:        app,
-		connMap:    make(map[string]*Conn),
+		conn:       conn.NewConn(),
 		creatorMap: make(map[string]reflect.Value),
 	}
 
@@ -74,11 +70,9 @@ func NewClient(app core.IApp) core.IGrpcComponent {
 }
 
 func (g *Client) Close() {
-	for _, conn := range g.connMap {
-		if conn.cc != nil {
-			_ = conn.cc.Close()
-		}
-	}
+	g.conn.IterInstance(func(name string, instance interface{}) {
+		_ = instance.(*Conn).cc.Close()
+	})
 }
 
 func (g *Client) RegistryGrpcClientCreator(name string, creator interface{}) {
@@ -107,40 +101,7 @@ func (g *Client) RegistryGrpcClientCreator(name string, creator interface{}) {
 }
 
 func (g *Client) GetGrpcClient(name string) interface{} {
-	g.mx.RLock()
-	conn, ok := g.connMap[name]
-	g.mx.RUnlock()
-
-	if ok {
-		conn.wg.Wait()
-		if conn.e != nil {
-			logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))
-		}
-		return conn.client
-	}
-
-	g.mx.Lock()
-
-	// 再获取一次, 它可能在获取锁的过程中完成了
-	if conn, ok = g.connMap[name]; ok {
-		g.mx.Unlock()
-
-		conn.wg.Wait()
-		if conn.e != nil {
-			logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))
-		}
-		return conn.client
-	}
-
-	// 占位置
-	conn = new(Conn)
-	conn.wg.Add(1)
-	defer conn.wg.Done()
-	g.connMap[name] = conn
-
-	g.mx.Unlock()
-
-	return g.makeClient(name, conn)
+	return g.conn.GetInstance(g.makeClient, name).(*Conn).client
 }
 
 func (g *Client) makeConn(name, scheme, balance string, timeout int) (*grpc.ClientConn, error) {
@@ -159,48 +120,30 @@ func (g *Client) makeConn(name, scheme, balance string, timeout int) (*grpc.Clie
 	)
 }
 
-func (g *Client) makeClient(name string, conn *Conn) interface{} {
+func (g *Client) makeClient(name string) (interface{}, error) {
 	// 获取配置
 	conf, ok := g.app.GetConfig().Config().Components.GrpcClient[name]
 	if !ok {
-		conn.e = errors.New("试图获取未注册的grpc客户端")
-		logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))
+		return nil, errors.New("试图获取未注册的grpc客户端")
 	}
 
 	// 获取建造者
 	creator, ok := g.creatorMap[name]
 	if !ok {
-		conn.e = errors.New("未注册grpc客户端建造者")
-		logger.Log.Panic(zap.String("name", name), zap.Error(conn.e))
+		return nil, errors.New("未注册grpc客户端建造者")
 	}
 
-	// 构建cc
-	err := utils.Recover.WarpCall(func() error {
-		cc, err := g.makeConn(name, conf.Registry, conf.Balance, conf.DialTimeout)
-		conn.cc = cc
-		return err
-	})
+	cc, err := g.makeConn(name, conf.Registry, conf.Balance, conf.DialTimeout)
 	if err != nil {
-		conn.e = err
-		g.mx.Lock()
-		delete(g.connMap, name)
-		g.mx.Unlock()
-		logger.Log.Panic(zap.String("name", name), zap.String("registry", conf.Registry), zap.String("balance", conf.Balance), zap.Error(conn.e))
+		return nil, fmt.Errorf("make conn error: name=%s, registry=%s, balance=%s, err: %s", name, conf.Registry, conf.Balance, err)
 	}
 
-	// 构建客户端
-	err = utils.Recover.WarpCall(func() error {
-		conn.client = creator.Call([]reflect.Value{reflect.ValueOf(conn.cc)})[0].Interface()
-		return nil
-	})
-	if err != nil {
-		conn.e = err
-		g.mx.Lock()
-		delete(g.connMap, name)
-		g.mx.Unlock()
-		logger.Log.Panic(zap.String("name", name), zap.String("registry", conf.Registry), zap.String("balance", conf.Balance), zap.Error(conn.e))
-	}
-	return conn.client
+	client := creator.Call([]reflect.Value{reflect.ValueOf(cc)})[0].Interface()
+
+	return &Conn{
+		cc:     cc,
+		client: client,
+	}, nil
 }
 
 func (g *Client) getBalance(balance string) grpc.DialOption {
