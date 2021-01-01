@@ -11,7 +11,7 @@ package core
 import (
 	"context"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	elastic7 "github.com/olivere/elastic/v7"
 	"github.com/zlyuancn/zcache"
 	"github.com/zlyuancn/zscheduler"

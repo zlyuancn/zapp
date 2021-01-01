@@ -12,7 +12,8 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
-	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/go-redis/redis v6.15.9+incompatible // indirect
+	github.com/go-redis/redis/v8 v8.4.4
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/iris-contrib/middleware/cors v0.0.0-20201115103636-07e8bced147f
@@ -40,7 +41,7 @@ require (
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.0+incompatible // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	github.com/zlyuancn/zcache v0.0.0-20201220104017-45060eb0bdad
+	github.com/zlyuancn/zcache v0.0.0-20210101061802-b341c7fed988
 	github.com/zlyuancn/zlog v0.0.0-20201214101451-7d0a723e032f
 	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
 	github.com/zlyuancn/zutils v0.0.0-20201225134902-42a98c76c24a

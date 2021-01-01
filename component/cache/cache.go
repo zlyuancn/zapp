@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/zlyuancn/zcache"
 	memory_cache "github.com/zlyuancn/zcache/cachedb/memory-cache"
 	no_cache "github.com/zlyuancn/zcache/cachedb/no-cache"
