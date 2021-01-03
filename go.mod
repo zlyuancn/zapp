@@ -40,8 +40,9 @@ require (
 	github.com/twpayne/go-geom v1.3.6
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.0+incompatible // indirect
+	github.com/vmihailenco/msgpack/v5 v5.1.4 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	github.com/zlyuancn/zcache v0.0.0-20210101061802-b341c7fed988
+	github.com/zlyuancn/zcache v1.0.0
 	github.com/zlyuancn/zlog v0.0.0-20201214101451-7d0a723e032f
 	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
 	github.com/zlyuancn/zutils v0.0.0-20201225134902-42a98c76c24a

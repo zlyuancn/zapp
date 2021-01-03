@@ -642,6 +642,8 @@ github.com/vmihailenco/msgpack/v5 v5.0.0-beta.9 h1:iBRIniTnWOo0kqkg3k3XR8Vn6OCkV
 github.com/vmihailenco/msgpack/v5 v5.0.0-beta.9/go.mod h1:HVxBVPUK/+fZMonk4bi1islLa8V3cfnBug0+4dykPzo=
 github.com/vmihailenco/msgpack/v5 v5.1.0 h1:+od5YbEXxW95SPlW6beocmt8nOtlh83zqat5Ip9Hwdc=
 github.com/vmihailenco/msgpack/v5 v5.1.0/go.mod h1:C5gboKD0TJPqWDTVTtrQNfRbiBwHZGo8UTqP/9/XvLI=
+github.com/vmihailenco/msgpack/v5 v5.1.4 h1:6K44/cU6dMNGkVTGGuu7ef2NdSRFMhAFGGLfE3cqtHM=
+github.com/vmihailenco/msgpack/v5 v5.1.4/go.mod h1:C5gboKD0TJPqWDTVTtrQNfRbiBwHZGo8UTqP/9/XvLI=
 github.com/vmihailenco/tagparser v0.1.2 h1:gnjoVuB/kljJ5wICEEOpx98oXMWPLj22G67Vbd1qPqc=
 github.com/vmihailenco/tagparser v0.1.2/go.mod h1:OeAg3pn3UbLjkWt+rN9oFYB6u/cQgqMEUPoW2WPyhdI=
 github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f h1:J9EGpcZtP0E/raorCMxlFGSTBrsSlaDGf3jU/qvAE2c=
@@ -671,6 +673,10 @@ github.com/zlyuancn/zcache v0.0.0-20201220104017-45060eb0bdad h1:ReUdumat35b3nkT
 github.com/zlyuancn/zcache v0.0.0-20201220104017-45060eb0bdad/go.mod h1:MFCcMHJ/t94K7r/monFPpti8kSn5gtUKlnFF2kpJUNs=
 github.com/zlyuancn/zcache v0.0.0-20210101061802-b341c7fed988 h1:OkKhGZmu/meBNy7T5wMw3DI7EfEmWgaRmIVFryurfIY=
 github.com/zlyuancn/zcache v0.0.0-20210101061802-b341c7fed988/go.mod h1:y3VjZ9IUH47ilLLNs7fhCqYd2J46XdL25IjfO+/G99Y=
+github.com/zlyuancn/zcache v0.0.0-20210103084248-b77e73860eff h1:izN+XiYBL4usrk7rdPa6ZfGLjfzptg2+UhFwOK4g8bI=
+github.com/zlyuancn/zcache v0.0.0-20210103084248-b77e73860eff/go.mod h1:y3VjZ9IUH47ilLLNs7fhCqYd2J46XdL25IjfO+/G99Y=
+github.com/zlyuancn/zcache v1.0.0 h1:OTw/QhP/S84LKRwjeorpsmaUlFZ71hlmMN0ppARwcms=
+github.com/zlyuancn/zcache v1.0.0/go.mod h1:y3VjZ9IUH47ilLLNs7fhCqYd2J46XdL25IjfO+/G99Y=
 github.com/zlyuancn/zgpool v0.0.0-20201028093712-18bf87b9f38e h1:TLiEOdD0/VoxqEIXES9mjCwX+EfRKnM/y19APbq3HCk=
 github.com/zlyuancn/zgpool v0.0.0-20201028093712-18bf87b9f38e/go.mod h1:hcTFkqRHzZYl33RX4BQZZ3WV9rrY7XAYk1HlOE2emxQ=
 github.com/zlyuancn/zlog v0.0.0-20200510075342-5831b7d2f6c6 h1:CiIGNOGjLSV35KrG5+XwtZbBWJRAexLGCAaKEtRA+xk=
