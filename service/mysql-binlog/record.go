@@ -18,6 +18,7 @@ type Record struct {
 	New       map[string]interface{} `json:"new"`
 	DbName    string                 `json:"db_name"`
 	TableName string                 `json:"table_name"`
+	Timestamp uint32                 `json:"timestamp"`
 }
 
 func (r *Record) OldString() string {

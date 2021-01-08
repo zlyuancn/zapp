@@ -53,6 +53,7 @@ func (a *analyzer) MakeRecords(event *canal.RowsEvent) (records []*Record, err e
 			New:       nil,
 			DbName:    event.Table.Schema,
 			TableName: event.Table.Name,
+			Timestamp: event.Header.Timestamp,
 		}
 		records[i] = record
 
@@ -83,6 +84,7 @@ func (a *analyzer) makeUpdateRecords(event *canal.RowsEvent) (records []*Record,
 			New:       nil,
 			DbName:    event.Table.Schema,
 			TableName: event.Table.Name,
+			Timestamp: event.Header.Timestamp,
 		}
 		records = append(records, record)
 
