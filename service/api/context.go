@@ -35,7 +35,7 @@ func makeContext(ctx iris.Context) *Context {
 //  bind api数据, 它会将api数据反序列化到a中, 如果a是结构体会验证a
 func (c *Context) Bind(a interface{}) error {
 	if err := c.ReadBody(a); err != nil {
-		return err
+		return ParamError.WithError(err)
 	}
 
 	c.Debug("api.request.arg", zap.Any("arg", a))
