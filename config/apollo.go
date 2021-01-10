@@ -13,11 +13,15 @@ import (
 	"runtime"
 	"strings"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/shima-park/agollo"
 	"github.com/spf13/viper"
+	"github.com/zlyuancn/zstr"
 	"github.com/zlyuancn/zutils"
+	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/consts"
+	"github.com/zlyuancn/zapp/logger"
 )
 
 // 命名空间定义
@@ -33,6 +37,20 @@ var allNamespaces = []string{
 	ServicesNamespace,
 	ComponentsNamespace,
 }
+
+// 分析apollo配置各命名空间的key等级
+const (
+	analyseApolloConfigFrameKeyLevel      = 1 // frame
+	analyseApolloConfigServicesKeyLevel   = 1 // services
+	analyseApolloConfigComponentsKeyLevel = 2 // components
+)
+
+// 分析apollo配置各命名空间的key前缀
+const (
+	analyseApolloConfigFrameKeyPrefixes      = "Log"                             // frame
+	analyseApolloConfigServicesKeyPrefixes   = "Api,Grpc,MysqlBinlog,Cron"       // services
+	analyseApolloConfigComponentsKeyPrefixes = "GrpcClient,Xorm,Redis,ES7,Cache" // components
+)
 
 type ApolloConfig struct {
 	Address              string // apollo-api地址, 多个地址用英文逗号连接
@@ -92,16 +110,56 @@ func makeViperFromApollo(conf *ApolloConfig) (*viper.Viper, error) {
 		return nil, fmt.Errorf("初始化agollo失败: %s", err)
 	}
 
-	data := make(map[string]interface{}, len(allNamespaces))
-	for _, name := range allNamespaces {
-		d := apolloClient.GetNameSpace(name)
-		data[strings.ReplaceAll(name, "_", "")] = map[string]interface{}(d)
+	configs := make(map[string]interface{}, len(allNamespaces))
+	for _, namespace := range allNamespaces {
+		raw := apolloClient.GetNameSpace(namespace)
+		data := map[string]interface{}(raw)
+		switch namespace {
+		case FrameNamespace:
+			data = analyseApolloConfig(namespace, raw, analyseApolloConfigFrameKeyLevel, analyseApolloConfigFrameKeyPrefixes)
+		case ServicesNamespace:
+			data = analyseApolloConfig(namespace, raw, analyseApolloConfigServicesKeyLevel, analyseApolloConfigServicesKeyPrefixes)
+		case ComponentsNamespace:
+			data = analyseApolloConfig(namespace, raw, analyseApolloConfigComponentsKeyLevel, analyseApolloConfigComponentsKeyPrefixes)
+		}
+		configs[strings.ReplaceAll(namespace, "_", "")] = data
 	}
 
 	// 构建viper
 	vi := viper.New()
-	if err = vi.MergeConfigMap(data); err != nil {
+	if err = vi.MergeConfigMap(configs); err != nil {
 		return nil, fmt.Errorf("合并配置失败: %s", err)
 	}
 	return vi, nil
+}
+
+// 分析apollo配置, 它会匹配key前缀且key的层级数为level, 然后将value转为 map[string]interface{}
+func analyseApolloConfig(namespace string, raw map[string]interface{}, level int, prefixes string) map[string]interface{} {
+	prefixMap := make(map[string]struct{})
+	for _, prefix := range strings.Split(strings.ToLower(prefixes), ",") {
+		prefixMap[prefix] = struct{}{}
+	}
+
+	data := make(map[string]interface{})
+	for key, value := range raw {
+		keys := strings.Split(key, ".")
+		if len(keys) != level { // 不匹配等级
+			data[key] = value
+			continue
+		}
+
+		if _, ok := prefixMap[strings.ToLower(keys[0])]; !ok { // 不匹配前缀
+			data[key] = value
+			continue
+		}
+
+		var doc interface{}
+		err := jsoniter.Unmarshal(zstr.ToBytes(zstr.ToString(value)), &doc)
+		if err != nil {
+			logger.Log.Fatal("apollo的value无法转为json", zap.String("namespace", namespace), zap.String("key", key), zap.Error(err))
+		}
+		data[key] = doc
+
+	}
+	return data
 }

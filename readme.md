@@ -98,6 +98,20 @@ apollo的配置是扁平化的, 多级的key应该用点连接起来, 所以配�
         ...
         Redis.default.Address   127.0.0.1:6379  ...
         ...
+apollo的配置也可以使用json, 如下:
+    frame:
+        Debug                   true            debug标志
+        FreeMemoryInterval      120000          清理内存间隔时间(毫秒)
+        ...
+        Log                     {json配置}
+    services:
+        Api                     {json配置}
+        Grpc                    {json配置}
+        ...
+    components:
+        Xorm.default            {json配置}
+        Redis.default           {json配置}
+        ...
 ```
 
 ### 配置文件和apollo混用
