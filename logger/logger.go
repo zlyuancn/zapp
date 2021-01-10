@@ -11,13 +11,14 @@ package logger
 import (
 	"github.com/zlyuancn/zlog"
 	"github.com/zlyuancn/zutils"
+	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/core"
 )
 
 var Log core.ILogger = zlog.DefaultLogger
 
-func NewLogger(appName string, c core.IConfig) core.ILogger {
+func NewLogger(appName string, c core.IConfig, opts ...zap.Option) core.ILogger {
 	conf := c.Config().Frame
 	if zutils.Reflect.IsZero(conf.Log) {
 		conf.Log = zlog.DefaultConfig
@@ -28,6 +29,6 @@ func NewLogger(appName string, c core.IConfig) core.ILogger {
 	}
 	c.Config().Frame.Log = conf.Log
 
-	Log = zlog.New(conf.Log)
+	Log = zlog.New(conf.Log, opts...)
 	return Log
 }

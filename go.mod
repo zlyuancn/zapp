@@ -22,6 +22,7 @@ require (
 	github.com/juju/testing v0.0.0-20201216035041-2be42bba85f3 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.2.0-alpha.0.20201113181155-4d09475c290d
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.9.0
 	github.com/mattn/go-sqlite3 v1.14.5
 	github.com/myesui/uuid v1.0.0 // indirect
@@ -43,10 +44,15 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.1.4 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	github.com/zlyuancn/zcache v1.0.0
-	github.com/zlyuancn/zlog v0.0.0-20201214101451-7d0a723e032f
+	github.com/zlyuancn/zlog v0.0.0-20210110090908-80015b727d59
 	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
-	github.com/zlyuancn/zutils v0.0.0-20201225134902-42a98c76c24a
+	github.com/zlyuancn/zstr v0.0.0-20201208035324-9c9af6935520
+	github.com/zlyuancn/zutils v0.0.0-20210110094651-f805c73e9d58
 	go.uber.org/zap v1.16.0
+	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
+	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
+	golang.org/x/sys v0.0.0-20210110051926-789bb1bd4061 // indirect
+	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/grpc v1.33.2
 	google.golang.org/grpc/examples v0.0.0-20201226181154-53788aa5dcb4 // indirect
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect

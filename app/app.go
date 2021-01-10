@@ -73,7 +73,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	}
 
 	app.config = config.NewConfig(appName, app.opt.configOpts...)
-	app.ILogger = logger.NewLogger(appName, app.config)
+	app.ILogger = logger.NewLogger(appName, app.config, app.withColoursMessageOfLoggerId())
 
 	app.Debug("app初始化")
 	app.handler(BeforeInitializeHandler)

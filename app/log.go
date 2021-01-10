@@ -12,10 +12,14 @@ import (
 	"sync/atomic"
 
 	"github.com/zlyuancn/zlog"
+	"github.com/zlyuancn/zutils"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/zlyuancn/zapp/core"
 )
+
+const logIdKey = "logId"
 
 // 获取下个日志id
 //
@@ -43,6 +47,38 @@ func (app *appCli) GetLogger() core.ILogger {
 }
 
 func (app *appCli) CreateLogger(tag ...string) core.ILogger {
-	log, _ := zlog.WrapZapFieldsWithLoger(app.ILogger, zap.String("logId", app.nextLoggerId()), zap.Strings("logTag", tag))
+	log, _ := zlog.WrapZapFieldsWithLoger(app.ILogger, zap.String(logIdKey, app.nextLoggerId()), zap.Strings("logTag", tag))
 	return log
+}
+
+func (app *appCli) withColoursMessageOfLoggerId() zap.Option {
+	isTerminal := app.config.Config().Frame.Log.IsTerminal
+	return zlog.WithHook(func(ent *zapcore.Entry, fields []zapcore.Field) (cancel bool) {
+		if !isTerminal || ent.Message == "" {
+			return
+		}
+
+		for _, field := range fields {
+			if field.Key == logIdKey {
+				ent.Message = app.makeColorMessageOfLoggerId(field.String, ent.Message)
+				break
+			}
+		}
+		return
+	})
+}
+
+func (app *appCli) makeColorMessageOfLoggerId(logId string, message string) string {
+	var id uint32
+	for _, c := range logId {
+		id *= 32
+		if c >= 'a' {
+			id += uint32(c) - 87
+		} else {
+			id += uint32(c) - 48
+		}
+	}
+
+	color := zutils.ColorType(id%7) + zutils.ColorRed
+	return zutils.Color.MakeColorText(color, message)
 }
