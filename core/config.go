@@ -66,7 +66,7 @@ type ApiServiceConfig struct {
 	Bind                          string // bind地址
 	IPWithNginxForwarded          bool   // 适配nginx的Forwarded获取ip, 优先级高于nginx的Real
 	IPWithNginxReal               bool   // 适配nginx的Real获取ip, 优先级高于sock连接的ip
-	ShowDetailedErrorOfProduction bool   // 生产环境显示详细的错误
+	ShowDetailedErrorInProduction bool   // 在生产环境显示详细的错误
 }
 
 // grpc服务配置

@@ -64,8 +64,8 @@ func WriteToCtx(ctx *Context, result interface{}) {
 		code, message := decodeErr(err)
 
 		isProduction := !component.GlobalComponent().Config().Frame.Debug
-		showDetailedErrorOfProduction := component.GlobalComponent().Config().Services.Api.ShowDetailedErrorOfProduction
-		if !isProduction || showDetailedErrorOfProduction {
+		showDetailedErrorInProduction := component.GlobalComponent().Config().Services.Api.ShowDetailedErrorInProduction
+		if !isProduction || showDetailedErrorInProduction {
 			message = err.Error()
 		}
 		_, _ = ctx.JSON(Response{

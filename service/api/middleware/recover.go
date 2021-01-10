@@ -22,7 +22,7 @@ import (
 
 func Recover() iris.Handler {
 	isProduction := !component.GlobalComponent().Config().Frame.Debug
-	showDetailedErrorOfProduction := component.GlobalComponent().Config().Services.Api.ShowDetailedErrorOfProduction
+	showDetailedErrorInProduction := component.GlobalComponent().Config().Services.Api.ShowDetailedErrorInProduction
 	return func(ctx iris.Context) {
 		err := utils.Recover.WarpCall(func() error {
 			ctx.Next()
@@ -58,7 +58,7 @@ func Recover() iris.Handler {
 			"err_code": 1,
 			"err_msg":  strings.Split(logMessage, "\n"),
 		}
-		if isProduction && !showDetailedErrorOfProduction {
+		if isProduction && !showDetailedErrorInProduction {
 			result["err_msg"] = "service internal error"
 		}
 		_, _ = ctx.JSON(result)

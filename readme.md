@@ -40,13 +40,12 @@ FreeMemoryInterval = 120000 # 主动清理内存间隔时间(毫秒), <= 0 表�
 Bind = ":8080"
 IPWithNginxForwarded = false
 IPWithNginxReal = false
-ShowDetailedErrorOfProduction = false
 
 [services.grpc]
 Bind = ":3000"
 HeartbeatTime = 20000
 
-[...]
+#[...]
 ```
 
 + 组件配置示例
@@ -57,7 +56,7 @@ Codec = "msgpack"
 DirectReturnOnCacheFault = true
 MemoryCacheDB.CleanupInterval = 300000
 
-[...]
+#[...]
 ```
 
 + 更多配置参考 [core.Config](./core/config.go)
