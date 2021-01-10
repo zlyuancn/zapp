@@ -20,6 +20,7 @@ import (
 )
 
 func LoggerMiddleware(app core.IApp) iris.Handler {
+	logResultInDevelop := app.GetConfig().Config().Services.Api.LogResultInDevelop
 	return func(ctx iris.Context) {
 		log := app.CreateLogger(ctx.Method(), ctx.Path())
 		utils.Context.SaveLoggerToIrisContext(ctx, log)
@@ -42,7 +43,9 @@ func LoggerMiddleware(app core.IApp) iris.Handler {
 			fields = append(fields, zap.Error(err))
 			log.Warn(fields...)
 		} else {
-			fields = append(fields, zap.Any("result", ctx.Values().Get("result")))
+			if logResultInDevelop{
+				fields = append(fields, zap.Any("result", ctx.Values().Get("result")))
+			}
 			log.Debug(fields...)
 		}
 	}
