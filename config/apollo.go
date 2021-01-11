@@ -61,6 +61,7 @@ type ApolloConfig struct {
 	Cluster              string // 集群名
 	AlwaysLoadFromRemote bool   // 总是从远程获取, 在远程加载失败时不会从备份文件加载
 	BackupFile           string // 备份文件名
+	Namespaces           string // 其他分片,多个分片名用英文逗号隔开
 }
 
 // 从viper构建apollo配置
@@ -101,8 +102,13 @@ func makeViperFromApollo(conf *ApolloConfig) (*viper.Viper, error) {
 			))
 	}
 
+	namespaces := append([]string{}, allNamespaces...)
+	if conf.Namespaces != "" {
+		namespaces = append(namespaces, strings.Split(conf.Namespaces, ",")...)
+	}
+
 	// 预加载数据, 从远程或本地加载成功就不会返回错误
-	opts = append(opts, agollo.PreloadNamespaces(allNamespaces...))
+	opts = append(opts, agollo.PreloadNamespaces(namespaces...))
 
 	// 构建apollo客户端
 	apolloClient, err := agollo.New(conf.Address, conf.AppId, opts...)
@@ -110,8 +116,8 @@ func makeViperFromApollo(conf *ApolloConfig) (*viper.Viper, error) {
 		return nil, fmt.Errorf("初始化agollo失败: %s", err)
 	}
 
-	configs := make(map[string]interface{}, len(allNamespaces))
-	for _, namespace := range allNamespaces {
+	configs := make(map[string]interface{}, len(namespaces))
+	for _, namespace := range namespaces {
 		raw := apolloClient.GetNameSpace(namespace)
 		data := map[string]interface{}(raw)
 		switch namespace {
