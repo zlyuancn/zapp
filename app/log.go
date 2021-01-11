@@ -71,7 +71,7 @@ func (app *appCli) withColoursMessageOfLoggerId() zap.Option {
 func (app *appCli) makeColorMessageOfLoggerId(logId string, message string) string {
 	var id uint32
 	for _, c := range logId {
-		id *= 32
+		id <<= 5
 		if c >= 'a' {
 			id += uint32(c) - 87
 		} else {
