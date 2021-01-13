@@ -52,9 +52,9 @@ func (app *appCli) CreateLogger(tag ...string) core.ILogger {
 }
 
 func (app *appCli) withColoursMessageOfLoggerId() zap.Option {
-	isTerminal := app.config.Config().Frame.Log.IsTerminal
+	isTerminal := &app.config.Config().Frame.Log.IsTerminal
 	return zlog.WithHook(func(ent *zapcore.Entry, fields []zapcore.Field) (cancel bool) {
-		if !isTerminal || ent.Message == "" {
+		if !*isTerminal || ent.Message == "" {
 			return
 		}
 
