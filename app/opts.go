@@ -121,3 +121,9 @@ func WithMysqlBinlogService() Option {
 		opt.AddService(core.MysqlBinlogService)
 	}
 }
+
+func WithAddService(serviceType core.ServiceType, serviceName ...string) Option {
+	return func(opt *option) {
+		opt.AddService(serviceType, serviceName...)
+	}
+}
