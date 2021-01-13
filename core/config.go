@@ -35,6 +35,11 @@ type IConfig interface {
 	ParseShard(shard string, outPtr interface{}) error
 	// 获取配置viper结构
 	GetViper() *viper.Viper
+
+	// 获取标记列表
+	Tags() []string
+	// 检查是否存在某个标记, 标记是忽略大小写的
+	HasTag(tag string) (ok bool)
 }
 
 // frame配置
@@ -47,6 +52,8 @@ type FrameConfig struct {
 	WaitServiceRunTime int
 	// 等待服务启动阶段2, 等待服务启动阶段1时间到后继续等待服务启动, 等待时间(毫秒), 如果时间到则真正认为服务启动成功
 	ContinueWaitServiceRunTime int
+	// 标记列表, 注意: tag是忽略大小写的
+	Tags []string
 	// log配置
 	Log LogConfig
 }

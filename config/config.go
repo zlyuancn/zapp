@@ -26,8 +26,9 @@ import (
 )
 
 type configCli struct {
-	vi *viper.Viper
-	c  *core.Config
+	vi     *viper.Viper
+	c      *core.Config
+	tagMap map[string]struct{}
 }
 
 func newConfig() *core.Config {
@@ -118,7 +119,15 @@ func NewConfig(appName string, opts ...Option) core.IConfig {
 		os.Exit(0)
 	}
 
+	c.makeTags()
 	return c
+}
+
+func (c *configCli) makeTags() {
+	c.tagMap = make(map[string]struct{}, len(c.c.Frame.Tags))
+	for _, tag := range c.c.Frame.Tags {
+		c.tagMap[strings.ToLower(tag)] = struct{}{}
+	}
 }
 
 // 从文件构建viper
@@ -175,4 +184,13 @@ func (c *configCli) ParseShard(shard string, outPtr interface{}) error {
 
 func (c *configCli) GetViper() *viper.Viper {
 	return c.vi
+}
+
+func (c *configCli) Tags() []string {
+	return append([]string{}, c.c.Frame.Tags...)
+}
+
+func (c *configCli) HasTag(tag string) (ok bool) {
+	_, ok = c.tagMap[strings.ToLower(tag)]
+	return
 }
