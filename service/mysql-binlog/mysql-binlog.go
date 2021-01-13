@@ -15,6 +15,7 @@ import (
 
 	"github.com/siddontang/go-mysql/canal"
 	"github.com/siddontang/go-mysql/mysql"
+	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/service"
@@ -118,15 +119,21 @@ func (m *MysqlBinlogService) Start() error {
 		RunServiceFn: func() error {
 			switch binlogName {
 			case OldestPos: // 最旧的位置
+				m.app.Debug("mysql-bing服务将从最旧位置开始处理")
 				return m.canal.Run()
 			case LatestPos: // 最新的位置
 				pos, err := m.canal.GetMasterPos()
 				if err != nil {
 					return err
 				}
+				m.app.Debug("mysql-bing服务将从最新位置开始处理", zap.String("binlogName", pos.Name), zap.Uint32("pos", pos.Pos))
+				_ = m.OnPosSynced(pos, nil, true)
 				return m.canal.RunFrom(pos)
 			default: // 指定位置
-				return m.canal.RunFrom(mysql.Position{Name: binlogName, Pos: pos})
+				p := mysql.Position{Name: binlogName, Pos: pos}
+				m.app.Debug("mysql-bing服务将从指定位置开始处理", zap.String("binlogName", binlogName), zap.Uint32("pos", pos))
+				_ = m.OnPosSynced(p, nil, false)
+				return m.canal.RunFrom(p)
 			}
 		},
 	})
