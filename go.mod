@@ -43,11 +43,11 @@ require (
 	github.com/uber/jaeger-lib v2.4.0+incompatible // indirect
 	github.com/vmihailenco/msgpack/v5 v5.1.4 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	github.com/zlyuancn/zcache v1.0.0
+	github.com/zlyuancn/zcache v1.0.1
 	github.com/zlyuancn/zlog v0.0.0-20210110090908-80015b727d59
-	github.com/zlyuancn/zscheduler v0.0.0-20201128125613-1b2cb0b16d69
-	github.com/zlyuancn/zstr v0.0.0-20201208035324-9c9af6935520
-	github.com/zlyuancn/zutils v0.0.0-20210110094651-f805c73e9d58
+	github.com/zlyuancn/zscheduler v0.0.0-20210115091504-47a7f0f03c4b
+	github.com/zlyuancn/zstr v0.0.0-20210105075255-fa288e301783
+	github.com/zlyuancn/zutils v0.0.0-20210115092017-e59ec459867c
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect

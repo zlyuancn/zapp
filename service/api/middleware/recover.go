@@ -25,7 +25,7 @@ func Recover() iris.Handler {
 	isProduction := !component.GlobalComponent().Config().Frame.Debug
 	showDetailedErrorInProduction := component.GlobalComponent().Config().Services.Api.ShowDetailedErrorInProduction
 	return func(ctx iris.Context) {
-		err := zutils.Recover.WarpCall(func() error {
+		err := zutils.Recover.WrapCall(func() error {
 			ctx.Next()
 			return nil
 		})

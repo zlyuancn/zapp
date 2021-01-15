@@ -78,7 +78,7 @@ func (c *Conn) getInstance(creator CreatorFunc, name string) interface{} {
 	c.mx.Unlock()
 
 	var err error
-	err = zutils.Recover.WarpCall(func() error {
+	err = zutils.Recover.WrapCall(func() error {
 		wg.instance, err = creator(name)
 		return err
 	})
