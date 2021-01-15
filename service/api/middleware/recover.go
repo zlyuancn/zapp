@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/kataras/iris/v12"
+	"github.com/zlyuancn/zutils"
 
 	"github.com/zlyuancn/zapp/component"
 	"github.com/zlyuancn/zapp/utils"
@@ -24,7 +25,7 @@ func Recover() iris.Handler {
 	isProduction := !component.GlobalComponent().Config().Frame.Debug
 	showDetailedErrorInProduction := component.GlobalComponent().Config().Services.Api.ShowDetailedErrorInProduction
 	return func(ctx iris.Context) {
-		err := utils.Recover.WarpCall(func() error {
+		err := zutils.Recover.WarpCall(func() error {
 			ctx.Next()
 			return nil
 		})

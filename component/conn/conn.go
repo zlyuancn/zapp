@@ -11,11 +11,11 @@ package conn
 import (
 	"sync"
 
+	"github.com/zlyuancn/zutils"
 	"go.uber.org/zap"
 
 	"github.com/zlyuancn/zapp/consts"
 	"github.com/zlyuancn/zapp/logger"
-	"github.com/zlyuancn/zapp/utils"
 )
 
 type CreatorFunc = func(name string) (interface{}, error)
@@ -78,7 +78,7 @@ func (c *Conn) getInstance(creator CreatorFunc, name string) interface{} {
 	c.mx.Unlock()
 
 	var err error
-	err = utils.Recover.WarpCall(func() error {
+	err = zutils.Recover.WarpCall(func() error {
 		wg.instance, err = creator(name)
 		return err
 	})
