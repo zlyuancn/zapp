@@ -72,7 +72,7 @@ func NewApp(appName string, opts ...Option) core.IApp {
 		app.enableDaemon()
 	}
 
-	app.config = config.NewConfig(appName, app.opt.configOpts...)
+	app.config = config.NewConfig(appName, app.opt.ConfigOpts...)
 	app.ILogger = logger.NewLogger(appName, app.config, app.withColoursMessageOfLoggerId())
 
 	app.Debug("app初始化")
@@ -82,7 +82,8 @@ func NewApp(appName string, opts ...Option) core.IApp {
 	app.component = component.NewComponent(app)
 
 	// 初始化服务
-	for serviceType, names := range app.opt.Servers {
+	app.opt.CheckCustomEnableServices(app.component)
+	for serviceType, names := range app.opt.Services {
 		services := make(map[string]core.IService, len(names))
 		for name := range names {
 			services[name] = service.NewService(serviceType, app)

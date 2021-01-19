@@ -21,13 +21,15 @@ type Option func(opt *option)
 
 type option struct {
 	// 配置选项
-	configOpts []config.Option
+	ConfigOpts []config.Option
 	// 启用守护
 	EnableDaemon bool
 	// 忽略未启用的服务注入
 	IgnoreInjectOfDisableServer bool
 	// 服务
-	Servers map[core.ServiceType]map[string]struct{}
+	Services map[core.ServiceType]map[string]struct{}
+	// 自定义启用服务函数
+	customEnableServicesFn func(c core.IComponent) (servers map[core.ServiceType]map[string]bool)
 	// handlers
 	Handlers map[HandlerType][]Handler
 }
@@ -36,7 +38,7 @@ func newOption() *option {
 	return &option{
 		EnableDaemon:                false,
 		IgnoreInjectOfDisableServer: false,
-		Servers:                     make(map[core.ServiceType]map[string]struct{}),
+		Services:                    make(map[core.ServiceType]map[string]struct{}),
 		Handlers:                    make(map[HandlerType][]Handler),
 	}
 }
@@ -48,10 +50,10 @@ func (o *option) AddService(serviceType core.ServiceType, serviceName ...string)
 		name = serviceName[0]
 	}
 
-	services, ok := o.Servers[serviceType]
+	services, ok := o.Services[serviceType]
 	if !ok {
 		services = make(map[string]struct{})
-		o.Servers[serviceType] = services
+		o.Services[serviceType] = services
 	}
 
 	if _, ok = services[name]; ok {
@@ -59,6 +61,23 @@ func (o *option) AddService(serviceType core.ServiceType, serviceName ...string)
 	}
 
 	services[name] = struct{}{}
+}
+
+// 检查自定义启用服务
+func (o *option) CheckCustomEnableServices(c core.IComponent) {
+	if o.customEnableServicesFn == nil {
+		return
+	}
+
+	customServices := o.customEnableServicesFn(c)
+	for serviceType, names := range customServices {
+		for name, enable := range names {
+			if !enable {
+				continue
+			}
+			o.AddService(serviceType, name)
+		}
+	}
 }
 
 // 启用守护进程模块
@@ -90,7 +109,7 @@ func WithIgnoreInjectOfDisableServer(ignore ...bool) Option {
 // 设置config选项
 func WithConfigOption(opts ...config.Option) Option {
 	return func(opt *option) {
-		opt.configOpts = append(opt.configOpts, opts...)
+		opt.ConfigOpts = append(opt.ConfigOpts, opts...)
 	}
 }
 
@@ -122,8 +141,24 @@ func WithMysqlBinlogService() Option {
 	}
 }
 
+// 启动服务
 func WithAddService(serviceType core.ServiceType, serviceName ...string) Option {
 	return func(opt *option) {
 		opt.AddService(serviceType, serviceName...)
+	}
+}
+
+// 自定义启用哪些服务
+//
+// 与其他启用服务选项不同, 这里已经加载了component, 用户可以方便的根据各种条件启用想要的服务.
+// 示例:
+//      app.WithCustomEnableService(func(c core.IComponent) (servers map[core.ServiceType]map[string]bool) {
+//			return map[core.ServiceType]map[string]bool{
+//				core.CronService: {"default": true},
+//			}
+//		})
+func WithCustomEnableService(fn func(c core.IComponent) (servers map[core.ServiceType]map[string]bool)) Option {
+	return func(opt *option) {
+		opt.customEnableServicesFn = fn
 	}
 }
