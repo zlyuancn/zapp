@@ -27,6 +27,7 @@ import (
 )
 
 var typeOfGrpcClientConn = reflect.TypeOf((*grpc.ClientConn)(nil))
+var typeOfGrpcClientConnInterface = reflect.TypeOf((grpc.ClientConnInterface)((*grpc.ClientConn)(nil)))
 
 type Client struct {
 	app        core.IApp
@@ -87,8 +88,9 @@ func (g *Client) RegistryGrpcClientCreator(name string, creator interface{}) {
 		return
 	}
 
-	if !createType.In(0).AssignableTo(typeOfGrpcClientConn) {
-		logger.Log.Fatal("grpc客户端建造者入参类型必须是 *grpc.ClientConn")
+	arg0 := createType.In(0)
+	if arg0.AssignableTo(typeOfGrpcClientConn) && !arg0.AssignableTo(typeOfGrpcClientConnInterface) {
+		logger.Log.Fatal("grpc客户端建造者入参类型必须是 *grpc.ClientConn 或 grpc.ClientConnInterface")
 		return
 	}
 
