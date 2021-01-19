@@ -79,6 +79,6 @@ func (app *appCli) makeColorMessageOfLoggerId(logId string, message string) stri
 		}
 	}
 
-	color := zutils.ColorType(id%7) + zutils.ColorRed
+	color := zutils.ColorType(id&7) + zutils.Color.Default
 	return zutils.Color.MakeColorText(color, message)
 }

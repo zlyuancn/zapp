@@ -12,7 +12,6 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
-	github.com/go-redis/redis v6.15.9+incompatible // indirect
 	github.com/go-redis/redis/v8 v8.4.4
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
@@ -22,7 +21,6 @@ require (
 	github.com/juju/testing v0.0.0-20201216035041-2be42bba85f3 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.2.0-alpha.0.20201113181155-4d09475c290d
-	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.9.0
 	github.com/mattn/go-sqlite3 v1.14.5
 	github.com/myesui/uuid v1.0.0 // indirect
@@ -30,7 +28,7 @@ require (
 	github.com/ngaut/sync2 v0.0.0-20141008032647-7a24ed77b2ef // indirect
 	github.com/olivere/elastic/v7 v7.0.22
 	github.com/pingcap/goleveldb v0.0.0-20191226122134-f82aafb29989 // indirect
-	github.com/pingcap/kvproto v0.0.0-20201218082734-fc36d7869035 // indirect
+	github.com/pingcap/kvproto v0.0.0-20210118091648-29d65899faf7 // indirect
 	github.com/pingcap/tidb v2.0.11+incompatible // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/shima-park/agollo v1.2.10
@@ -41,20 +39,15 @@ require (
 	github.com/twpayne/go-geom v1.3.6
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.0+incompatible // indirect
-	github.com/vmihailenco/msgpack/v5 v5.1.4 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	github.com/zlyuancn/zcache v1.0.1
 	github.com/zlyuancn/zlog v0.0.0-20210110090908-80015b727d59
 	github.com/zlyuancn/zscheduler v0.0.0-20210115091504-47a7f0f03c4b
 	github.com/zlyuancn/zstr v0.0.0-20210105075255-fa288e301783
-	github.com/zlyuancn/zutils v0.0.0-20210115092017-e59ec459867c
+	github.com/zlyuancn/zutils v0.0.0-20210119085353-53ed075d171a
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
-	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
-	golang.org/x/sys v0.0.0-20210110051926-789bb1bd4061 // indirect
-	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/grpc v1.33.2
-	google.golang.org/grpc/examples v0.0.0-20201226181154-53788aa5dcb4 // indirect
+	google.golang.org/grpc/examples v0.0.0-20210116000752-504caa93c539 // indirect
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
 	xorm.io/xorm v1.0.5
 )
