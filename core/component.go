@@ -9,8 +9,6 @@
 package core
 
 import (
-	"context"
-
 	"github.com/go-redis/redis/v8"
 	elastic7 "github.com/olivere/elastic/v7"
 	"github.com/zlyuancn/zcache"
@@ -27,8 +25,6 @@ type IComponent interface {
 
 	// 日志
 	ILogger
-	// 从标准context获取日志
-	CtxLog(ctx context.Context) ILogger
 	// 关闭所有组件
 	Close()
 

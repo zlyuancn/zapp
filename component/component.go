@@ -9,7 +9,6 @@
 package component
 
 import (
-	"context"
 	"sync"
 
 	"github.com/zlyuancn/zapp/component/cache"
@@ -20,7 +19,6 @@ import (
 	"github.com/zlyuancn/zapp/component/xorm"
 	"github.com/zlyuancn/zapp/core"
 	"github.com/zlyuancn/zapp/logger"
-	"github.com/zlyuancn/zapp/utils"
 )
 
 var defaultComponent core.IComponent
@@ -59,10 +57,6 @@ func NewComponent(app core.IApp) core.IComponent {
 
 func (c *ComponentCli) App() core.IApp       { return c.app }
 func (c *ComponentCli) Config() *core.Config { return c.config }
-
-func (c *ComponentCli) CtxLog(ctx context.Context) core.ILogger {
-	return utils.Context.MustGetLoggerFromContext(ctx)
-}
 
 func (c *ComponentCli) Close() {
 	var wg sync.WaitGroup
