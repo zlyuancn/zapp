@@ -8,10 +8,6 @@
 
 package core
 
-import (
-	"fmt"
-)
-
 // 服务
 type IService interface {
 	// 注入, 根据服务不同具有不同作用, 具体参考服务实现说明
@@ -29,41 +25,15 @@ type IServiceCreator interface {
 }
 
 // 服务类型
-type ServiceType uint8
+type ServiceType string
 
 const (
 	// api服务
-	ApiService ServiceType = iota
+	ApiService ServiceType = "api"
 	// grpc服务
-	GrpcService
+	GrpcService ServiceType = "grpc"
 	// cron服务
-	CronService
+	CronService ServiceType = "cron"
 	// mysql-binlog服务
-	MysqlBinlogService
+	MysqlBinlogService ServiceType = "mysql-binlog"
 )
-
-func (t ServiceType) String() string {
-	switch t {
-	case ApiService:
-		return "api"
-	case GrpcService:
-		return "grpc"
-	case CronService:
-		return "cron"
-	case MysqlBinlogService:
-		return "mysql-binlog"
-	default:
-		if desc, ok := serviceTypeDescribeMap[t]; ok {
-			return desc
-		}
-	}
-
-	return fmt.Sprintf("<undefined service type %d>", t)
-}
-
-var serviceTypeDescribeMap = make(map[ServiceType]string)
-
-// 注册服务类型描述
-func RegistryServiceTypeDescribe(t ServiceType, desc string) {
-	serviceTypeDescribeMap[t] = desc
-}

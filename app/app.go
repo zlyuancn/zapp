@@ -119,7 +119,7 @@ func (app *appCli) startService() {
 	for serviceType, services := range app.services {
 		for name, s := range services {
 			if err := s.Start(); err != nil {
-				app.Fatal("服务启动失败", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name), zap.Error(err))
+				app.Fatal("服务启动失败", zap.String("serviceType", string(serviceType)), zap.String("serviceName", name), zap.Error(err))
 			}
 		}
 	}
@@ -130,7 +130,7 @@ func (app *appCli) closeService() {
 	for serviceType, services := range app.services {
 		for name, s := range services {
 			if err := s.Close(); err != nil {
-				app.Error("服务关闭失败", zap.String("serviceType", serviceType.String()), zap.String("serviceName", name), zap.Error(err))
+				app.Error("服务关闭失败", zap.String("serviceType", string(serviceType)), zap.String("serviceName", name), zap.Error(err))
 			}
 		}
 	}
