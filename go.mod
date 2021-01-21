@@ -43,8 +43,8 @@ require (
 	github.com/zlyuancn/zcache v1.0.1
 	github.com/zlyuancn/zlog v0.0.0-20210110090908-80015b727d59
 	github.com/zlyuancn/zscheduler v0.0.0-20210115091504-47a7f0f03c4b
-	github.com/zlyuancn/zstr v0.0.0-20210105075255-fa288e301783
-	github.com/zlyuancn/zutils v0.0.0-20210119085353-53ed075d171a
+	github.com/zlyuancn/zstr v0.0.0-20210121050244-daa622b5ac44
+	github.com/zlyuancn/zutils v0.0.0-20210121050237-808b1a5b618e
 	go.uber.org/zap v1.16.0
 	google.golang.org/grpc v1.33.2
 	google.golang.org/grpc/examples v0.0.0-20210116000752-504caa93c539 // indirect
