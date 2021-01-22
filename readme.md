@@ -1,4 +1,6 @@
 
+# 此项目已停止, 请使用 https://github.com/zly-app/zapp
+
 # 用于快速构建项目的基础库
 
 ---
